@@ -1,4 +1,7 @@
 #include "cr_knowledge_extraction/hello.hpp"
+#include "cr_knowledge_extraction/kleene/kleene_extractor.hpp"
+#include "cr_knowledge_extraction/proposition.hpp"
+#include "cr_knowledge_extraction/relationship/relationship_extractor.hpp"
 
 // CCS
 #include <geometry/curvilinear_coordinate_system.h>

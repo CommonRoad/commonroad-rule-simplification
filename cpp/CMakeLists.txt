@@ -1,9 +1,17 @@
 set(CR_KNOWLEDGE_EXTRACTION_SRC_FILES
-    src/hello.cpp
+        src/hello.cpp
+
+        src/relationship/implication/in_front_of_impl_extractor.cpp
 )
 
 set(CR_KNOWLEDGE_EXTRACTION_HDR_FILES
-    include/cr_knowledge_extraction/hello.hpp
+        include/cr_knowledge_extraction/hello.hpp
+        include/cr_knowledge_extraction/proposition.hpp
+
+        include/cr_knowledge_extraction/kleene/kleene_extractor.hpp
+
+        include/cr_knowledge_extraction/relationship/relationship_extractor.hpp
+        include/cr_knowledge_extraction/relationship/implication/in_front_of_impl_extractor.hpp
 )
 
 add_library(cr_knowledge_extraction ${CR_KNOWLEDGE_EXTRACTION_SRC_FILES})
