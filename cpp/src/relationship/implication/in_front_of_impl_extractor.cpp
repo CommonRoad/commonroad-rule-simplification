@@ -42,9 +42,12 @@ std::unordered_map<time_step_t, std::vector<InFrontOfImplExtractor::Relationship
         std::ranges::sort(relevant_obstacle_rears,
                           [](const auto &lhs, const auto &rhs) { return lhs.second < rhs.second; });
 
+        result[time_step].reserve(relevant_obstacle_rears.size() - 1);
         for (size_t i = 0; i < relevant_obstacle_rears.size() - 1; ++i) {
-            result[time_step].emplace_back(RelationshipType::IMPLICATION, relevant_obstacle_rears[i].first,
-                                           relevant_obstacle_rears[i + 1].first);
+            const auto &cur = relevant_obstacle_rears[i];
+            const auto &next = relevant_obstacle_rears[i + 1];
+            auto type = cur.second == next.second ? RelationshipType::EQUIVALENCE : RelationshipType::IMPLICATION;
+            result[time_step].emplace_back(type, cur.first, next.first);
         }
     }
     return result;

@@ -259,10 +259,10 @@ if (CR_KNOWLEDGE_EXTRACTION_BUILD_PYTHON_BINDINGS)
 endif ()
 
 # Add subdirectory for tests
-#if (CR_KNOWLEDGE_EXTRACTION_BUILD_TESTS)
-#    enable_testing()
-#    add_subdirectory(cpp/tests)
-#endif ()
+if (CR_KNOWLEDGE_EXTRACTION_BUILD_TESTS)
+    enable_testing()
+    add_subdirectory(cpp/tests)
+endif ()
 
 # Add documentation
 #if (CR_KNOWLEDGE_EXTRACTION_BUILD_DOXYGEN)
