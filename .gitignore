@@ -1,0 +1,17 @@
+# IDE directories
+.idea/
+.vscode/
+
+# Python
+__pycache__/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Output directory
+output/
+
+# build
+build/
+cmake-build-*/
+*.so
