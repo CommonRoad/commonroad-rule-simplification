@@ -1,6 +1,7 @@
 set(CR_KNOWLEDGE_EXTRACTION_TEST_SRC_FILES
         test_hello.cpp
 
+        relationship/equivalence/test_in_same_lane_equiv_extractor.cpp
         relationship/implication/test_in_front_of_impl_extractor.cpp
 
         test_envs/test_envs.cpp
