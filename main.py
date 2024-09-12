@@ -1,3 +1,4 @@
+import time
 from typing import Dict
 
 import mltl_simplification as simp
@@ -23,8 +24,10 @@ def main():
     relevant_aps = formula.relevant_aps(15)
 
     # extract scenario knowledge
+    tic = time.perf_counter()
     extractor = ExtractionInterface(scenario_path, ccs)
     extracted_knowledge = extractor.extract(relevant_aps)
+    toc = time.perf_counter()
     for time_step, result in extracted_knowledge.items():
         print("====================================")
         print(f"Time step: {time_step}")
@@ -32,12 +35,16 @@ def main():
         print(f"Negative: {result.negative_propositions}")
         print(f"Implications: {result.implications}")
         print(f"Equivalences: {result.equivalences}")
+    print(f"Extraction time: {toc - tic} seconds")
 
     # augment formula with knowledge
+    tic = time.perf_counter()
     knowledge_sequence = convert_to_knowledge_sequence(extracted_knowledge)
     augmenter = simp.Augmenter(knowledge_sequence)
     augmented_formula = augmenter.augment(formula)
+    toc = time.perf_counter()
     print(augmented_formula)
+    print(f"Augmentation time: {toc - tic} seconds")
 
 
 def convert_to_knowledge_sequence(extracted_knowledge: Dict[int, ExtractionResult]) -> simp.KnowledgeSequence:
