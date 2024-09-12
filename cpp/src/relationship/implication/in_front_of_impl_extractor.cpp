@@ -39,6 +39,10 @@ std::unordered_map<time_step_t, std::vector<InFrontOfImplExtractor::Relationship
         std::vector<std::pair<size_t, double>> relevant_obstacle_rears{relevant_obstacle_rears_.begin(),
                                                                        relevant_obstacle_rears_.end()};
 
+        if (relevant_obstacle_rears.empty()) {
+            continue;
+        }
+
         std::ranges::sort(relevant_obstacle_rears,
                           [](const auto &lhs, const auto &rhs) { return lhs.second < rhs.second; });
 

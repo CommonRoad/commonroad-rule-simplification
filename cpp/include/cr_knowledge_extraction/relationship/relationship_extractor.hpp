@@ -1,3 +1,5 @@
+#pragma once
+
 #include "cr_knowledge_extraction/proposition.hpp"
 
 #include <commonroad_cpp/auxiliaryDefs/types_and_definitions.h>

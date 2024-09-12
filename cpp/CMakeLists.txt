@@ -1,5 +1,7 @@
 set(CR_KNOWLEDGE_EXTRACTION_SRC_FILES
+        src/extraction_interface.cpp
         src/hello.cpp
+        src/proposition.cpp
 
         src/relationship/equivalence/in_same_lane_equiv_extractor.cpp
         src/relationship/implication/in_front_of_impl_extractor.cpp

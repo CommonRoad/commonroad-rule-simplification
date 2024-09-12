@@ -15,7 +15,9 @@ keywords = [
     "temporal logic",
 ]
 dependencies = [
+    "commonroad-io>=2024.2",
     "commonroad-drivability-checker>=2024.1",
+    "commonroad-route-planner>=2024.1, <2024.2",
     "numpy>=1.22.0, <2.0",
 ]
 

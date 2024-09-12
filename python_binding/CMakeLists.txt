@@ -26,6 +26,9 @@ endif ()
 add_library(cr_knowledge_extraction_python OBJECT
         pybind.hpp
         pybind.cpp
+
+        helper/world.hpp
+        helper/world.cpp
 )
 target_link_libraries(cr_knowledge_extraction_python PRIVATE cr_knowledge_extraction pybind11::module)
 set_property(TARGET cr_knowledge_extraction_python PROPERTY POSITION_INDEPENDENT_CODE ON)
