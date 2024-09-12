@@ -9,6 +9,8 @@ set(CR_KNOWLEDGE_EXTRACTION_SRC_FILES
 set(CR_KNOWLEDGE_EXTRACTION_HDR_FILES
         include/cr_knowledge_extraction/proposition.hpp
 
+        include/cr_knowledge_extraction/ego_behavior/sets/box.hpp
+
         include/cr_knowledge_extraction/kleene/kleene_extractor.hpp
 
         include/cr_knowledge_extraction/relationship/relationship_extractor.hpp
