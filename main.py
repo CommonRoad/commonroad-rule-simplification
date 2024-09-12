@@ -1,8 +1,11 @@
+from typing import Dict
+
+import mltl_simplification as simp
 from commonroad.common.file_reader import CommonRoadFileReader
 from commonroad_dc import pycrccosy
 from commonroad_route_planner.route_planner import RoutePlanner
 
-from cr_knowledge_extraction import ExtractionInterface, hello
+from cr_knowledge_extraction import ExtractionInterface, ExtractionResult
 
 
 def main():
@@ -15,21 +18,14 @@ def main():
     reference_path = pycrccosy.Util.resample_polyline(route.reference_path, 2.0)
     ccs = pycrccosy.CurvilinearCoordinateSystem(reference_path)
 
+    # specify formula
+    formula = simp.Formula("(G InFrontOf(10) & InSameLane(10)) & (G InFrontOf(12) & InSameLane(12))")
+    relevant_aps = formula.relevant_aps(15)
+
+    # extract scenario knowledge
     extractor = ExtractionInterface(scenario_path, ccs)
-    results = extractor.extract(
-        {
-            0: ["InFrontOf(10)", "InFrontOf(11)", "InFrontOf(12)", "InFrontOf(13)", "InFrontOf(14)", "InFrontOf(15)"],
-            1: [
-                "InSameLane(10)",
-                "InSameLane(11)",
-                "InSameLane(12)",
-                "InSameLane(13)",
-                "InSameLane(14)",
-                "InSameLane(15)",
-            ],
-        }
-    )
-    for time_step, result in results.items():
+    extracted_knowledge = extractor.extract(relevant_aps)
+    for time_step, result in extracted_knowledge.items():
         print("====================================")
         print(f"Time step: {time_step}")
         print(f"Positive: {result.positive_propositions}")
@@ -37,8 +33,24 @@ def main():
         print(f"Implications: {result.implications}")
         print(f"Equivalences: {result.equivalences}")
 
-    print(hello.hello())
-    print(hello.hello_cpp())
+    # augment formula with knowledge
+    knowledge_sequence = convert_to_knowledge_sequence(extracted_knowledge)
+    augmenter = simp.Augmenter(knowledge_sequence)
+    augmented_formula = augmenter.augment(formula)
+    print(augmented_formula)
+
+
+def convert_to_knowledge_sequence(extracted_knowledge: Dict[int, ExtractionResult]) -> simp.KnowledgeSequence:
+    knowledge = {
+        time_step: (
+            result.positive_propositions,
+            result.negative_propositions,
+            result.implications,
+            result.equivalences,
+        )
+        for time_step, result in extracted_knowledge.items()
+    }
+    return simp.KnowledgeSequence(knowledge)
 
 
 if __name__ == "__main__":
