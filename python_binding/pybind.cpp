@@ -26,11 +26,11 @@ void export_extraction_result(py::module &module) {
 
 void export_extraction_interface(py::module &module) {
     py::class_<knowledge_extraction::ExtractionInterface>(module, "ExtractionInterface")
-        .def(py::init([](const std::string &scenario_path,
+        .def(py::init([](const std::string &scenario_path, double dt,
                          const std::shared_ptr<geometry::CurvilinearCoordinateSystem> &ego_ccs) {
-                 auto world = pybind_helper::open_world(scenario_path);
+                 auto world = pybind_helper::open_world(scenario_path, dt);
                  return knowledge_extraction::ExtractionInterface{std::move(world), ego_ccs};
              }),
-             py::arg("scenario_path"), py::arg("ego_ccs"))
+             py::arg("scenario_path"), py::arg("dt"), py::arg("ego_ccs"))
         .def("extract", &knowledge_extraction::ExtractionInterface::extract);
 }

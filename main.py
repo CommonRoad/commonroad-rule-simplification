@@ -25,7 +25,7 @@ def main():
 
     # extract scenario knowledge
     tic = time.perf_counter()
-    extractor = ExtractionInterface(scenario_path, ccs)
+    extractor = ExtractionInterface(scenario_path, 0.08, ccs)
     extracted_knowledge = extractor.extract(relevant_aps)
     toc = time.perf_counter()
     for time_step, result in extracted_knowledge.items():
