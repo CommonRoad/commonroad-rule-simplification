@@ -2,6 +2,8 @@ set(CR_KNOWLEDGE_EXTRACTION_SRC_FILES
         src/extraction_interface.cpp
         src/proposition.cpp
 
+        src/ego_behavior/behavior_overapproximation.cpp
+
         src/relationship/equivalence/in_same_lane_equiv_extractor.cpp
         src/relationship/implication/in_front_of_impl_extractor.cpp
 )
@@ -9,6 +11,8 @@ set(CR_KNOWLEDGE_EXTRACTION_SRC_FILES
 set(CR_KNOWLEDGE_EXTRACTION_HDR_FILES
         include/cr_knowledge_extraction/proposition.hpp
 
+        include/cr_knowledge_extraction/ego_behavior/behavior_overapproximation.hpp
+        include/cr_knowledge_extraction/ego_behavior/ego_params.hpp
         include/cr_knowledge_extraction/ego_behavior/sets/box.hpp
 
         include/cr_knowledge_extraction/kleene/kleene_extractor.hpp

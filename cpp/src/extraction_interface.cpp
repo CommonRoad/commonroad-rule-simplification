@@ -3,10 +3,29 @@
 #include "cr_knowledge_extraction/relationship/equivalence/in_same_lane_equiv_extractor.hpp"
 #include "cr_knowledge_extraction/relationship/implication/in_front_of_impl_extractor.hpp"
 
+#include <commonroad_cpp/geometry/geometric_operations.h>
+
 #include <ranges>
 #include <unordered_set>
 
 using namespace knowledge_extraction;
+
+std::shared_ptr<ego_behavior::BehaviorOverapproximation>
+ExtractionInterface::make_ego_approximations(double dt, ego_behavior::EgoParameters ego_params,
+                                             const std::shared_ptr<geometry::CurvilinearCoordinateSystem> &ego_ccs) {
+    auto &initial_state = ego_params.initial_state;
+
+    auto ccs_pos = ego_ccs->convertToCurvilinearCoords(initial_state.getXPosition(), initial_state.getYPosition());
+    initial_state.setLonPosition(ccs_pos.x());
+    initial_state.setLatPosition(ccs_pos.y());
+
+    auto ccs_tangent = ego_ccs->tangent(ccs_pos.x());
+    auto ccs_orientation = std::atan2(ccs_tangent.y(), ccs_tangent.x());
+    auto theta = geometric_operations::subtractOrientations(initial_state.getGlobalOrientation(), ccs_orientation);
+    initial_state.setCurvilinearOrientation(theta);
+
+    return std::make_shared<ego_behavior::BehaviorOverapproximation>(dt, ego_params);
+}
 
 std::unordered_map<time_step_t, ExtractionResult>
 ExtractionInterface::extract(const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions) {

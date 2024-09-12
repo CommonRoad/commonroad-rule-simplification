@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cr_knowledge_extraction/ego_behavior/behavior_overapproximation.hpp"
 #include "cr_knowledge_extraction/kleene/kleene_extractor.hpp"
 #include "cr_knowledge_extraction/relationship/relationship_extractor.hpp"
 
@@ -25,13 +26,20 @@ class ExtractionInterface {
     std::shared_ptr<World> world;
     std::shared_ptr<geometry::CurvilinearCoordinateSystem> ego_ccs;
 
+    std::shared_ptr<ego_behavior::BehaviorOverapproximation> ego_approximations;
+    static std::shared_ptr<ego_behavior::BehaviorOverapproximation>
+    make_ego_approximations(double dt, ego_behavior::EgoParameters ego_params,
+                            const std::shared_ptr<geometry::CurvilinearCoordinateSystem> &ego_ccs);
+
     std::optional<std::unique_ptr<kleene::KleeneExtractor>> create_kleene_extractor(Proposition prop);
 
     std::optional<std::unique_ptr<relationship::RelationshipExtractor>> create_relationship_extractor(Proposition prop);
 
   public:
-    ExtractionInterface(std::shared_ptr<World> world, std::shared_ptr<geometry::CurvilinearCoordinateSystem> ego_ccs)
-        : world(std::move(world)), ego_ccs(std::move(ego_ccs)) {}
+    ExtractionInterface(std::shared_ptr<World> world, std::shared_ptr<geometry::CurvilinearCoordinateSystem> ego_ccs,
+                        const ego_behavior::EgoParameters &ego_params)
+        : world(std::move(world)), ego_ccs(std::move(ego_ccs)),
+          ego_approximations(make_ego_approximations(this->world->getDt(), ego_params, this->ego_ccs)) {}
 
     std::unordered_map<time_step_t, ExtractionResult>
     extract(const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions);
