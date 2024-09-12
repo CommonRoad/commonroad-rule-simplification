@@ -1,6 +1,5 @@
 set(CR_KNOWLEDGE_EXTRACTION_SRC_FILES
         src/extraction_interface.cpp
-        src/hello.cpp
         src/proposition.cpp
 
         src/relationship/equivalence/in_same_lane_equiv_extractor.cpp
@@ -8,7 +7,6 @@ set(CR_KNOWLEDGE_EXTRACTION_SRC_FILES
 )
 
 set(CR_KNOWLEDGE_EXTRACTION_HDR_FILES
-        include/cr_knowledge_extraction/hello.hpp
         include/cr_knowledge_extraction/proposition.hpp
 
         include/cr_knowledge_extraction/kleene/kleene_extractor.hpp
@@ -54,9 +52,6 @@ target_link_libraries(cr_knowledge_extraction
 )
 
 add_library(CommonRoadKnowledgeExtraction::cr_knowledge_extraction ALIAS cr_knowledge_extraction)
-
-add_executable(cr_knowledge_extraction_executable src/main.cpp)
-target_link_libraries(cr_knowledge_extraction_executable PRIVATE cr_knowledge_extraction)
 
 foreach (target IN ITEMS cr_knowledge_extraction)
     # this adds many warnings to the build. They usually help to find some bugs

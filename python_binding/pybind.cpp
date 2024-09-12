@@ -3,7 +3,6 @@
 #include "helper/world.hpp"
 
 #include "cr_knowledge_extraction/extraction_interface.hpp"
-#include "cr_knowledge_extraction/hello.hpp"
 
 #include <pybind11/stl.h>
 
@@ -13,7 +12,6 @@ PYBIND11_MODULE(cr_knowledge_extraction_core, module) {
 
     module.doc() = "C++ extension for commonroad-knowledge-extraction.";
 
-    module.def("hello", &knowledge_extraction::hello);
     export_extraction_result(module);
     export_extraction_interface(module);
 }
