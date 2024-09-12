@@ -13,6 +13,13 @@ TEST_F(BoxTest, Bounds2D) {
     EXPECT_EQ(max, (Eigen::Vector2d{{11, 12}}));
 }
 
+TEST_F(BoxTest, Intersect2D) {
+    auto other_box = Box<2>{{11, 11}, {1, 1}};
+    auto sum = box2d.intersect(other_box);
+    auto expected = Box<2>{{10.5, 11}, {0.5, 1}};
+    EXPECT_EQ(sum, expected);
+}
+
 TEST_F(BoxTest, Sum2D) {
     auto other_box = Box<2>{{1, 1}, {2, 2}};
     auto sum = box2d.sum(other_box);
@@ -43,6 +50,13 @@ TEST_F(BoxTest, Bounds4D) {
     auto [min, max] = box4d.bounds();
     EXPECT_EQ(min, (Eigen::Vector4d{{9, 8, 7, 6}}));
     EXPECT_EQ(max, (Eigen::Vector4d{{11, 12, 13, 14}}));
+}
+
+TEST_F(BoxTest, Intersect4D) {
+    auto other_box = Box<4>{{11, 11, 11, 11}, {1, 1, 1, 1}};
+    auto sum = box4d.intersect(other_box);
+    auto expected = Box<4>{{10.5, 11, 11, 11}, {0.5, 1, 1, 1}};
+    EXPECT_EQ(sum, expected);
 }
 
 TEST_F(BoxTest, Sum4D) {
