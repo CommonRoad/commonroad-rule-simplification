@@ -23,12 +23,14 @@ class EnteringVehiclesRule(TrafficRule):
 
     @staticmethod
     def instantiate_once(obstacle_id: int, start: int = 0, end: Optional[int] = None) -> Formula:
+        obstacle_id = str(obstacle_id)
+
         condition = Formula.conjunction(
             [
                 Formula.ap(Prop.OnMainCarriageway()),
-                Formula.ap(Prop.InFrontOf(obstacle_id)),
-                Formula.ap(Prop.OtherOnAccessRamp(obstacle_id)),
-                Formula.eventually(Formula.ap(Prop.OtherOnMainCarriageway(obstacle_id))),
+                Formula.ap(Prop.InFrontOf(), obstacle_id),
+                Formula.ap(Prop.OtherOnAccessRamp(), obstacle_id),
+                Formula.eventually(Formula.ap(Prop.OtherOnMainCarriageway(), obstacle_id)),
             ]
         )
 

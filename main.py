@@ -8,6 +8,7 @@ from commonroad_dc import pycrccosy
 from commonroad_route_planner.route_planner import RoutePlanner
 
 from cr_knowledge_extraction import EgoParameters, ExtractionInterface, ExtractionResult
+from cr_knowledge_extraction.formula.formatting import format_formula_for_reach
 from cr_knowledge_extraction.traffic_rule.instantiation import TrafficRuleInstantiator
 
 
@@ -58,8 +59,11 @@ def main():
     augmented = extract_and_augment(extractor, augmented, 15, extraction_mode=2)
     print(augmented)
 
+    print([format_formula_for_reach(f) for f in formula.split_at_top_level_conjunction()])
+    print(format_formula_for_reach(augmented))
 
-def extract_and_augment(extractor, formula, time_steps, verbose=False, extraction_mode=0):
+
+def extract_and_augment(extractor, formula, time_steps, verbose=True, extraction_mode=0):
     # extract scenario knowledge
     tic = time.perf_counter()
     relevant_aps = formula.relevant_aps(time_steps)

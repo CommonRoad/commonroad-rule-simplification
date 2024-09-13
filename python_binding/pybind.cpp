@@ -48,16 +48,19 @@ void export_extraction_interface(py::module &module) {
 }
 
 void export_propositions(py::module &module) {
-    auto prop = py::enum_<Proposition>(module, "Proposition")
-                    .value("IN_SAME_LANE", Proposition::IN_SAME_LANE)
-                    .value("KEEPS_SAFE_DISTANCE_PREC", Proposition::KEEPS_SAFE_DISTANCE_PREC)
-                    .value("IN_FRONT_OF", Proposition::IN_FRONT_OF)
-                    .value("ON_MAIN_CARRIAGEWAY", Proposition::ON_MAIN_CARRIAGEWAY)
-                    .value("ON_MAIN_CARRIAGEWAY_RIGHT_LANE", Proposition::ON_MAIN_CARRIAGEWAY_RIGHT_LANE)
-                    .value("OTHER_ON_ACCESS_RAMP", Proposition::OTHER_ON_ACCESS_RAMP)
-                    .value("OTHER_ON_MAIN_CARRIAGEWAY", Proposition::OTHER_ON_MAIN_CARRIAGEWAY)
-                    .def_static("to_string", &knowledge_extraction::proposition::to_string)
-                    .def_static("from_string", &knowledge_extraction::proposition::from_string);
+    auto prop =
+        py::enum_<Proposition>(module, "Proposition")
+            .value("IN_SAME_LANE", Proposition::IN_SAME_LANE)
+            .value("KEEPS_SAFE_DISTANCE_PREC", Proposition::KEEPS_SAFE_DISTANCE_PREC)
+            .value("IN_FRONT_OF", Proposition::IN_FRONT_OF)
+            .value("ON_MAIN_CARRIAGEWAY", Proposition::ON_MAIN_CARRIAGEWAY)
+            .value("ON_MAIN_CARRIAGEWAY_RIGHT_LANE", Proposition::ON_MAIN_CARRIAGEWAY_RIGHT_LANE)
+            .value("OTHER_ON_ACCESS_RAMP", Proposition::OTHER_ON_ACCESS_RAMP)
+            .value("OTHER_ON_MAIN_CARRIAGEWAY", Proposition::OTHER_ON_MAIN_CARRIAGEWAY)
+            .def_static("to_string", &knowledge_extraction::proposition::to_string)
+            .def_static("from_string", &knowledge_extraction::proposition::from_string)
+            .def_readonly_static("proposition_to_string", &knowledge_extraction::proposition::proposition_to_string)
+            .def_readonly_static("string_to_proposition", &knowledge_extraction::proposition::string_to_proposition);
     for (const auto &[prop_enum, prop_string] : knowledge_extraction::proposition::proposition_to_string) {
         prop.def_static(
             prop_string.c_str(),
