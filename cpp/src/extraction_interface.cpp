@@ -1,6 +1,8 @@
 #include "cr_knowledge_extraction/extraction_interface.hpp"
 #include "cr_knowledge_extraction/kleene/ego_independent/ego_independent_extractor.hpp"
+#include "cr_knowledge_extraction/kleene/position/in_front_of_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/position/on_lanelet_with_type_extractor.hpp"
+#include "cr_knowledge_extraction/kleene/position/on_main_carriageway_right_lane_extractor.hpp"
 #include "cr_knowledge_extraction/proposition.hpp"
 #include "cr_knowledge_extraction/relationship/equivalence/in_same_lane_equiv_extractor.hpp"
 #include "cr_knowledge_extraction/relationship/implication/in_front_of_impl_extractor.hpp"
@@ -157,6 +159,11 @@ std::optional<std::unique_ptr<kleene::KleeneExtractor>> ExtractionInterface::cre
     case Proposition::ON_MAIN_CARRIAGEWAY:
         return std::make_unique<kleene::position::OnLaneletWithTypeExtractor>(world, ego_ccs, prop, ego_approximations,
                                                                               LaneletType::mainCarriageWay);
+    case Proposition::ON_MAIN_CARRIAGEWAY_RIGHT_LANE:
+        return std::make_unique<kleene::position::OnMainCarriagewayRightLaneExtractor>(world, ego_ccs,
+                                                                                       ego_approximations);
+    case Proposition::IN_FRONT_OF:
+        return std::make_unique<kleene::position::InFrontOfExtractor>(world, ego_ccs, ego_approximations);
     case Proposition::OTHER_ON_ACCESS_RAMP:
         return std::make_unique<kleene::ego_independent::EgoIndependentExtractor>(
             world, ego_ccs, prop, std::make_unique<OnLaneletWithTypePredicate>(),
