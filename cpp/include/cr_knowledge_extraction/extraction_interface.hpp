@@ -58,6 +58,9 @@ class ExtractionInterface {
     std::unordered_map<time_step_t, ExtractionResult>
     extract_all(const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions);
 
+    std::unordered_map<time_step_t, ExtractionResult> extract_all_but_implications(
+        const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions);
+
     std::unordered_map<time_step_t, ExtractionResult>
     extract_kleene(const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions);
 

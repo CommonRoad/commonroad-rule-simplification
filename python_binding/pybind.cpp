@@ -38,6 +38,7 @@ void export_extraction_interface(py::module &module) {
              }),
              py::arg("scenario_path"), py::arg("dt"), py::arg("ego_params"), py::arg("ego_ccs"))
         .def("extract_all", &knowledge_extraction::ExtractionInterface::extract_all)
+        .def("extract_all_but_implications", &knowledge_extraction::ExtractionInterface::extract_all_but_implications)
         .def("extract_kleene", py::overload_cast<const std::unordered_map<time_step_t, std::vector<std::string>> &>(
                                    &knowledge_extraction::ExtractionInterface::extract_kleene))
         .def("extract_relationships",

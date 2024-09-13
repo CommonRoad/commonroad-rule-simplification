@@ -49,6 +49,19 @@ std::unordered_map<time_step_t, ExtractionResult> ExtractionInterface::extract_a
     return result;
 }
 
+std::unordered_map<time_step_t, ExtractionResult> ExtractionInterface::extract_all_but_implications(
+    const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions) {
+    auto relevant_obstacles = compute_relevant_obstacles(relevant_propositions);
+
+    std::unordered_map<time_step_t, ExtractionResult> result{};
+    // Kleene extraction
+    extract_kleene(relevant_obstacles, result);
+    // Relationship extraction
+    extract_relationships(relevant_obstacles, result, relationship::RelationshipType::EQUIVALENCE);
+
+    return result;
+}
+
 std::unordered_map<time_step_t, ExtractionResult> ExtractionInterface::extract_kleene(
     const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions) {
     auto relevant_obstacles = compute_relevant_obstacles(relevant_propositions);
