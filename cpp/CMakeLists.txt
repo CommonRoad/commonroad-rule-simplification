@@ -6,6 +6,8 @@ set(CR_KNOWLEDGE_EXTRACTION_SRC_FILES
 
         src/relationship/equivalence/in_same_lane_equiv_extractor.cpp
         src/relationship/implication/in_front_of_impl_extractor.cpp
+
+        src/road_network/curvilinear_road_network.cpp
 )
 
 set(CR_KNOWLEDGE_EXTRACTION_HDR_FILES
@@ -20,6 +22,9 @@ set(CR_KNOWLEDGE_EXTRACTION_HDR_FILES
         include/cr_knowledge_extraction/relationship/relationship_extractor.hpp
         include/cr_knowledge_extraction/relationship/equivalence/in_same_lane_equiv_extractor.hpp
         include/cr_knowledge_extraction/relationship/implication/in_front_of_impl_extractor.hpp
+
+        include/cr_knowledge_extraction/road_network/curvilinear_lanelet.hpp
+        include/cr_knowledge_extraction/road_network/curvilinear_road_network.hpp
 )
 
 add_library(cr_knowledge_extraction ${CR_KNOWLEDGE_EXTRACTION_SRC_FILES})

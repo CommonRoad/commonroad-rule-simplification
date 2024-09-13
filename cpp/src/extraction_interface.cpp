@@ -2,6 +2,7 @@
 #include "cr_knowledge_extraction/proposition.hpp"
 #include "cr_knowledge_extraction/relationship/equivalence/in_same_lane_equiv_extractor.hpp"
 #include "cr_knowledge_extraction/relationship/implication/in_front_of_impl_extractor.hpp"
+#include "cr_knowledge_extraction/road_network/curvilinear_road_network.hpp"
 
 #include <commonroad_cpp/geometry/geometric_operations.h>
 
@@ -11,8 +12,9 @@
 using namespace knowledge_extraction;
 
 std::shared_ptr<ego_behavior::BehaviorOverapproximation>
-ExtractionInterface::make_ego_approximations(double dt, ego_behavior::EgoParameters ego_params,
-                                             const std::shared_ptr<geometry::CurvilinearCoordinateSystem> &ego_ccs) {
+ExtractionInterface::make_ego_approximations(const std::shared_ptr<World> &world,
+                                             const std::shared_ptr<geometry::CurvilinearCoordinateSystem> &ego_ccs,
+                                             ego_behavior::EgoParameters ego_params) {
     auto &initial_state = ego_params.initial_state;
 
     auto ccs_pos = ego_ccs->convertToCurvilinearCoords(initial_state.getXPosition(), initial_state.getYPosition());
@@ -24,7 +26,10 @@ ExtractionInterface::make_ego_approximations(double dt, ego_behavior::EgoParamet
     auto theta = geometric_operations::subtractOrientations(initial_state.getGlobalOrientation(), ccs_orientation);
     initial_state.setCurvilinearOrientation(theta);
 
-    return std::make_shared<ego_behavior::BehaviorOverapproximation>(dt, ego_params);
+    auto dt = world->getDt();
+
+    return std::make_shared<ego_behavior::BehaviorOverapproximation>(
+        dt, ego_params, road_network::CurvilinearRoadNetwork{world, ego_ccs});
 }
 
 std::unordered_map<time_step_t, ExtractionResult>

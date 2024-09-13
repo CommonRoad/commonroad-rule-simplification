@@ -6,9 +6,13 @@
 using namespace knowledge_extraction::ego_behavior;
 using knowledge_extraction::ego_behavior::sets::Box2D;
 using knowledge_extraction::ego_behavior::sets::Box4D;
+using knowledge_extraction::road_network::CurvilinearLanelet;
 
-BehaviorOverapproximation::BehaviorOverapproximation(double dt, const EgoParameters &ego_params)
-    : system_matrix(make_system_matrix(dt)), input_state_update(make_input_state_update(dt, ego_params)),
+BehaviorOverapproximation::BehaviorOverapproximation(
+    double dt, const EgoParameters &ego_params,
+    knowledge_extraction::road_network::CurvilinearRoadNetwork ccs_road_network)
+    : ccs_road_network(std::move(ccs_road_network)), system_matrix(make_system_matrix(dt)),
+      input_state_update(make_input_state_update(dt, ego_params)),
       admissible_states(make_admissible_states(ego_params)),
       shrink_delta(compute_shrink_delta(ego_params.length, ego_params.width)),
       outer_shape_box(make_outer_shape_box(ego_params.length, ego_params.width)),
@@ -85,27 +89,41 @@ sets::Box4D BehaviorOverapproximation::get_center_approximation(time_step_t time
 }
 
 sets::Box2D BehaviorOverapproximation::get_occupancy_approximation(time_step_t time_step) {
-    auto idx = time_step - offset;
-    if (occupancy_approximation.size() <= idx) {
-        // compute all previous steps
-        get_occupancy_approximation(time_step - 1);
+    if (!occupancy_approximation.contains(time_step)) {
         auto center_approx = get_center_approximation(time_step);
         auto occ_approx = project_to_positions(center_approx).sum(outer_shape_box);
-        occupancy_approximation.emplace_back(std::move(occ_approx));
+        occupancy_approximation.emplace(time_step, std::move(occ_approx));
     }
-    return occupancy_approximation[idx];
+    return occupancy_approximation.at(time_step);
+}
+
+const std::vector<std::shared_ptr<CurvilinearLanelet>> &
+BehaviorOverapproximation::get_covered_lanelets(time_step_t time_step) {
+    if (!covered_lanelets.contains(time_step)) {
+        auto occ_approx = get_occupancy_approximation(time_step);
+        auto lanelets = ccs_road_network.get_overlapping_lanelets(occ_approx);
+        covered_lanelets.emplace(time_step, std::move(lanelets));
+    }
+    return covered_lanelets.at(time_step);
 }
 
 sets::Box2D BehaviorOverapproximation::get_occupancy_intersection_approximation(time_step_t time_step) {
-    auto idx = time_step - offset;
-    if (occupancy_intersection_approximation.size() <= idx) {
-        // compute all previous steps
-        get_occupancy_intersection_approximation(time_step - 1);
+    if (!occupancy_intersection_approximation.contains(time_step)) {
         auto center_approx = get_center_approximation(time_step);
         auto occ_int_approx = project_to_positions(center_approx).shrink(shrink_delta);
-        occupancy_intersection_approximation.emplace_back(std::move(occ_int_approx));
+        occupancy_intersection_approximation.emplace(time_step, std::move(occ_int_approx));
     }
-    return occupancy_intersection_approximation[idx];
+    return occupancy_intersection_approximation.at(time_step);
+}
+
+const std::vector<std::shared_ptr<CurvilinearLanelet>> &
+BehaviorOverapproximation::get_intersected_lanelets(time_step_t time_step) {
+    if (!intersected_lanelets.contains(time_step)) {
+        auto occ_int_approx = get_occupancy_intersection_approximation(time_step);
+        auto lanelets = ccs_road_network.get_overlapping_lanelets(occ_int_approx);
+        intersected_lanelets.emplace(time_step, std::move(lanelets));
+    }
+    return intersected_lanelets.at(time_step);
 }
 
 sets::Box2D BehaviorOverapproximation::project_to_positions(const Box4D &state_set) {

@@ -2,6 +2,7 @@
 
 #include "cr_knowledge_extraction/ego_behavior/ego_params.hpp"
 #include "cr_knowledge_extraction/ego_behavior/sets/box.hpp"
+#include "cr_knowledge_extraction/road_network/curvilinear_road_network.hpp"
 
 #include <commonroad_cpp/auxiliaryDefs/types_and_definitions.h>
 #include <eigen3/Eigen/Dense>
@@ -9,6 +10,8 @@
 namespace knowledge_extraction::ego_behavior {
 class BehaviorOverapproximation {
   private:
+    const knowledge_extraction::road_network::CurvilinearRoadNetwork ccs_road_network;
+
     const Eigen::Matrix<double, 4, 4> system_matrix;
     static Eigen::Matrix<double, 4, 4> make_system_matrix(double dt);
 
@@ -27,15 +30,23 @@ class BehaviorOverapproximation {
     const time_step_t offset;
 
     std::vector<sets::Box4D> center_approximation;
-    std::vector<sets::Box2D> occupancy_approximation;
-    std::vector<sets::Box2D> occupancy_intersection_approximation;
-
     static sets::Box4D make_initial_center_approximation(const EgoParameters &ego_params);
+
+    std::unordered_map<time_step_t, sets::Box2D> occupancy_approximation;
+    std::unordered_map<time_step_t,
+                       std::vector<std::shared_ptr<knowledge_extraction::road_network::CurvilinearLanelet>>>
+        covered_lanelets;
+
+    std::unordered_map<time_step_t, sets::Box2D> occupancy_intersection_approximation;
+    std::unordered_map<time_step_t,
+                       std::vector<std::shared_ptr<knowledge_extraction::road_network::CurvilinearLanelet>>>
+        intersected_lanelets;
 
     static sets::Box2D project_to_positions(const sets::Box4D &state_set);
 
   public:
-    BehaviorOverapproximation(double dt, const EgoParameters &ego_params);
+    BehaviorOverapproximation(double dt, const EgoParameters &ego_params,
+                              knowledge_extraction::road_network::CurvilinearRoadNetwork ccs_road_network);
 
     double get_inner_radius() const { return shrink_delta; }
 
@@ -84,7 +95,11 @@ class BehaviorOverapproximation {
     sets::Box4D get_center_approximation(time_step_t time_step);
 
     sets::Box2D get_occupancy_approximation(time_step_t time_step);
+    const std::vector<std::shared_ptr<knowledge_extraction::road_network::CurvilinearLanelet>> &
+    get_covered_lanelets(time_step_t time_step);
 
     sets::Box2D get_occupancy_intersection_approximation(time_step_t time_step);
+    const std::vector<std::shared_ptr<knowledge_extraction::road_network::CurvilinearLanelet>> &
+    get_intersected_lanelets(time_step_t time_step);
 };
 } // namespace knowledge_extraction::ego_behavior
