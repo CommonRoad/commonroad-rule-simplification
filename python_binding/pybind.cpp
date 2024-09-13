@@ -6,6 +6,7 @@
 
 #include <pybind11/stl.h>
 
+using knowledge_extraction::Proposition;
 using knowledge_extraction::ego_behavior::EgoParameters;
 
 PYBIND11_MODULE(cr_knowledge_extraction_core, module) {
@@ -14,6 +15,7 @@ PYBIND11_MODULE(cr_knowledge_extraction_core, module) {
 
     module.doc() = "C++ extension for commonroad-knowledge-extraction.";
 
+    export_propositions(module);
     export_ego_parameters(module);
     export_extraction_result(module);
     export_extraction_interface(module);
@@ -45,8 +47,29 @@ void export_extraction_interface(py::module &module) {
         .def("extract_implications", &knowledge_extraction::ExtractionInterface::extract_implications);
 }
 
+void export_propositions(py::module &module) {
+    auto prop = py::enum_<Proposition>(module, "Proposition")
+                    .value("IN_SAME_LANE", Proposition::IN_SAME_LANE)
+                    .value("KEEPS_SAFE_DISTANCE_PREC", Proposition::KEEPS_SAFE_DISTANCE_PREC)
+                    .value("IN_FRONT_OF", Proposition::IN_FRONT_OF)
+                    .value("ON_MAIN_CARRIAGEWAY", Proposition::ON_MAIN_CARRIAGEWAY)
+                    .value("ON_MAIN_CARRIAGEWAY_RIGHT_LANE", Proposition::ON_MAIN_CARRIAGEWAY_RIGHT_LANE)
+                    .value("OTHER_ON_ACCESS_RAMP", Proposition::OTHER_ON_ACCESS_RAMP)
+                    .value("OTHER_ON_MAIN_CARRIAGEWAY", Proposition::OTHER_ON_MAIN_CARRIAGEWAY)
+                    .def_static("to_string", &knowledge_extraction::proposition::to_string)
+                    .def_static("from_string", &knowledge_extraction::proposition::from_string);
+    for (const auto &[prop_enum, prop_string] : knowledge_extraction::proposition::proposition_to_string) {
+        prop.def_static(
+            prop_string.c_str(),
+            [prop_enum](std::optional<size_t> obstacle_id) {
+                return knowledge_extraction::proposition::to_string(prop_enum, obstacle_id);
+            },
+            py::arg("obstacle_id") = std::nullopt);
+    }
+}
+
 void export_ego_parameters(py::module &module) {
-    py::class_<knowledge_extraction::ego_behavior::EgoParameters>(module, "EgoParameters")
+    py::class_<EgoParameters>(module, "EgoParameters")
         .def(py::init([](std::optional<double> a_lon_min, std::optional<double> a_lon_max,
                          std::optional<double> a_lat_min, std::optional<double> a_lat_max,
                          std::optional<double> v_lon_min, std::optional<double> v_lon_max,

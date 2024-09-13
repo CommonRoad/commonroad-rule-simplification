@@ -4,6 +4,8 @@
 
 namespace py = pybind11;
 
+void export_propositions(py::module &module);
+
 void export_ego_parameters(py::module &module);
 
 void export_extraction_result(py::module &module);

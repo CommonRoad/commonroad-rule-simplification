@@ -8,6 +8,7 @@ from commonroad_dc import pycrccosy
 from commonroad_route_planner.route_planner import RoutePlanner
 
 from cr_knowledge_extraction import EgoParameters, ExtractionInterface, ExtractionResult
+from cr_knowledge_extraction.traffic_rule.instantiation import TrafficRuleInstantiator
 
 
 def main():
@@ -17,6 +18,7 @@ def main():
     planning_problem = list(planning_problems.planning_problem_dict.values())[0]
     # dt = 0.08
     dt = 0.2
+    planning_horizon = 15
     planning_problem.initial_state.time_step = int(planning_problem.initial_state.time_step // (dt / scenario.dt))
 
     # configure ego parameters
@@ -29,23 +31,24 @@ def main():
 
     # specify formula
     # formula = simp.Formula("(G InFrontOf(10) & InSameLane(10)) & (G InFrontOf(12) & InSameLane(12))")
-    formula = simp.Formula(
-        """
-        (G OnMainCarriageway & InFrontOf(103) & OtherOnAccessRamp(103) & (F OtherOnMainCarriageway(103)) ->
-            !(!OnMainCarriagewayRightLane & F OnMainCarriagewayRightLane)) &
-        (G OnMainCarriageway & InFrontOf(102) & OtherOnAccessRamp(102) & (F OtherOnMainCarriageway(102)) ->
-            !(!OnMainCarriagewayRightLane & F OnMainCarriagewayRightLane))
-        """
-    )
+    # formula = simp.Formula(
+    #     """
+    #     (G OnMainCarriageway & InFrontOf(103) & OtherOnAccessRamp(103) & (F OtherOnMainCarriageway(103)) ->
+    #         !(!OnMainCarriagewayRightLane & F OnMainCarriagewayRightLane)) &
+    #     (G OnMainCarriageway & InFrontOf(102) & OtherOnAccessRamp(102) & (F OtherOnMainCarriageway(102)) ->
+    #         !(!OnMainCarriagewayRightLane & F OnMainCarriagewayRightLane))
+    #     """
+    # )
+    formula = simp.Formula.conjunction(TrafficRuleInstantiator.instantiate(["R_I5"], scenario, end=planning_horizon))
 
     tic = time.perf_counter()
     extractor = ExtractionInterface(scenario_path, dt, ego_params, ccs)
     toc = time.perf_counter()
-    print(f"Extractor initialization time: {toc -tic} seconds")
+    print(f"Extractor initialization time: {toc - tic} seconds")
 
     # single pass augmentation
     print("Single pass")
-    augmented = extract_and_augment(extractor, formula, 15)
+    augmented = extract_and_augment(extractor, formula, planning_horizon)
     print(augmented)
 
     # multi pass augmentation
