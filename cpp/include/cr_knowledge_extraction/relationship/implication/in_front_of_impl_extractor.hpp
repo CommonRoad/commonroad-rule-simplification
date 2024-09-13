@@ -15,7 +15,7 @@ class InFrontOfImplExtractor : public RelationshipExtractor {
                                 Proposition::IN_FRONT_OF, RelationshipType::IMPLICATION){};
 
     std::unordered_map<time_step_t, std::vector<Relationship>>
-    extract(const std::unordered_map<time_step_t, std::unordered_set<size_t>> &relevant_obstacle_ids_over_time)
-        const override;
+    extract(const std::unordered_map<time_step_t, std::unordered_set<std::optional<size_t>>>
+                &relevant_obstacle_ids_over_time) const override;
 };
 } // namespace knowledge_extraction::relationship::implication

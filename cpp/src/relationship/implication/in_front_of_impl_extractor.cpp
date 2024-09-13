@@ -23,7 +23,8 @@ std::optional<double> InFrontOfImplExtractor::get_obstacle_rear(size_t time_step
 }
 
 std::unordered_map<time_step_t, std::vector<InFrontOfImplExtractor::Relationship>> InFrontOfImplExtractor::extract(
-    const std::unordered_map<time_step_t, std::unordered_set<size_t>> &relevant_obstacle_ids_over_time) const {
+    const std::unordered_map<time_step_t, std::unordered_set<std::optional<size_t>>> &relevant_obstacle_ids_over_time)
+    const {
     std::unordered_map<time_step_t, std::vector<Relationship>> result;
 
     for (const auto &[time_step, obstacle_ids] : relevant_obstacle_ids_over_time) {

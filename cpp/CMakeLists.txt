@@ -5,6 +5,7 @@ set(CR_KNOWLEDGE_EXTRACTION_SRC_FILES
         src/ego_behavior/behavior_overapproximation.cpp
 
         src/kleene/ego_independent/ego_independent_extractor.cpp
+        src/kleene/position/on_lanelet_with_type_extractor.cpp
 
         src/relationship/equivalence/in_same_lane_equiv_extractor.cpp
         src/relationship/implication/in_front_of_impl_extractor.cpp
@@ -20,7 +21,9 @@ set(CR_KNOWLEDGE_EXTRACTION_HDR_FILES
         include/cr_knowledge_extraction/ego_behavior/sets/box.hpp
 
         include/cr_knowledge_extraction/kleene/kleene_extractor.hpp
+        include/cr_knowledge_extraction/kleene/ego_dependent_kleene_extractor.hpp
         include/cr_knowledge_extraction/kleene/ego_independent/ego_independent_extractor.hpp
+        include/cr_knowledge_extraction/kleene/position/on_lanelet_with_type_extractor.hpp
 
         include/cr_knowledge_extraction/relationship/relationship_extractor.hpp
         include/cr_knowledge_extraction/relationship/equivalence/in_same_lane_equiv_extractor.hpp

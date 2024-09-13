@@ -30,7 +30,7 @@ class EgoIndependentExtractor : public KleeneExtractor {
           inner_predicate(std::move(inner_predicate)), additional_params(std::move(additional_params)) {}
 
     std::unordered_map<time_step_t, TrueFalseObstacleIds>
-    extract(const std::unordered_map<time_step_t, std::unordered_set<size_t>> &relevant_obstacle_ids_over_time)
-        const override;
+    extract(const std::unordered_map<time_step_t, std::unordered_set<std::optional<size_t>>>
+                &relevant_obstacle_ids_over_time) const override;
 };
 } // namespace knowledge_extraction::kleene::ego_independent

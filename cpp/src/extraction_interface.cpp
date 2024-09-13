@@ -1,5 +1,6 @@
 #include "cr_knowledge_extraction/extraction_interface.hpp"
 #include "cr_knowledge_extraction/kleene/ego_independent/ego_independent_extractor.hpp"
+#include "cr_knowledge_extraction/kleene/position/on_lanelet_with_type_extractor.hpp"
 #include "cr_knowledge_extraction/proposition.hpp"
 #include "cr_knowledge_extraction/relationship/equivalence/in_same_lane_equiv_extractor.hpp"
 #include "cr_knowledge_extraction/relationship/implication/in_front_of_impl_extractor.hpp"
@@ -153,6 +154,9 @@ auto lanelet_type_to_string(LaneletType lanelet_type) {
 
 std::optional<std::unique_ptr<kleene::KleeneExtractor>> ExtractionInterface::create_kleene_extractor(Proposition prop) {
     switch (prop) {
+    case Proposition::ON_MAIN_CARRIAGEWAY:
+        return std::make_unique<kleene::position::OnLaneletWithTypeExtractor>(world, ego_ccs, prop, ego_approximations,
+                                                                              LaneletType::mainCarriageWay);
     case Proposition::OTHER_ON_ACCESS_RAMP:
         return std::make_unique<kleene::ego_independent::EgoIndependentExtractor>(
             world, ego_ccs, prop, std::make_unique<OnLaneletWithTypePredicate>(),
@@ -180,18 +184,12 @@ ExtractionInterface::create_relationship_extractor(Proposition prop) {
 
 ExtractionInterface::RelevantObstacles ExtractionInterface::compute_relevant_obstacles(
     const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions) {
-    std::unordered_map<Proposition, std::unordered_map<time_step_t, std::unordered_set<size_t>>>
-        relevant_obstacles_over_time_per_prop{};
+    RelevantObstacles relevant_obstacles_over_time_per_prop{};
     for (const auto &[time_step, propositions] : relevant_propositions) {
         for (const auto &prop : propositions) {
             try {
                 auto [prop_enum, param] = proposition::from_string(prop);
-                // Touch proposition at time step to create an empty set
-                // (needed for propositions that do not have parameters)
-                relevant_obstacles_over_time_per_prop[prop_enum][time_step];
-                if (param.has_value()) {
-                    relevant_obstacles_over_time_per_prop[prop_enum][time_step].insert(param.value());
-                }
+                relevant_obstacles_over_time_per_prop[prop_enum][time_step].insert(param);
             } catch (const std::logic_error &e) {
                 // Unknown propositions are simply ignored with a warning
                 spdlog::warn("Unknown proposition: {}. No knowledge will be extracted for this proposition!", prop);

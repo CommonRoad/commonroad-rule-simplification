@@ -38,7 +38,8 @@ class RelationshipExtractor {
 
     using Relationship = std::tuple<RelationshipType, size_t, size_t>;
 
-    virtual std::unordered_map<time_step_t, std::vector<Relationship>> extract(
-        const std::unordered_map<time_step_t, std::unordered_set<size_t>> &relevant_obstacle_ids_over_time) const = 0;
+    virtual std::unordered_map<time_step_t, std::vector<Relationship>>
+    extract(const std::unordered_map<time_step_t, std::unordered_set<std::optional<size_t>>>
+                &relevant_obstacle_ids_over_time) const = 0;
 };
 } // namespace knowledge_extraction::relationship

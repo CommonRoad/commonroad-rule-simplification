@@ -36,8 +36,9 @@ class ExtractionInterface {
 
     std::optional<std::unique_ptr<relationship::RelationshipExtractor>> create_relationship_extractor(Proposition prop);
 
+    // We use st::nullopt to mark the ego vehicle
     using RelevantObstacles =
-        std::unordered_map<Proposition, std::unordered_map<time_step_t, std::unordered_set<size_t>>>;
+        std::unordered_map<Proposition, std::unordered_map<time_step_t, std::unordered_set<std::optional<size_t>>>>;
 
     static RelevantObstacles
     compute_relevant_obstacles(const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions);

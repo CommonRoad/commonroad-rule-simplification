@@ -28,9 +28,11 @@ class KleeneExtractor {
 
     Proposition get_proposition() const { return proposition; }
 
-    using TrueFalseObstacleIds = std::pair<std::unordered_set<size_t>, std::unordered_set<size_t>>;
+    using TrueFalseObstacleIds =
+        std::pair<std::unordered_set<std::optional<size_t>>, std::unordered_set<std::optional<size_t>>>;
 
-    virtual std::unordered_map<time_step_t, TrueFalseObstacleIds> extract(
-        const std::unordered_map<time_step_t, std::unordered_set<size_t>> &relevant_obstacle_ids_over_time) const = 0;
+    virtual std::unordered_map<time_step_t, TrueFalseObstacleIds>
+    extract(const std::unordered_map<time_step_t, std::unordered_set<std::optional<size_t>>>
+                &relevant_obstacle_ids_over_time) const = 0;
 };
 } // namespace knowledge_extraction::kleene
