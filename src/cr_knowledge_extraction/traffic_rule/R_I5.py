@@ -32,13 +32,11 @@ class EnteringVehiclesRule(TrafficRule):
             ]
         )
 
-        consequence = Formula.negation(
-            Formula.disjunction(
-                [
-                    Formula.negation(Formula.ap(Prop.OnMainCarriagewayRightLane())),
-                    Formula.eventually(Formula.ap(Prop.OnMainCarriagewayRightLane())),
-                ]
-            )
+        consequence = Formula.disjunction(
+            [
+                Formula.ap(Prop.OnMainCarriagewayRightLane()),
+                Formula.always(Formula.negation(Formula.ap(Prop.OnMainCarriagewayRightLane()))),
+            ]
         )
 
         return Formula.always(Formula.implication(condition, consequence), start, end)
