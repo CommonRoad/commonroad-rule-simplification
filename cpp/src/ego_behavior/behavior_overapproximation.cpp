@@ -42,10 +42,11 @@ Box4D BehaviorOverapproximation::make_input_state_update(double dt, const EgoPar
 }
 
 sets::Box4D BehaviorOverapproximation::make_admissible_states(const EgoParameters &ego_params) {
-    return Box4D::from_bounds(Eigen::Vector4d{std::numeric_limits<double>::min(), ego_params.v_lon_min,
-                                              std::numeric_limits<double>::min(), ego_params.v_lat_min},
-                              Eigen::Vector4d{std::numeric_limits<double>::max(), ego_params.v_lon_max,
-                                              std::numeric_limits<double>::max(), ego_params.v_lat_max});
+    // We do not use std::numeric_limits<double> here, as they cause overflow problems
+    // Instead we just use a "big enough" number
+    constexpr double big_m = 10e9;
+    return Box4D::from_bounds(Eigen::Vector4d{-big_m, ego_params.v_lon_min, -big_m, ego_params.v_lat_min},
+                              Eigen::Vector4d{big_m, ego_params.v_lon_max, big_m, ego_params.v_lat_max});
 }
 
 double BehaviorOverapproximation::compute_shrink_delta(double length, double width) {
@@ -127,7 +128,7 @@ BehaviorOverapproximation::get_intersected_lanelets(time_step_t time_step) {
 }
 
 sets::Box2D BehaviorOverapproximation::project_to_positions(const Box4D &state_set) {
-    auto center = state_set.center({0, 2});
-    auto radius = state_set.radius({0, 2});
+    Eigen::Vector2d center = state_set.center({0, 2});
+    Eigen::Vector2d radius = state_set.radius({0, 2});
     return Box2D{center, radius};
 }
