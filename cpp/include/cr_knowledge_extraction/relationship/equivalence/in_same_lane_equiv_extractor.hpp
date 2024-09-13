@@ -14,7 +14,7 @@ class InSameLaneEquivExtractor : public RelationshipExtractor {
     InSameLaneEquivExtractor(std::shared_ptr<World> world,
                              std::shared_ptr<geometry::CurvilinearCoordinateSystem> ego_ccs)
         : RelationshipExtractor(std::move(world), std::move(ego_ccs), Proposition::IN_SAME_LANE,
-                                Proposition::IN_SAME_LANE){};
+                                Proposition::IN_SAME_LANE, RelationshipType::EQUIVALENCE){};
 
     std::unordered_map<time_step_t, std::vector<Relationship>>
     extract(const std::unordered_map<time_step_t, std::unordered_set<size_t>> &relevant_obstacle_ids_over_time)

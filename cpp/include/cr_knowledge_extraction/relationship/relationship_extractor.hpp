@@ -17,6 +17,7 @@ class RelationshipExtractor {
   private:
     const Proposition proposition_lhs;
     const Proposition proposition_rhs;
+    const RelationshipType dominant_relationship;
 
   protected:
     const std::shared_ptr<World> world;
@@ -24,13 +25,16 @@ class RelationshipExtractor {
 
   public:
     RelationshipExtractor(std::shared_ptr<World> world, std::shared_ptr<geometry::CurvilinearCoordinateSystem> ego_ccs,
-                          Proposition proposition_lhs, Proposition proposition_rhs)
-        : proposition_lhs(proposition_lhs), proposition_rhs(proposition_rhs), world(std::move(world)),
-          ego_ccs(std::move(ego_ccs)){};
+                          Proposition proposition_lhs, Proposition proposition_rhs,
+                          RelationshipType dominant_relationship)
+        : proposition_lhs(proposition_lhs), proposition_rhs(proposition_rhs),
+          dominant_relationship(dominant_relationship), world(std::move(world)), ego_ccs(std::move(ego_ccs)){};
 
     virtual ~RelationshipExtractor() = default;
 
     std::pair<Proposition, Proposition> get_propositions() const { return {proposition_lhs, proposition_rhs}; }
+
+    RelationshipType get_dominant_relationship() const { return dominant_relationship; }
 
     using Relationship = std::tuple<RelationshipType, size_t, size_t>;
 

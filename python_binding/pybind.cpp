@@ -35,7 +35,14 @@ void export_extraction_interface(py::module &module) {
                  return knowledge_extraction::ExtractionInterface{std::move(world), ego_ccs, ego_params};
              }),
              py::arg("scenario_path"), py::arg("dt"), py::arg("ego_params"), py::arg("ego_ccs"))
-        .def("extract", &knowledge_extraction::ExtractionInterface::extract);
+        .def("extract_all", &knowledge_extraction::ExtractionInterface::extract_all)
+        .def("extract_kleene", py::overload_cast<const std::unordered_map<time_step_t, std::vector<std::string>> &>(
+                                   &knowledge_extraction::ExtractionInterface::extract_kleene))
+        .def("extract_relationships",
+             py::overload_cast<const std::unordered_map<time_step_t, std::vector<std::string>> &>(
+                 &knowledge_extraction::ExtractionInterface::extract_relationships))
+        .def("extract_equivalences", &knowledge_extraction::ExtractionInterface::extract_equivalences)
+        .def("extract_implications", &knowledge_extraction::ExtractionInterface::extract_implications);
 }
 
 void export_ego_parameters(py::module &module) {

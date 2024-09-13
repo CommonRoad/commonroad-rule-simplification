@@ -12,7 +12,7 @@ class InFrontOfImplExtractor : public RelationshipExtractor {
   public:
     InFrontOfImplExtractor(std::shared_ptr<World> world, std::shared_ptr<geometry::CurvilinearCoordinateSystem> ego_ccs)
         : RelationshipExtractor(std::move(world), std::move(ego_ccs), Proposition::IN_FRONT_OF,
-                                Proposition::IN_FRONT_OF){};
+                                Proposition::IN_FRONT_OF, RelationshipType::IMPLICATION){};
 
     std::unordered_map<time_step_t, std::vector<Relationship>>
     extract(const std::unordered_map<time_step_t, std::unordered_set<size_t>> &relevant_obstacle_ids_over_time)

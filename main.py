@@ -37,20 +37,39 @@ def main():
             !(!OnMainCarriagewayRightLane & F OnMainCarriagewayRightLane))
         """
     )
-    relevant_aps = formula.relevant_aps(15)
 
-    # extract scenario knowledge
     tic = time.perf_counter()
     extractor = ExtractionInterface(scenario_path, dt, ego_params, ccs)
-    extracted_knowledge = extractor.extract(relevant_aps)
     toc = time.perf_counter()
-    for time_step, result in sorted(extracted_knowledge.items()):
-        print("====================================")
-        print(f"Time step: {time_step}")
-        print(f"Positive: {', '.join(result.positive_propositions)}")
-        print(f"Negative: {', '.join(result.negative_propositions)}")
-        print(f"Implications: {', '.join(f'{a} -> {b}' for a, b in result.implications)}")
-        print(f"Equivalences: {', '.join(f'{a} <-> {b}' for a, b in result.equivalences)}")
+    print(f"Extractor initialization time: {toc -tic} seconds")
+
+    # single pass augmentation
+    print("Single pass")
+    augmented = extract_and_augment(extractor, formula, 15)
+    print(augmented)
+
+    # multi pass augmentation
+    extractor = ExtractionInterface(scenario_path, dt, ego_params, ccs)  # re-init to make comparison fair
+    print("Multi pass")
+    augmented = extract_and_augment(extractor, formula, 15, extraction_mode=1)
+    augmented = extract_and_augment(extractor, augmented, 15, extraction_mode=2)
+    print(augmented)
+
+
+def extract_and_augment(extractor, formula, time_steps, verbose=False, extraction_mode=0):
+    # extract scenario knowledge
+    tic = time.perf_counter()
+    relevant_aps = formula.relevant_aps(time_steps)
+    match extraction_mode:
+        case 1:
+            extracted_knowledge = extractor.extract_kleene(relevant_aps)
+        case 2:
+            extracted_knowledge = extractor.extract_relationships(relevant_aps)
+        case _:
+            extracted_knowledge = extractor.extract_all(relevant_aps)
+    toc = time.perf_counter()
+    if verbose:
+        print_knowledge(extracted_knowledge)
     print(f"Extraction time: {toc - tic} seconds")
 
     # augment formula with knowledge
@@ -59,8 +78,11 @@ def main():
     augmenter = simp.Augmenter(knowledge_sequence)
     augmented_formula = augmenter.augment(formula)
     toc = time.perf_counter()
-    print(augmented_formula)
+    if verbose:
+        print(augmented_formula)
     print(f"Augmentation time: {toc - tic} seconds")
+
+    return augmented_formula
 
 
 def convert_to_knowledge_sequence(extracted_knowledge: Dict[int, ExtractionResult]) -> simp.KnowledgeSequence:
@@ -82,6 +104,16 @@ def initialize_from_planning_problem(
     state = planning_problem.initial_state
     # there is no acceleration in the planning problem, so we set it to 0
     return state.time_step, state.position[0], state.position[1], state.velocity, 0, state.orientation
+
+
+def print_knowledge(extracted_knowledge):
+    for time_step, result in sorted(extracted_knowledge.items()):
+        print("====================================")
+        print(f"Time step: {time_step}")
+        print(f"Positive: {', '.join(result.positive_propositions)}")
+        print(f"Negative: {', '.join(result.negative_propositions)}")
+        print(f"Implications: {', '.join(f'{a} -> {b}' for a, b in result.implications)}")
+        print(f"Equivalences: {', '.join(f'{a} <-> {b}' for a, b in result.equivalences)}")
 
 
 if __name__ == "__main__":

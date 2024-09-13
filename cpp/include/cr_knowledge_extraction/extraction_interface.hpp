@@ -36,6 +36,19 @@ class ExtractionInterface {
 
     std::optional<std::unique_ptr<relationship::RelationshipExtractor>> create_relationship_extractor(Proposition prop);
 
+    using RelevantObstacles =
+        std::unordered_map<Proposition, std::unordered_map<time_step_t, std::unordered_set<size_t>>>;
+
+    static RelevantObstacles
+    compute_relevant_obstacles(const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions);
+
+    void extract_kleene(const RelevantObstacles &relevant_obstacles,
+                        std::unordered_map<time_step_t, ExtractionResult> &result);
+
+    void extract_relationships(const ExtractionInterface::RelevantObstacles &relevant_obstacles,
+                               std::unordered_map<time_step_t, ExtractionResult> &result,
+                               std::optional<relationship::RelationshipType> type = std::nullopt);
+
   public:
     ExtractionInterface(std::shared_ptr<World> world, std::shared_ptr<geometry::CurvilinearCoordinateSystem> ego_ccs,
                         const ego_behavior::EgoParameters &ego_params)
@@ -43,6 +56,18 @@ class ExtractionInterface {
           ego_approximations(make_ego_approximations(this->world, this->ego_ccs, ego_params)) {}
 
     std::unordered_map<time_step_t, ExtractionResult>
-    extract(const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions);
+    extract_all(const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions);
+
+    std::unordered_map<time_step_t, ExtractionResult>
+    extract_kleene(const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions);
+
+    std::unordered_map<time_step_t, ExtractionResult>
+    extract_relationships(const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions);
+
+    std::unordered_map<time_step_t, ExtractionResult>
+    extract_equivalences(const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions);
+
+    std::unordered_map<time_step_t, ExtractionResult>
+    extract_implications(const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions);
 };
 } // namespace knowledge_extraction

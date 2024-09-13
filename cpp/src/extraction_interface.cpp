@@ -36,31 +36,30 @@ ExtractionInterface::make_ego_approximations(const std::shared_ptr<World> &world
         dt, ego_params, road_network::CurvilinearRoadNetwork{world, ego_ccs});
 }
 
-std::unordered_map<time_step_t, ExtractionResult>
-ExtractionInterface::extract(const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions) {
-    std::unordered_map<Proposition, std::unordered_map<time_step_t, std::unordered_set<size_t>>>
-        relevant_obstacles_over_time_per_prop{};
-    for (const auto &[time_step, propositions] : relevant_propositions) {
-        for (const auto &prop : propositions) {
-            try {
-                auto [prop_enum, param] = proposition::from_string(prop);
-                // Touch proposition at time step to create an empty set
-                // (needed for propositions that do not have parameters)
-                relevant_obstacles_over_time_per_prop[prop_enum][time_step];
-                if (param.has_value()) {
-                    relevant_obstacles_over_time_per_prop[prop_enum][time_step].insert(param.value());
-                }
-            } catch (const std::logic_error &e) {
-                // Unknown propositions are simply ignored with a warning
-                spdlog::warn("Unknown proposition: {} No knowledge will be extracted for this proposition!", prop);
-                continue;
-            }
-        }
-    }
+std::unordered_map<time_step_t, ExtractionResult> ExtractionInterface::extract_all(
+    const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions) {
+    auto relevant_obstacles = compute_relevant_obstacles(relevant_propositions);
 
     std::unordered_map<time_step_t, ExtractionResult> result{};
     // Kleene extraction
-    for (const auto &[prop, relevant_obstacles_over_time] : relevant_obstacles_over_time_per_prop) {
+    extract_kleene(relevant_obstacles, result);
+    // Relationship extraction
+    extract_relationships(relevant_obstacles, result);
+
+    return result;
+}
+
+std::unordered_map<time_step_t, ExtractionResult> ExtractionInterface::extract_kleene(
+    const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions) {
+    auto relevant_obstacles = compute_relevant_obstacles(relevant_propositions);
+    std::unordered_map<time_step_t, ExtractionResult> result{};
+    extract_kleene(relevant_obstacles, result);
+    return result;
+}
+
+void ExtractionInterface::extract_kleene(const RelevantObstacles &relevant_obstacles,
+                                         std::unordered_map<time_step_t, ExtractionResult> &result) {
+    for (const auto &[prop, relevant_obstacles_over_time] : relevant_obstacles) {
         auto extractor = create_kleene_extractor(prop);
         if (extractor.has_value()) {
             auto kleene_values = extractor.value()->extract(relevant_obstacles_over_time);
@@ -76,11 +75,41 @@ ExtractionInterface::extract(const std::unordered_map<time_step_t, std::vector<s
             }
         }
     }
+}
 
-    // Relationship extraction
-    for (const auto &[prop, relevant_obstacles_over_time] : relevant_obstacles_over_time_per_prop) {
+std::unordered_map<time_step_t, ExtractionResult> ExtractionInterface::extract_relationships(
+    const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions) {
+    auto relevant_obstacles = compute_relevant_obstacles(relevant_propositions);
+    std::unordered_map<time_step_t, ExtractionResult> result{};
+    extract_relationships(relevant_obstacles, result);
+    return result;
+}
+
+std::unordered_map<time_step_t, ExtractionResult> ExtractionInterface::extract_equivalences(
+    const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions) {
+    auto relevant_obstacles = compute_relevant_obstacles(relevant_propositions);
+    std::unordered_map<time_step_t, ExtractionResult> result{};
+    extract_relationships(relevant_obstacles, result, relationship::RelationshipType::EQUIVALENCE);
+    return result;
+}
+
+std::unordered_map<time_step_t, ExtractionResult> ExtractionInterface::extract_implications(
+    const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions) {
+    auto relevant_obstacles = compute_relevant_obstacles(relevant_propositions);
+    std::unordered_map<time_step_t, ExtractionResult> result{};
+    extract_relationships(relevant_obstacles, result, relationship::RelationshipType::IMPLICATION);
+    return result;
+}
+
+void ExtractionInterface::extract_relationships(const ExtractionInterface::RelevantObstacles &relevant_obstacles,
+                                                std::unordered_map<time_step_t, ExtractionResult> &result,
+                                                std::optional<relationship::RelationshipType> type) {
+    for (const auto &[prop, relevant_obstacles_over_time] : relevant_obstacles) {
         auto extractor = create_relationship_extractor(prop);
         if (extractor.has_value()) {
+            if (type.has_value() && extractor.value()->get_dominant_relationship() != type.value()) {
+                continue;
+            }
             auto [lhs, rhs] = extractor.value()->get_propositions();
             auto relationships = extractor.value()->extract(relevant_obstacles_over_time);
             for (auto &[time_step, relations] : relationships) {
@@ -101,8 +130,6 @@ ExtractionInterface::extract(const std::unordered_map<time_step_t, std::vector<s
             }
         }
     }
-
-    return result;
 }
 
 auto lanelet_type_to_string(LaneletType lanelet_type) {
@@ -136,4 +163,28 @@ ExtractionInterface::create_relationship_extractor(Proposition prop) {
     default:
         return std::nullopt;
     }
+}
+
+ExtractionInterface::RelevantObstacles ExtractionInterface::compute_relevant_obstacles(
+    const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions) {
+    std::unordered_map<Proposition, std::unordered_map<time_step_t, std::unordered_set<size_t>>>
+        relevant_obstacles_over_time_per_prop{};
+    for (const auto &[time_step, propositions] : relevant_propositions) {
+        for (const auto &prop : propositions) {
+            try {
+                auto [prop_enum, param] = proposition::from_string(prop);
+                // Touch proposition at time step to create an empty set
+                // (needed for propositions that do not have parameters)
+                relevant_obstacles_over_time_per_prop[prop_enum][time_step];
+                if (param.has_value()) {
+                    relevant_obstacles_over_time_per_prop[prop_enum][time_step].insert(param.value());
+                }
+            } catch (const std::logic_error &e) {
+                // Unknown propositions are simply ignored with a warning
+                spdlog::warn("Unknown proposition: {}. No knowledge will be extracted for this proposition!", prop);
+                continue;
+            }
+        }
+    }
+    return relevant_obstacles_over_time_per_prop;
 }
