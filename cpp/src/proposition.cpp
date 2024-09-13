@@ -14,7 +14,7 @@ std::pair<Proposition, std::optional<size_t>> proposition::from_string(const std
     // Take substring from beginning to opening parenthesis
     auto proposition_name = has_parameter ? proposition.substr(0, opening_parenthesis) : proposition;
     if (!proposition::string_to_proposition.contains(proposition_name)) {
-        throw std::invalid_argument("Unknown proposition: " + proposition);
+        throw std::logic_error("Unknown proposition: " + proposition);
     }
     auto proposition_enum = proposition::string_to_proposition.at(proposition_name);
 

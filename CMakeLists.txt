@@ -218,7 +218,7 @@ if (CMAKE_SUPPORTS_TRY_FIND_PACKAGE)
     endif ()
 endif ()
 
-# Include eigen3 and GTest
+# Include eigen3, GTest, and spdlog
 if (CR_KNOWLEDGE_EXTRACTION_SYSTEM_PACKAGES_FORCE)
     # This is the fallback branch in case the CMake version is older than 3.24
     # and the user requested we try to use system packages
@@ -231,6 +231,7 @@ if (CR_KNOWLEDGE_EXTRACTION_SYSTEM_PACKAGES_FORCE)
             "trying again.")
 
     find_package(Eigen3 3.3.7 REQUIRED)
+    find_package(spdlog 1.8.0 REQUIRED)
     find_package(GTest)
 
     # yaml-cpp::yaml-cpp is not present in installed config file as of version 0.7.0
@@ -242,6 +243,7 @@ else ()
     # back to normal FetchContent
 
     include(ExternalEigen)
+    include(ExternalSpdlog)
     include(ExternalGoogleTest)
 endif ()
 

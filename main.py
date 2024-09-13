@@ -11,10 +11,12 @@ from cr_knowledge_extraction import EgoParameters, ExtractionInterface, Extracti
 
 
 def main():
-    scenario_path = "scenarios/DEU_LocationALower-11_4_T-1.xml"
+    # scenario_path = "scenarios/DEU_LocationALower-11_4_T-1.xml"
+    scenario_path = "cpp/tests/scenarios/interstate_simple.xml"
     scenario, planning_problems = CommonRoadFileReader(scenario_path).open()
     planning_problem = list(planning_problems.planning_problem_dict.values())[0]
-    dt = 0.08
+    # dt = 0.08
+    dt = 0.2
     planning_problem.initial_state.time_step = int(planning_problem.initial_state.time_step // (dt / scenario.dt))
 
     # configure ego parameters
@@ -26,7 +28,15 @@ def main():
     ccs = pycrccosy.CurvilinearCoordinateSystem(reference_path)
 
     # specify formula
-    formula = simp.Formula("(G InFrontOf(10) & InSameLane(10)) & (G InFrontOf(12) & InSameLane(12))")
+    # formula = simp.Formula("(G InFrontOf(10) & InSameLane(10)) & (G InFrontOf(12) & InSameLane(12))")
+    formula = simp.Formula(
+        """
+        (G OnMainCarriageway & InFrontOf(103) & OtherOnAccessRamp(103) & (F OtherOnMainCarriageway(103)) ->
+            !(!OnMainCarriagewayRightLane & F OnMainCarriagewayRightLane)) &
+        (G OnMainCarriageway & InFrontOf(102) & OtherOnAccessRamp(102) & (F OtherOnMainCarriageway(102)) ->
+            !(!OnMainCarriagewayRightLane & F OnMainCarriagewayRightLane))
+        """
+    )
     relevant_aps = formula.relevant_aps(15)
 
     # extract scenario knowledge
@@ -34,13 +44,13 @@ def main():
     extractor = ExtractionInterface(scenario_path, dt, ego_params, ccs)
     extracted_knowledge = extractor.extract(relevant_aps)
     toc = time.perf_counter()
-    for time_step, result in extracted_knowledge.items():
+    for time_step, result in sorted(extracted_knowledge.items()):
         print("====================================")
         print(f"Time step: {time_step}")
-        print(f"Positive: {result.positive_propositions}")
-        print(f"Negative: {result.negative_propositions}")
-        print(f"Implications: {result.implications}")
-        print(f"Equivalences: {result.equivalences}")
+        print(f"Positive: {', '.join(result.positive_propositions)}")
+        print(f"Negative: {', '.join(result.negative_propositions)}")
+        print(f"Implications: {', '.join(f'{a} -> {b}' for a, b in result.implications)}")
+        print(f"Equivalences: {', '.join(f'{a} <-> {b}' for a, b in result.equivalences)}")
     print(f"Extraction time: {toc - tic} seconds")
 
     # augment formula with knowledge
