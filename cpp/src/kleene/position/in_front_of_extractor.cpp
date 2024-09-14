@@ -23,7 +23,7 @@ std::unordered_map<time_step_t, InFrontOfExtractor::TrueFalseObstacleIds> InFron
 
         const auto &approximations = env_model->get_ego_approximations();
         auto ego_front_max = approximations->p_lon_max(time_step) + approximations->get_outer_radius();
-        auto ego_front_min = approximations->p_lon_max(time_step) - approximations->get_inner_radius();
+        auto ego_front_min = approximations->p_lon_min(time_step) + approximations->get_inner_radius();
 
         for (const auto &[obstacle_id, rear] : relevant_obstacle_rears) {
             if (ego_front_max < rear) {
