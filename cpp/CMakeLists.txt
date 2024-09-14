@@ -4,6 +4,8 @@ set(CR_KNOWLEDGE_EXTRACTION_SRC_FILES
 
         src/ego_behavior/behavior_overapproximation.cpp
 
+        src/env_model/env_model.cpp
+
         src/kleene/ego_independent/ego_independent_extractor.cpp
         src/kleene/position/in_front_of_extractor.cpp
         src/kleene/position/on_lanelet_with_type_extractor.cpp
@@ -18,12 +20,13 @@ set(CR_KNOWLEDGE_EXTRACTION_SRC_FILES
 set(CR_KNOWLEDGE_EXTRACTION_HDR_FILES
         include/cr_knowledge_extraction/proposition.hpp
 
+        include/cr_knowledge_extraction/env_model/env_model.hpp
+
         include/cr_knowledge_extraction/ego_behavior/behavior_overapproximation.hpp
         include/cr_knowledge_extraction/ego_behavior/ego_params.hpp
         include/cr_knowledge_extraction/ego_behavior/sets/box.hpp
 
         include/cr_knowledge_extraction/kleene/kleene_extractor.hpp
-        include/cr_knowledge_extraction/kleene/ego_dependent_kleene_extractor.hpp
         include/cr_knowledge_extraction/kleene/ego_independent/ego_independent_extractor.hpp
         include/cr_knowledge_extraction/kleene/position/in_front_of_extractor.hpp
         include/cr_knowledge_extraction/kleene/position/on_lanelet_with_type_extractor.hpp

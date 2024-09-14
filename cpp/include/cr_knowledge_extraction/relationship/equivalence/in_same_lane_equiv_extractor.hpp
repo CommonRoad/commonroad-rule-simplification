@@ -6,15 +6,10 @@
 
 namespace knowledge_extraction::relationship::equivalence {
 class InSameLaneEquivExtractor : public RelationshipExtractor {
-  private:
-    std::optional<std::set<size_t>> get_obstacle_lane_ids(size_t time_step,
-                                                          const std::shared_ptr<Obstacle> &obstacle) const;
-
   public:
-    InSameLaneEquivExtractor(std::shared_ptr<World> world,
-                             std::shared_ptr<geometry::CurvilinearCoordinateSystem> ego_ccs)
-        : RelationshipExtractor(std::move(world), std::move(ego_ccs), Proposition::IN_SAME_LANE,
-                                Proposition::IN_SAME_LANE, RelationshipType::EQUIVALENCE){};
+    InSameLaneEquivExtractor(std::shared_ptr<knowledge_extraction::env_model::EnvironmentModel> env_model)
+        : RelationshipExtractor(std::move(env_model), Proposition::IN_SAME_LANE, Proposition::IN_SAME_LANE,
+                                RelationshipType::EQUIVALENCE){};
 
     std::unordered_map<time_step_t, std::vector<Relationship>>
     extract(const std::unordered_map<time_step_t, std::unordered_set<std::optional<size_t>>>

@@ -1,4 +1,5 @@
 #include "cr_knowledge_extraction/extraction_interface.hpp"
+
 #include "cr_knowledge_extraction/kleene/ego_independent/ego_independent_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/position/in_front_of_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/position/on_lanelet_with_type_extractor.hpp"
@@ -8,7 +9,6 @@
 #include "cr_knowledge_extraction/relationship/implication/in_front_of_impl_extractor.hpp"
 #include "cr_knowledge_extraction/road_network/curvilinear_road_network.hpp"
 
-#include <commonroad_cpp/geometry/geometric_operations.h>
 #include <commonroad_cpp/predicates/lane/on_lanelet_with_type_predicate.h>
 
 #include <spdlog/spdlog.h>
@@ -17,27 +17,6 @@
 #include <unordered_set>
 
 using namespace knowledge_extraction;
-
-std::shared_ptr<ego_behavior::BehaviorOverapproximation>
-ExtractionInterface::make_ego_approximations(const std::shared_ptr<World> &world,
-                                             const std::shared_ptr<geometry::CurvilinearCoordinateSystem> &ego_ccs,
-                                             ego_behavior::EgoParameters ego_params) {
-    auto &initial_state = ego_params.initial_state;
-
-    auto ccs_pos = ego_ccs->convertToCurvilinearCoords(initial_state.getXPosition(), initial_state.getYPosition());
-    initial_state.setLonPosition(ccs_pos.x());
-    initial_state.setLatPosition(ccs_pos.y());
-
-    auto ccs_tangent = ego_ccs->tangent(ccs_pos.x());
-    auto ccs_orientation = std::atan2(ccs_tangent.y(), ccs_tangent.x());
-    auto theta = geometric_operations::subtractOrientations(initial_state.getGlobalOrientation(), ccs_orientation);
-    initial_state.setCurvilinearOrientation(theta);
-
-    auto dt = world->getDt();
-
-    return std::make_shared<ego_behavior::BehaviorOverapproximation>(
-        dt, ego_params, road_network::CurvilinearRoadNetwork{world, ego_ccs});
-}
 
 std::unordered_map<time_step_t, ExtractionResult> ExtractionInterface::extract_all(
     const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions) {
@@ -157,20 +136,19 @@ auto lanelet_type_to_string(LaneletType lanelet_type) {
 std::optional<std::unique_ptr<kleene::KleeneExtractor>> ExtractionInterface::create_kleene_extractor(Proposition prop) {
     switch (prop) {
     case Proposition::ON_MAIN_CARRIAGEWAY:
-        return std::make_unique<kleene::position::OnLaneletWithTypeExtractor>(world, ego_ccs, prop, ego_approximations,
+        return std::make_unique<kleene::position::OnLaneletWithTypeExtractor>(env_model, prop,
                                                                               LaneletType::mainCarriageWay);
     case Proposition::ON_MAIN_CARRIAGEWAY_RIGHT_LANE:
-        return std::make_unique<kleene::position::OnMainCarriagewayRightLaneExtractor>(world, ego_ccs,
-                                                                                       ego_approximations);
+        return std::make_unique<kleene::position::OnMainCarriagewayRightLaneExtractor>(env_model);
     case Proposition::IN_FRONT_OF:
-        return std::make_unique<kleene::position::InFrontOfExtractor>(world, ego_ccs, ego_approximations);
+        return std::make_unique<kleene::position::InFrontOfExtractor>(env_model);
     case Proposition::OTHER_ON_ACCESS_RAMP:
         return std::make_unique<kleene::ego_independent::EgoIndependentExtractor>(
-            world, ego_ccs, prop, std::make_unique<OnLaneletWithTypePredicate>(),
+            env_model, prop, std::make_unique<OnLaneletWithTypePredicate>(),
             std::vector{lanelet_type_to_string(LaneletType::accessRamp)});
     case Proposition::OTHER_ON_MAIN_CARRIAGEWAY:
         return std::make_unique<kleene::ego_independent::EgoIndependentExtractor>(
-            world, ego_ccs, prop, std::make_unique<OnLaneletWithTypePredicate>(),
+            env_model, prop, std::make_unique<OnLaneletWithTypePredicate>(),
             std::vector{lanelet_type_to_string(LaneletType::mainCarriageWay)});
     default:
         return std::nullopt;
@@ -181,9 +159,9 @@ std::optional<std::unique_ptr<relationship::RelationshipExtractor>>
 ExtractionInterface::create_relationship_extractor(Proposition prop) {
     switch (prop) {
     case Proposition::IN_SAME_LANE:
-        return std::make_unique<relationship::equivalence::InSameLaneEquivExtractor>(world, ego_ccs);
+        return std::make_unique<relationship::equivalence::InSameLaneEquivExtractor>(env_model);
     case Proposition::IN_FRONT_OF:
-        return std::make_unique<relationship::implication::InFrontOfImplExtractor>(world, ego_ccs);
+        return std::make_unique<relationship::implication::InFrontOfImplExtractor>(env_model);
     default:
         return std::nullopt;
     }

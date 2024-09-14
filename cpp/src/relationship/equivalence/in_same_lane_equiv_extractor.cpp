@@ -9,22 +9,6 @@
 
 using namespace knowledge_extraction::relationship::equivalence;
 
-std::optional<std::set<size_t>>
-InSameLaneEquivExtractor::get_obstacle_lane_ids(size_t time_step, const std::shared_ptr<Obstacle> &obstacle) const {
-    std::shared_ptr<State> obstacle_state;
-    try {
-        std::set<size_t> lanelet_ids{};
-        auto occupied_lanes = obstacle->getOccupiedLanes(world->getRoadNetwork(), time_step);
-        for (const auto &lane : occupied_lanes) {
-            auto lane_lanelet_ids = lane->getContainedLaneletIDs();
-            lanelet_ids.insert(lane_lanelet_ids.begin(), lane_lanelet_ids.end());
-        }
-        return lanelet_ids;
-    } catch (std::logic_error &e) {
-        return std::nullopt;
-    }
-}
-
 std::unordered_map<time_step_t, std::vector<InSameLaneEquivExtractor::Relationship>> InSameLaneEquivExtractor::extract(
     const std::unordered_map<time_step_t, std::unordered_set<std::optional<size_t>>> &relevant_obstacle_ids_over_time)
     const {
@@ -32,11 +16,11 @@ std::unordered_map<time_step_t, std::vector<InSameLaneEquivExtractor::Relationsh
 
     for (const auto &[time_step, obstacle_ids] : relevant_obstacle_ids_over_time) {
         auto relevant_obstacle_lanes_ =
-            world->getObstacles() | std::views::filter([&obstacle_ids](const auto &obstacle) {
+            env_model->get_world()->getObstacles() | std::views::filter([&obstacle_ids](const auto &obstacle) {
                 return obstacle_ids.contains(obstacle->getId());
             }) |
             std::views::transform([this, &time_step](const auto &obstacle) {
-                return std::make_pair(obstacle->getId(), get_obstacle_lane_ids(time_step, obstacle));
+                return std::make_pair(obstacle->getId(), env_model->get_obstacle_lane_ids(time_step, obstacle));
             }) |
             std::views::filter([](const auto &pair) { return pair.second.has_value(); }) |
             std::views::transform([](const auto &pair) { return std::make_pair(pair.first, pair.second.value()); });

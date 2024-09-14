@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cr_knowledge_extraction/env_model/env_model.hpp"
 #include "cr_knowledge_extraction/proposition.hpp"
 
 #include <commonroad_cpp/auxiliaryDefs/types_and_definitions.h>
@@ -16,13 +17,12 @@ class KleeneExtractor {
     const Proposition proposition;
 
   protected:
-    const std::shared_ptr<World> world;
-    const std::shared_ptr<geometry::CurvilinearCoordinateSystem> ego_ccs;
+    const std::shared_ptr<knowledge_extraction::env_model::EnvironmentModel> env_model;
 
   public:
-    KleeneExtractor(std::shared_ptr<World> world, std::shared_ptr<geometry::CurvilinearCoordinateSystem> ego_ccs,
+    KleeneExtractor(std::shared_ptr<knowledge_extraction::env_model::EnvironmentModel> env_model,
                     Proposition proposition)
-        : proposition(proposition), world(std::move(world)), ego_ccs(std::move(ego_ccs)){};
+        : proposition(proposition), env_model(std::move(env_model)){};
 
     virtual ~KleeneExtractor() = default;
 

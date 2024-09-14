@@ -12,15 +12,16 @@ std::unordered_map<time_step_t, InFrontOfExtractor::TrueFalseObstacleIds> InFron
     std::unordered_map<time_step_t, TrueFalseObstacleIds> true_false_obstacle_ids;
     for (const auto &[time_step, obstacle_ids] : relevant_obstacle_ids_over_time) {
         auto relevant_obstacle_rears =
-            world->getObstacles() | std::views::filter([&obstacle_ids](const auto &obstacle) {
+            env_model->get_world()->getObstacles() | std::views::filter([&obstacle_ids](const auto &obstacle) {
                 return obstacle_ids.contains(obstacle->getId());
             }) |
             std::views::transform([this, &time_step](const auto &obstacle) {
-                return std::make_pair(obstacle->getId(), get_obstacle_rear(time_step, obstacle));
+                return std::make_pair(obstacle->getId(), env_model->get_obstacle_rear(time_step, obstacle));
             }) |
             std::views::filter([](const auto &pair) { return pair.second.has_value(); }) |
             std::views::transform([](const auto &pair) { return std::make_pair(pair.first, pair.second.value()); });
 
+        const auto &approximations = env_model->get_ego_approximations();
         auto ego_front_max = approximations->p_lon_max(time_step) + approximations->get_outer_radius();
         auto ego_front_min = approximations->p_lon_max(time_step) - approximations->get_inner_radius();
 
@@ -33,19 +34,4 @@ std::unordered_map<time_step_t, InFrontOfExtractor::TrueFalseObstacleIds> InFron
         }
     }
     return true_false_obstacle_ids;
-}
-
-std::optional<double> InFrontOfExtractor::get_obstacle_rear(size_t time_step,
-                                                            const std::shared_ptr<Obstacle> &obstacle) const {
-    std::shared_ptr<State> obstacle_state;
-    try {
-        obstacle_state = obstacle->getStateByTimeStep(time_step);
-    } catch (std::logic_error &e) {
-        return std::nullopt;
-    }
-    if (!ego_ccs->cartesianPointInProjectionDomain(obstacle_state->getXPosition(), obstacle_state->getYPosition())) {
-        return std::nullopt;
-    }
-
-    return obstacle->rearS(time_step, ego_ccs);
 }

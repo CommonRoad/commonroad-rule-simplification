@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cr_knowledge_extraction/env_model/env_model.hpp"
 #include "cr_knowledge_extraction/proposition.hpp"
 
 #include <commonroad_cpp/auxiliaryDefs/types_and_definitions.h>
@@ -20,15 +21,14 @@ class RelationshipExtractor {
     const RelationshipType dominant_relationship;
 
   protected:
-    const std::shared_ptr<World> world;
-    const std::shared_ptr<geometry::CurvilinearCoordinateSystem> ego_ccs;
+    const std::shared_ptr<knowledge_extraction::env_model::EnvironmentModel> env_model;
 
   public:
-    RelationshipExtractor(std::shared_ptr<World> world, std::shared_ptr<geometry::CurvilinearCoordinateSystem> ego_ccs,
+    RelationshipExtractor(std::shared_ptr<knowledge_extraction::env_model::EnvironmentModel> env_model,
                           Proposition proposition_lhs, Proposition proposition_rhs,
                           RelationshipType dominant_relationship)
         : proposition_lhs(proposition_lhs), proposition_rhs(proposition_rhs),
-          dominant_relationship(dominant_relationship), world(std::move(world)), ego_ccs(std::move(ego_ccs)){};
+          dominant_relationship(dominant_relationship), env_model(std::move(env_model)){};
 
     virtual ~RelationshipExtractor() = default;
 

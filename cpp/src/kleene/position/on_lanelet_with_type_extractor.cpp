@@ -12,6 +12,8 @@ std::unordered_map<time_step_t, OnLaneletWithTypeExtractor::TrueFalseObstacleIds
         // Should only contain std::nullopt as this predicate does not have parameters
         assert(obstacle_ids.size() == 1);
 
+        const auto &approximations = env_model->get_ego_approximations();
+
         auto cannot_be_true =
             std::ranges::none_of(approximations->get_covered_lanelets(time_step), [this](const auto &ccs_lanelet) {
                 return ccs_lanelet->lanelet->getLaneletTypes().contains(lanelet_type);

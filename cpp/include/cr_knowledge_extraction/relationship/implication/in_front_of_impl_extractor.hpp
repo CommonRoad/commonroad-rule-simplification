@@ -6,13 +6,10 @@
 
 namespace knowledge_extraction::relationship::implication {
 class InFrontOfImplExtractor : public RelationshipExtractor {
-  private:
-    std::optional<double> get_obstacle_rear(size_t time_step, const std::shared_ptr<Obstacle> &obstacle) const;
-
   public:
-    InFrontOfImplExtractor(std::shared_ptr<World> world, std::shared_ptr<geometry::CurvilinearCoordinateSystem> ego_ccs)
-        : RelationshipExtractor(std::move(world), std::move(ego_ccs), Proposition::IN_FRONT_OF,
-                                Proposition::IN_FRONT_OF, RelationshipType::IMPLICATION){};
+    InFrontOfImplExtractor(std::shared_ptr<knowledge_extraction::env_model::EnvironmentModel> env_model)
+        : RelationshipExtractor(std::move(env_model), Proposition::IN_FRONT_OF, Proposition::IN_FRONT_OF,
+                                RelationshipType::IMPLICATION){};
 
     std::unordered_map<time_step_t, std::vector<Relationship>>
     extract(const std::unordered_map<time_step_t, std::unordered_set<std::optional<size_t>>>
