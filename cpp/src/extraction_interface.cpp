@@ -1,5 +1,6 @@
 #include "cr_knowledge_extraction/extraction_interface.hpp"
 
+#include "cr_knowledge_extraction/kleene/braking/safe_distance_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/ego_independent/ego_independent_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/position/in_front_of_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/position/on_lanelet_with_type_extractor.hpp"
@@ -143,6 +144,8 @@ std::optional<std::unique_ptr<kleene::KleeneExtractor>> ExtractionInterface::cre
         return std::make_unique<kleene::position::OnMainCarriagewayRightLaneExtractor>(env_model);
     case Proposition::IN_FRONT_OF:
         return std::make_unique<kleene::position::InFrontOfExtractor>(env_model);
+    case Proposition::KEEPS_SAFE_DISTANCE_PREC:
+        return std::make_unique<kleene::braking::SafeDistanceExtractor>(env_model);
     case Proposition::OTHER_ON_ACCESS_RAMP:
         return std::make_unique<kleene::ego_independent::EgoIndependentExtractor>(
             env_model, prop, std::make_unique<OnLaneletWithTypePredicate>(),

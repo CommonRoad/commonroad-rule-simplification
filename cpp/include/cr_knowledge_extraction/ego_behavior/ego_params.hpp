@@ -4,7 +4,7 @@
 
 namespace knowledge_extraction::ego_behavior {
 struct EgoParameters {
-    double a_lon_min{-11.5};
+    double a_lon_min{-9.5};
     double a_lon_max{11.5};
     double a_lat_min{-2.0};
     double a_lat_max{2.0};
