@@ -19,5 +19,5 @@ std::shared_ptr<EnvironmentModel> TestEnvironments::setup_interstate_simple() {
     geometry::EigenPolyline reference_path{{-250, 0}, {0, 0}, {250, 0}};
     auto ccs = std::make_shared<geometry::CurvilinearCoordinateSystem>(reference_path, 100);
 
-    return std::make_shared<EnvironmentModel>(world, ccs, EgoParameters{});
+    return std::make_shared<EnvironmentModel>(world, ccs, EgoParameters{}, PredicateParameters{});
 }

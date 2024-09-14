@@ -4,8 +4,10 @@
 #include "cr_knowledge_extraction/ego_behavior/ego_params.hpp"
 
 #include <boost/functional/hash.hpp>
+#include <commonroad_cpp/predicates/predicate_parameter_collection.h>
 #include <commonroad_cpp/world.h>
 #include <geometry/curvilinear_coordinate_system.h>
+#include <utility>
 
 namespace knowledge_extraction::env_model {
 class EnvironmentModel {
@@ -13,6 +15,7 @@ class EnvironmentModel {
     const std::shared_ptr<World> world;
     const std::shared_ptr<geometry::CurvilinearCoordinateSystem> ego_ccs;
     const knowledge_extraction::ego_behavior::EgoParameters ego_params;
+    PredicateParameters predicate_params;
 
     const std::shared_ptr<knowledge_extraction::ego_behavior::BehaviorOverapproximation> ego_approximations;
     static std::shared_ptr<knowledge_extraction::ego_behavior::BehaviorOverapproximation>
@@ -30,10 +33,15 @@ class EnvironmentModel {
     std::optional<std::set<size_t>> get_obstacle_lane_ids_impl(size_t time_step,
                                                                const std::shared_ptr<Obstacle> &obstacle) const;
 
+    ObstacleCache<std::optional<double>> stopping_s_cache;
+    std::optional<double> get_stopping_s_impl(size_t time_step, const std::shared_ptr<Obstacle> &obstacle);
+
   public:
     EnvironmentModel(std::shared_ptr<World> world, std::shared_ptr<geometry::CurvilinearCoordinateSystem> ego_ccs,
-                     const knowledge_extraction::ego_behavior::EgoParameters &ego_params)
+                     const knowledge_extraction::ego_behavior::EgoParameters &ego_params,
+                     PredicateParameters predicate_params)
         : world(std::move(world)), ego_ccs(std::move(ego_ccs)), ego_params(ego_params),
+          predicate_params(std::move(predicate_params)),
           ego_approximations(make_ego_approximations(this->world, this->ego_ccs, this->ego_params)) {}
 
     const std::shared_ptr<knowledge_extraction::ego_behavior::BehaviorOverapproximation> &
@@ -47,7 +55,10 @@ class EnvironmentModel {
 
     const knowledge_extraction::ego_behavior::EgoParameters &get_ego_params() const { return ego_params; }
 
+    PredicateParameters &get_predicate_params() { return predicate_params; }
+
     std::optional<double> get_obstacle_rear(size_t time_step, const std::shared_ptr<Obstacle> &obstacle);
     std::optional<std::set<size_t>> get_obstacle_lane_ids(size_t time_step, const std::shared_ptr<Obstacle> &obstacle);
+    std::optional<double> get_stopping_s(size_t time_step, const std::shared_ptr<Obstacle> &obstacle);
 };
 } // namespace knowledge_extraction::env_model

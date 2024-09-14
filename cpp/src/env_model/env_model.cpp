@@ -86,3 +86,31 @@ std::optional<std::set<size_t>> EnvironmentModel::get_obstacle_lane_ids(size_t t
 
     return result;
 }
+
+std::optional<double> EnvironmentModel::get_stopping_s_impl(size_t time_step,
+                                                            const std::shared_ptr<Obstacle> &obstacle) {
+    auto rear_opt = get_obstacle_rear(time_step, obstacle);
+    if (!rear_opt.has_value()) {
+        return std::nullopt;
+    }
+    auto rear = rear_opt.value();
+
+    // This cannot fail, otherwise get_obstacle_rear would have returned std::nullopt
+    auto velocity = obstacle->getStateByTimeStep(time_step)->getVelocity();
+
+    return rear + ((velocity * velocity) / (2 * std::abs(obstacle->getAminLong())));
+}
+
+std::optional<double> EnvironmentModel::get_stopping_s(size_t time_step, const std::shared_ptr<Obstacle> &obstacle) {
+    auto obstacle_id = obstacle->getId();
+    auto key = std::make_pair(time_step, obstacle_id);
+    if (stopping_s_cache.contains(key)) {
+        return stopping_s_cache.at(key);
+    }
+
+    auto result = get_stopping_s_impl(time_step, obstacle);
+
+    stopping_s_cache.emplace(key, result);
+
+    return result;
+}

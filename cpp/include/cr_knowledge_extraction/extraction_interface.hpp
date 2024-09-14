@@ -46,7 +46,9 @@ class ExtractionInterface {
   public:
     ExtractionInterface(std::shared_ptr<World> world, std::shared_ptr<geometry::CurvilinearCoordinateSystem> ego_ccs,
                         const ego_behavior::EgoParameters &ego_params)
-        : env_model(std::make_shared<env_model::EnvironmentModel>(std::move(world), std::move(ego_ccs), ego_params)) {}
+        : env_model(std::make_shared<env_model::EnvironmentModel>(std::move(world), std::move(ego_ccs), ego_params,
+                                                                  PredicateParameters{})) {}
+    // TODO: Make predicate parameters configurable from Python
 
     std::unordered_map<time_step_t, ExtractionResult>
     extract_all(const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions);

@@ -7,6 +7,7 @@
 #include "cr_knowledge_extraction/proposition.hpp"
 #include "cr_knowledge_extraction/relationship/equivalence/in_same_lane_equiv_extractor.hpp"
 #include "cr_knowledge_extraction/relationship/implication/in_front_of_impl_extractor.hpp"
+#include "cr_knowledge_extraction/relationship/implication/safe_distance_impl_extractor.hpp"
 #include "cr_knowledge_extraction/road_network/curvilinear_road_network.hpp"
 
 #include <commonroad_cpp/predicates/lane/on_lanelet_with_type_predicate.h>
@@ -162,6 +163,8 @@ ExtractionInterface::create_relationship_extractor(Proposition prop) {
         return std::make_unique<relationship::equivalence::InSameLaneEquivExtractor>(env_model);
     case Proposition::IN_FRONT_OF:
         return std::make_unique<relationship::implication::InFrontOfImplExtractor>(env_model);
+    case Proposition::KEEPS_SAFE_DISTANCE_PREC:
+        return std::make_unique<relationship::implication::SafeDistanceImplExtractor>(env_model);
     default:
         return std::nullopt;
     }
