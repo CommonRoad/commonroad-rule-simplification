@@ -40,7 +40,9 @@ def main():
     #         !(!OnMainCarriagewayRightLane & F OnMainCarriagewayRightLane))
     #     """
     # )
-    formula = simp.Formula.conjunction(TrafficRuleInstantiator.instantiate(["R_I5"], scenario, end=planning_horizon))
+    formula = simp.Formula.conjunction(
+        TrafficRuleInstantiator().instantiate(["R_G1", "R_I5"], scenario, end=planning_horizon)
+    )
 
     tic = time.perf_counter()
     extractor = ExtractionInterface(scenario_path, dt, ego_params, ccs)
@@ -72,6 +74,8 @@ def extract_and_augment(extractor, formula, time_steps, verbose=True, extraction
             extracted_knowledge = extractor.extract_kleene(relevant_aps)
         case 2:
             extracted_knowledge = extractor.extract_relationships(relevant_aps)
+        case 3:
+            extracted_knowledge = extractor.extract_equivalences(relevant_aps)
         case _:
             extracted_knowledge = extractor.extract_all(relevant_aps)
     toc = time.perf_counter()
