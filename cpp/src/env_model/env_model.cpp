@@ -61,7 +61,7 @@ EnvironmentModel::get_obstacle_lane_ids_impl(size_t time_step, const std::shared
     std::shared_ptr<State> obstacle_state;
     try {
         std::set<size_t> lanelet_ids{};
-        auto occupied_lanes = obstacle->getOccupiedLanes(world->getRoadNetwork(), time_step);
+        auto occupied_lanes = obstacle->getOccupiedLanesDrivingDirection(world->getRoadNetwork(), time_step);
         for (const auto &lane : occupied_lanes) {
             auto lane_lanelet_ids = lane->getContainedLaneletIDs();
             lanelet_ids.insert(lane_lanelet_ids.begin(), lane_lanelet_ids.end());

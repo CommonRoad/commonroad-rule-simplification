@@ -1,6 +1,5 @@
 #pragma once
 
-#include "cr_knowledge_extraction/ego_behavior/behavior_overapproximation.hpp"
 #include "cr_knowledge_extraction/kleene/kleene_extractor.hpp"
 
 namespace knowledge_extraction::kleene::position {

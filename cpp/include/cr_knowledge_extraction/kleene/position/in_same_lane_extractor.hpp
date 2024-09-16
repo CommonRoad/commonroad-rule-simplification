@@ -3,13 +3,10 @@
 #include "cr_knowledge_extraction/kleene/kleene_extractor.hpp"
 
 namespace knowledge_extraction::kleene::position {
-class OnMainCarriagewayRightLaneExtractor : public KleeneExtractor {
-  private:
-    static bool is_mcw_right_lane_lanelet(const std::shared_ptr<Lanelet> &lanelet);
-
+class InSameLaneExtractor : public KleeneExtractor {
   public:
-    OnMainCarriagewayRightLaneExtractor(std::shared_ptr<knowledge_extraction::env_model::EnvironmentModel> env_model)
-        : KleeneExtractor(std::move(env_model), Proposition::ON_MAIN_CARRIAGEWAY_RIGHT_LANE) {}
+    InSameLaneExtractor(std::shared_ptr<knowledge_extraction::env_model::EnvironmentModel> env_model)
+        : KleeneExtractor(std::move(env_model), Proposition::IN_SAME_LANE) {}
 
     std::unordered_map<time_step_t, TrueFalseObstacleIds>
     extract(const std::unordered_map<time_step_t, std::unordered_set<std::optional<size_t>>>
