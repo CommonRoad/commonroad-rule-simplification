@@ -18,7 +18,7 @@ class EgoIndependentExtractor : public KleeneExtractor {
      * @return True iff the inner predicate is satisfied.
      * @throw std::logic_error If the obstacle does not exist in the world.
      */
-    bool evaluate_inner(time_step_t step, const std::shared_ptr<Obstacle> &obstacle) const;
+    std::optional<bool> evaluate_inner(time_step_t step, const std::shared_ptr<Obstacle> &obstacle) const;
 
   public:
     EgoIndependentExtractor(std::shared_ptr<knowledge_extraction::env_model::EnvironmentModel> env_model,

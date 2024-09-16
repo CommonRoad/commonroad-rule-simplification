@@ -1,6 +1,7 @@
 #include "cr_knowledge_extraction/kleene/ego_independent/ego_independent_extractor.hpp"
 
 #include <commonroad_cpp/obstacle/obstacle.h>
+#include <spdlog/spdlog.h>
 
 using namespace knowledge_extraction::kleene::ego_independent;
 
@@ -14,16 +15,25 @@ std::unordered_map<time_step_t, EgoIndependentExtractor::TrueFalseObstacleIds> E
             if (!obstacle_ids.contains(obstacle_id)) {
                 continue;
             }
-            if (evaluate_inner(time_step, obstacle)) {
-                true_false_obstacle_ids[time_step].first.insert(obstacle_id);
-            } else {
-                true_false_obstacle_ids[time_step].second.insert(obstacle_id);
+            auto inner_result = evaluate_inner(time_step, obstacle);
+            if (inner_result.has_value()) {
+                if (inner_result.value()) {
+                    true_false_obstacle_ids[time_step].first.insert(obstacle_id);
+                } else {
+                    true_false_obstacle_ids[time_step].second.insert(obstacle_id);
+                }
             }
         }
     }
     return true_false_obstacle_ids;
 }
 
-bool EgoIndependentExtractor::evaluate_inner(time_step_t step, const std::shared_ptr<Obstacle> &obstacle) const {
-    return inner_predicate->booleanEvaluation(step, env_model->get_world(), obstacle, nullptr, additional_params);
+std::optional<bool> EgoIndependentExtractor::evaluate_inner(time_step_t step,
+                                                            const std::shared_ptr<Obstacle> &obstacle) const {
+    try {
+        return inner_predicate->booleanEvaluation(step, env_model->get_world(), obstacle, nullptr, additional_params);
+    } catch (std::exception &e) {
+        spdlog::warn("Evaluation of CommonRoad predicate failed: {}", e.what());
+        return std::nullopt;
+    }
 }
