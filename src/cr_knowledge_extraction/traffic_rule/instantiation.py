@@ -2,6 +2,8 @@ import math
 import warnings
 from typing import List, Optional, Set
 
+import numpy as np
+from commonroad.planning.planning_problem import PlanningProblem
 from commonroad.scenario.scenario import Scenario
 from mltl_simplification import Formula
 
@@ -10,15 +12,27 @@ from cr_knowledge_extraction.traffic_rule.R_I5 import EnteringVehiclesRule
 
 
 class TrafficRuleInstantiator:
+    fov_radius: float
+
     t_c: float
 
-    def __init__(self, t_c: float = 3.0):
+    def __init__(self, fov_radius: float = 200, t_c: float = 3.0):
+        self.fov_radius = fov_radius
+
         self.t_c = t_c
 
     def instantiate(
-        self, rules: List[str], scenario: Scenario, start: int = 0, end: Optional[int] = None
+        self, rules: List[str], scenario: Scenario, planning_problem: PlanningProblem, time_steps: Optional[int] = None
     ) -> List[Formula]:
-        obstacle_ids = {obs.obstacle_id for obs in scenario.obstacles}
+        initial_position = planning_problem.initial_state.position
+        start = planning_problem.initial_state.time_step
+        end = start + time_steps if time_steps is not None else None
+        obstacle_ids = {
+            obs.obstacle_id
+            for obs in scenario.obstacles
+            if obs.state_at_time(start) is not None
+            and np.linalg.norm(obs.state_at_time(start).position - initial_position) <= self.fov_radius
+        }
         dt = scenario.dt
         return [self._instantiate_one(rule, obstacle_ids, dt, start, end) for rule in rules]
 
