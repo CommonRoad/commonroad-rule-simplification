@@ -14,12 +14,13 @@ from cr_knowledge_extraction.traffic_rule.instantiation import TrafficRuleInstan
 
 def main():
     # scenario_path = "scenarios/DEU_LocationALower-11_4_T-1.xml"
-    scenario_path = "cpp/tests/scenarios/interstate_simple.xml"
+    # scenario_path = "cpp/tests/scenarios/interstate_simple.xml"
+    scenario_path = "scenarios/DEU_MerzenichRather-2_8814400_T-14549.xml"
     scenario, planning_problems = CommonRoadFileReader(scenario_path).open()
     planning_problem = list(planning_problems.planning_problem_dict.values())[0]
-    # dt = 0.08
-    dt = 0.2
-    planning_horizon = 15
+    dt = 0.08
+    # dt = 0.2
+    planning_horizon = 30
     planning_problem.initial_state.time_step = int(planning_problem.initial_state.time_step // (dt / scenario.dt))
 
     # configure ego parameters
@@ -41,8 +42,9 @@ def main():
     #     """
     # )
     formula = simp.Formula.conjunction(
-        TrafficRuleInstantiator().instantiate(["R_G1", "R_I5"], scenario, end=planning_horizon)
+        TrafficRuleInstantiator().instantiate(["R_G1", "R_I5"], scenario, planning_problem, time_steps=planning_horizon)
     )
+    print(formula)
 
     tic = time.perf_counter()
     extractor = ExtractionInterface(scenario_path, dt, ego_params, ccs)
@@ -57,8 +59,8 @@ def main():
     # multi pass augmentation
     extractor = ExtractionInterface(scenario_path, dt, ego_params, ccs)  # re-init to make comparison fair
     print("Multi pass")
-    augmented = extract_and_augment(extractor, formula, 15, extraction_mode=1)
-    augmented = extract_and_augment(extractor, augmented, 15, extraction_mode=2)
+    augmented = extract_and_augment(extractor, formula, planning_horizon, extraction_mode=1)
+    augmented = extract_and_augment(extractor, augmented, planning_horizon, extraction_mode=2)
     print(augmented)
 
     print([format_formula_for_reach(f) for f in formula.split_at_top_level_conjunction()])
