@@ -1,4 +1,4 @@
-from typing import Optional, Set
+from typing import List, Optional, Set
 
 from mltl_simplification import Formula
 
@@ -46,8 +46,8 @@ class SafeDistanceRule(TrafficRule):
     def __init__(self, t_c: int):
         self.t_c = t_c
 
-    def instantiate(self, obstacle_ids: Set[int], start: int = 0, end: Optional[int] = None) -> Formula:
-        return Formula.conjunction([self.instantiate_once(obstacle_id, start, end) for obstacle_id in obstacle_ids])
+    def instantiate(self, obstacle_ids: Set[int], start: int = 0, end: Optional[int] = None) -> List[Formula]:
+        return [self.instantiate_once(obstacle_id, start, end) for obstacle_id in obstacle_ids]
 
     def instantiate_once(self, obstacle_id: int, start: int = 0, end: Optional[int] = None) -> Formula:
         obstacle_id = str(obstacle_id)

@@ -1,4 +1,4 @@
-from typing import Optional, Set
+from typing import List, Optional, Set
 
 from mltl_simplification import Formula
 
@@ -18,8 +18,8 @@ class EnteringVehiclesRule(TrafficRule):
     )
     """
 
-    def instantiate(self, obstacle_ids: Set[int], start: int = 0, end: Optional[int] = None) -> Formula:
-        return Formula.conjunction([self.instantiate_once(obstacle_id, start, end) for obstacle_id in obstacle_ids])
+    def instantiate(self, obstacle_ids: Set[int], start: int = 0, end: Optional[int] = None) -> List[Formula]:
+        return [self.instantiate_once(obstacle_id, start, end) for obstacle_id in obstacle_ids]
 
     @staticmethod
     def instantiate_once(obstacle_id: int, start: int = 0, end: Optional[int] = None) -> Formula:

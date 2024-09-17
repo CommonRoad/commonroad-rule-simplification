@@ -23,7 +23,7 @@ class TrafficRuleInstantiator:
 
     def instantiate(
         self, rules: List[str], scenario: Scenario, planning_problem: PlanningProblem, time_steps: Optional[int] = None
-    ) -> List[Formula]:
+    ) -> List[List[Formula]]:
         initial_position = planning_problem.initial_state.position
         start = planning_problem.initial_state.time_step
         end = start + time_steps if time_steps is not None else None
@@ -36,7 +36,9 @@ class TrafficRuleInstantiator:
         dt = scenario.dt
         return [self._instantiate_one(rule, obstacle_ids, dt, start, end) for rule in rules]
 
-    def _instantiate_one(self, rule: str, obstacle_ids: Set[int], dt: float, start: int, end: Optional[int]) -> Formula:
+    def _instantiate_one(
+        self, rule: str, obstacle_ids: Set[int], dt: float, start: int, end: Optional[int]
+    ) -> List[Formula]:
         match rule:
             case "R_G1" | "SafeDistanceRule":
                 t_c_time_steps = math.floor(self.t_c / dt)
@@ -46,6 +48,6 @@ class TrafficRuleInstantiator:
             case "R_I5" | "EnteringVehiclesRule":
                 return EnteringVehiclesRule().instantiate(obstacle_ids, start, end)
             case _ if rule.startswith("LTL "):
-                return Formula(rule.removeprefix("LTL "))
+                return [Formula(rule.removeprefix("LTL "))]
             case _:
                 raise ValueError(f"Unknown rule: {rule}")

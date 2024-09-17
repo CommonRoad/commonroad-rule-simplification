@@ -19,6 +19,7 @@ dependencies = [
     "commonroad-drivability-checker>=2024.1",
     "commonroad-route-planner>=2024.1, <2024.2",
     "numpy>=1.22.0, <2.0",
+    "more-itertools~=10.5.0",
 ]
 
 classifiers = [
