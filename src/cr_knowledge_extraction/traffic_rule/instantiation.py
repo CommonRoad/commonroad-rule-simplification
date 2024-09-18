@@ -1,6 +1,6 @@
 import math
 import warnings
-from typing import List, Optional, Set
+from typing import Dict, List, Optional, Set
 
 import numpy as np
 from commonroad.planning.planning_problem import PlanningProblem
@@ -23,7 +23,7 @@ class TrafficRuleInstantiator:
 
     def instantiate(
         self, rules: List[str], scenario: Scenario, planning_problem: PlanningProblem, time_steps: Optional[int] = None
-    ) -> List[List[Formula]]:
+    ) -> Dict[str, List[Formula]]:
         initial_position = planning_problem.initial_state.position
         start = planning_problem.initial_state.time_step
         end = start + time_steps if time_steps is not None else None
@@ -34,7 +34,7 @@ class TrafficRuleInstantiator:
             and np.linalg.norm(obs.state_at_time(start).position - initial_position) <= self.fov_radius
         }
         dt = scenario.dt
-        return [self._instantiate_one(rule, obstacle_ids, dt, start, end) for rule in rules]
+        return {rule: self._instantiate_one(rule, obstacle_ids, dt, start, end) for rule in rules}
 
     def _instantiate_one(
         self, rule: str, obstacle_ids: Set[int], dt: float, start: int, end: Optional[int]

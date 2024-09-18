@@ -45,9 +45,9 @@ def main():
     # )
     formulas = list(
         more_itertools.flatten(
-            TrafficRuleInstantiator().instantiate(
-                ["R_G1", "R_I5"], scenario, planning_problem, time_steps=planning_horizon
-            )
+            TrafficRuleInstantiator()
+            .instantiate(["R_G1", "R_I5"], scenario, planning_problem, time_steps=planning_horizon)
+            .values()
         )
     )
     print(simp.Formula.conjunction(formulas))
