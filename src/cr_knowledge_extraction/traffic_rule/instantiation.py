@@ -1,9 +1,10 @@
 import math
 import warnings
-from typing import Dict, List, Optional, Set
+from typing import Callable, Dict, List, Optional, Set
 
 import numpy as np
 from commonroad.planning.planning_problem import PlanningProblem
+from commonroad.scenario.obstacle import Obstacle
 from commonroad.scenario.scenario import Scenario
 from mltl_simplification import Formula
 
@@ -22,7 +23,12 @@ class TrafficRuleInstantiator:
         self.t_c = t_c
 
     def instantiate(
-        self, rules: List[str], scenario: Scenario, planning_problem: PlanningProblem, time_steps: Optional[int] = None
+        self,
+        rules: List[str],
+        scenario: Scenario,
+        planning_problem: PlanningProblem,
+        time_steps: Optional[int] = None,
+        consider_obstacle: Callable[[Obstacle], bool] = lambda obs: True,
     ) -> Dict[str, List[Formula]]:
         initial_position = planning_problem.initial_state.position
         start = planning_problem.initial_state.time_step
@@ -32,6 +38,7 @@ class TrafficRuleInstantiator:
             for obs in scenario.obstacles
             if obs.state_at_time(start) is not None
             and np.linalg.norm(obs.state_at_time(start).position - initial_position) <= self.fov_radius
+            and consider_obstacle(obs)
         }
         dt = scenario.dt
         return {rule: self._instantiate_one(rule, obstacle_ids, dt, start, end) for rule in rules}
