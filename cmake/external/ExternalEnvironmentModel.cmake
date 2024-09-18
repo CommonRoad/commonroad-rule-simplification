@@ -6,7 +6,7 @@ set(EXTERNAL_CRDC_FORCE ON)
 FetchContent_Declare(
         EnvironmentModel
         GIT_REPOSITORY git@gitlab.lrz.de:cps/commonroad/environment-model.git
-        GIT_TAG d3f77b5f75e9c3febf9ba0989e1afe4162f920c0
+        GIT_TAG ef1efc16f50c3f49a12456a516e5914617bf93e1
         #    URL /home/lercher/tum/commonroad/environment-model
 )
 
