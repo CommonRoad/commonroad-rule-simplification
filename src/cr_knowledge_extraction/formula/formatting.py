@@ -20,7 +20,7 @@ def format_formula_for_reach(formula: Formula) -> str:
         else:
             return name
 
-    return formula.format_as_string(format_literal_reach)
+    return formula.remove_timed_until().format_as_string(format_literal_reach)
 
 
 def format_formula_for_monitor(formula: Formula) -> str:
@@ -30,4 +30,4 @@ def format_formula_for_monitor(formula: Formula) -> str:
         else:
             return name
 
-    return formula.format_as_string(format_literal_monitor)
+    return formula.remove_delayed_until().format_as_string(format_literal_monitor)
