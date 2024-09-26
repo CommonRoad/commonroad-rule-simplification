@@ -4,14 +4,24 @@
 
 #include "cr_knowledge_extraction/extraction_interface.hpp"
 
-#include <pybind11/stl.h>
+#include <nanobind/eigen/dense.h>
+#include <nanobind/stl/optional.h>
+#include <nanobind/stl/pair.h>
+#include <nanobind/stl/shared_ptr.h>
+#include <nanobind/stl/string.h>
+#include <nanobind/stl/tuple.h>
+#include <nanobind/stl/unordered_map.h>
+#include <nanobind/stl/vector.h>
 
 using knowledge_extraction::Proposition;
 using knowledge_extraction::ego_behavior::EgoParameters;
 
-PYBIND11_MODULE(cr_knowledge_extraction_core, module) {
+namespace nb = nanobind;
+using namespace nb::literals;
+
+NB_MODULE(cr_knowledge_extraction_core, module) {
     // Import the Python bindings of the curvilinear coordinate system to ensure that the necessary types are bound
-    py::module_::import("commonroad_dc.pycrccosy");
+    nb::module_::import_("commonroad_dc.pycrccosy");
 
     module.doc() = "C++ extension for commonroad-knowledge-extraction.";
 
@@ -21,136 +31,142 @@ PYBIND11_MODULE(cr_knowledge_extraction_core, module) {
     export_extraction_interface(module);
 }
 
-void export_extraction_result(py::module &module) {
-    py::class_<knowledge_extraction::ExtractionResult>(module, "ExtractionResult")
-        .def_readonly("positive_propositions", &knowledge_extraction::ExtractionResult::positive_propositions)
-        .def_readonly("negative_propositions", &knowledge_extraction::ExtractionResult::negative_propositions)
-        .def_readonly("implications", &knowledge_extraction::ExtractionResult::implications)
-        .def_readonly("equivalences", &knowledge_extraction::ExtractionResult::equivalences);
+void export_extraction_result(nb::module_ &module) {
+    nb::class_<knowledge_extraction::ExtractionResult>(module, "ExtractionResult")
+        .def_ro("positive_propositions", &knowledge_extraction::ExtractionResult::positive_propositions)
+        .def_ro("negative_propositions", &knowledge_extraction::ExtractionResult::negative_propositions)
+        .def_ro("implications", &knowledge_extraction::ExtractionResult::implications)
+        .def_ro("equivalences", &knowledge_extraction::ExtractionResult::equivalences);
 }
 
-void export_extraction_interface(py::module &module) {
-    py::class_<knowledge_extraction::ExtractionInterface>(module, "ExtractionInterface")
-        .def(py::init([](const std::string &scenario_path, double dt, const EgoParameters &ego_params,
-                         const std::shared_ptr<geometry::CurvilinearCoordinateSystem> &ego_ccs) {
-                 auto world = pybind_helper::open_world(scenario_path, dt);
-                 return knowledge_extraction::ExtractionInterface{std::move(world), ego_ccs, ego_params};
-             }),
-             py::arg("scenario_path"), py::arg("dt"), py::arg("ego_params"), py::arg("ego_ccs"))
+void export_extraction_interface(nb::module_ &module) {
+    nb::class_<knowledge_extraction::ExtractionInterface>(module, "ExtractionInterface")
+        .def(
+            "__init__",
+            [](knowledge_extraction::ExtractionInterface *self, const std::string &scenario_path, double dt,
+               const EgoParameters &ego_params, const geometry::EigenPolyline &reference_path) {
+                auto world = pybind_helper::open_world(scenario_path, dt);
+                auto ego_ccs = std::make_shared<geometry::CurvilinearCoordinateSystem>(reference_path);
+                new (self) knowledge_extraction::ExtractionInterface(std::move(world), ego_ccs, ego_params);
+            },
+            "scenario_path"_a, "dt"_a, "ego_params"_a, "reference_path"_a)
         .def("extract_all", &knowledge_extraction::ExtractionInterface::extract_all)
         .def("extract_all_but_implications", &knowledge_extraction::ExtractionInterface::extract_all_but_implications)
-        .def("extract_kleene", py::overload_cast<const std::unordered_map<time_step_t, std::vector<std::string>> &>(
+        .def("extract_kleene", nb::overload_cast<const std::unordered_map<time_step_t, std::vector<std::string>> &>(
                                    &knowledge_extraction::ExtractionInterface::extract_kleene))
         .def("extract_relationships",
-             py::overload_cast<const std::unordered_map<time_step_t, std::vector<std::string>> &>(
+             nb::overload_cast<const std::unordered_map<time_step_t, std::vector<std::string>> &>(
                  &knowledge_extraction::ExtractionInterface::extract_relationships))
         .def("extract_equivalences", &knowledge_extraction::ExtractionInterface::extract_equivalences)
         .def("extract_implications", &knowledge_extraction::ExtractionInterface::extract_implications);
 }
 
-void export_propositions(py::module &module) {
-    auto prop =
-        py::enum_<Proposition>(module, "Proposition")
-            .value("IN_SAME_LANE", Proposition::IN_SAME_LANE)
-            .value("KEEPS_SAFE_DISTANCE_PREC", Proposition::KEEPS_SAFE_DISTANCE_PREC)
-            .value("IN_FRONT_OF", Proposition::IN_FRONT_OF)
-            .value("ON_MAIN_CARRIAGEWAY", Proposition::ON_MAIN_CARRIAGEWAY)
-            .value("ON_MAIN_CARRIAGEWAY_RIGHT_LANE", Proposition::ON_MAIN_CARRIAGEWAY_RIGHT_LANE)
-            .value("OTHER_ON_ACCESS_RAMP", Proposition::OTHER_ON_ACCESS_RAMP)
-            .value("OTHER_ON_MAIN_CARRIAGEWAY", Proposition::OTHER_ON_MAIN_CARRIAGEWAY)
-            .def_static("to_string", &knowledge_extraction::proposition::to_string)
-            .def_static("from_string", &knowledge_extraction::proposition::from_string)
-            .def_readonly_static("proposition_to_string", &knowledge_extraction::proposition::proposition_to_string)
-            .def_readonly_static("string_to_proposition", &knowledge_extraction::proposition::string_to_proposition);
+void export_propositions(nb::module_ &module) {
+    auto prop = nb::enum_<Proposition>(module, "Proposition")
+                    .value("IN_SAME_LANE", Proposition::IN_SAME_LANE)
+                    .value("KEEPS_SAFE_DISTANCE_PREC", Proposition::KEEPS_SAFE_DISTANCE_PREC)
+                    .value("IN_FRONT_OF", Proposition::IN_FRONT_OF)
+                    .value("ON_MAIN_CARRIAGEWAY", Proposition::ON_MAIN_CARRIAGEWAY)
+                    .value("ON_MAIN_CARRIAGEWAY_RIGHT_LANE", Proposition::ON_MAIN_CARRIAGEWAY_RIGHT_LANE)
+                    .value("OTHER_ON_ACCESS_RAMP", Proposition::OTHER_ON_ACCESS_RAMP)
+                    .value("OTHER_ON_MAIN_CARRIAGEWAY", Proposition::OTHER_ON_MAIN_CARRIAGEWAY)
+                    .def_static("to_string", &knowledge_extraction::proposition::to_string)
+                    .def_static("from_string", &knowledge_extraction::proposition::from_string)
+                    .def_static("proposition_to_string",
+                                [](const Proposition &prop) {
+                                    return knowledge_extraction::proposition::proposition_to_string.at(prop);
+                                })
+                    .def_static("string_to_proposition", [](const std::string &prop) {
+                        return knowledge_extraction::proposition::string_to_proposition.at(prop);
+                    });
     for (const auto &[prop_enum, prop_string] : knowledge_extraction::proposition::proposition_to_string) {
         prop.def_static(
             prop_string.c_str(),
             [prop_enum](std::optional<size_t> obstacle_id) {
                 return knowledge_extraction::proposition::to_string(prop_enum, obstacle_id);
             },
-            py::arg("obstacle_id") = std::nullopt);
+            "obstacle_id"_a = std::nullopt);
     }
 }
 
-void export_ego_parameters(py::module &module) {
-    py::class_<EgoParameters>(module, "EgoParameters")
-        .def(py::init([](std::optional<double> a_lon_min, std::optional<double> a_lon_max,
-                         std::optional<double> a_lat_min, std::optional<double> a_lat_max,
-                         std::optional<double> v_lon_min, std::optional<double> v_lon_max,
-                         std::optional<double> v_lat_min, std::optional<double> v_lat_max,
-                         std::optional<std::tuple<time_step_t, double, double, double, double, double>> initial_state,
-                         std::optional<double> uncertainty_p_lon, std::optional<double> uncertainty_p_lat,
-                         std::optional<double> uncertainty_v_lon, std::optional<double> uncertainty_v_lat,
-                         std::optional<double> length, std::optional<double> width, std::optional<double> t_react) {
-                 auto params = EgoParameters{};
-                 if (a_lon_min.has_value()) {
-                     params.a_lon_min = a_lon_min.value();
-                 }
-                 if (a_lon_max.has_value()) {
-                     params.a_lon_max = a_lon_max.value();
-                 }
-                 if (a_lat_min.has_value()) {
-                     params.a_lat_min = a_lat_min.value();
-                 }
-                 if (a_lat_max.has_value()) {
-                     params.a_lat_max = a_lat_max.value();
-                 }
-                 if (v_lon_min.has_value()) {
-                     params.v_lon_min = v_lon_min.value();
-                 }
-                 if (v_lon_max.has_value()) {
-                     params.v_lon_max = v_lon_max.value();
-                 }
-                 if (v_lat_min.has_value()) {
-                     params.v_lat_min = v_lat_min.value();
-                 }
-                 if (v_lat_max.has_value()) {
-                     params.v_lat_max = v_lat_max.value();
-                 }
-                 if (initial_state.has_value()) {
-                     auto [time_step, p_x, p_y, v, acc, phi] = initial_state.value();
-                     params.initial_state = State{time_step, p_x, p_y, v, acc, phi};
-                 }
-                 if (uncertainty_p_lon.has_value()) {
-                     params.uncertainty_p_lon = uncertainty_p_lon.value();
-                 }
-                 if (uncertainty_p_lat.has_value()) {
-                     params.uncertainty_p_lat = uncertainty_p_lat.value();
-                 }
-                 if (uncertainty_v_lon.has_value()) {
-                     params.uncertainty_v_lon = uncertainty_v_lon.value();
-                 }
-                 if (uncertainty_v_lat.has_value()) {
-                     params.uncertainty_v_lat = uncertainty_v_lat.value();
-                 }
-                 if (length.has_value()) {
-                     params.length = length.value();
-                 }
-                 if (width.has_value()) {
-                     params.width = width.value();
-                 }
-                 if (t_react.has_value()) {
-                     params.t_react = t_react.value();
-                 }
-                 return params;
-             }),
-             py::arg("a_lon_min") = std::nullopt, py::arg("a_lon_max") = std::nullopt,
-             py::arg("a_lat_min") = std::nullopt, py::arg("a_lat_max") = std::nullopt,
-             py::arg("v_lon_min") = std::nullopt, py::arg("v_lon_max") = std::nullopt,
-             py::arg("v_lat_min") = std::nullopt, py::arg("v_lat_max") = std::nullopt,
-             py::arg("initial_state") = std::nullopt, py::arg("uncertainty_p_lon") = std::nullopt,
-             py::arg("uncertainty_p_lat") = std::nullopt, py::arg("uncertainty_v_lon") = std::nullopt,
-             py::arg("uncertainty_v_lat") = std::nullopt, py::arg("length") = std::nullopt,
-             py::arg("width") = std::nullopt, py::arg("t_react") = std::nullopt)
-        .def_readwrite("a_lon_min", &EgoParameters::a_lon_min)
-        .def_readwrite("a_lon_max", &EgoParameters::a_lon_max)
-        .def_readwrite("a_lat_min", &EgoParameters::a_lat_min)
-        .def_readwrite("a_lat_max", &EgoParameters::a_lat_max)
-        .def_readwrite("v_lon_min", &EgoParameters::v_lon_min)
-        .def_readwrite("v_lon_max", &EgoParameters::v_lon_max)
-        .def_readwrite("v_lat_min", &EgoParameters::v_lat_min)
-        .def_readwrite("v_lat_max", &EgoParameters::v_lat_max)
-        .def_property(
+void export_ego_parameters(nb::module_ &module) {
+    nb::class_<EgoParameters>(module, "EgoParameters")
+        .def(
+            "__init__",
+            [](EgoParameters *self, std::optional<double> a_lon_min, std::optional<double> a_lon_max,
+               std::optional<double> a_lat_min, std::optional<double> a_lat_max, std::optional<double> v_lon_min,
+               std::optional<double> v_lon_max, std::optional<double> v_lat_min, std::optional<double> v_lat_max,
+               std::optional<std::tuple<time_step_t, double, double, double, double, double>> initial_state,
+               std::optional<double> uncertainty_p_lon, std::optional<double> uncertainty_p_lat,
+               std::optional<double> uncertainty_v_lon, std::optional<double> uncertainty_v_lat,
+               std::optional<double> length, std::optional<double> width, std::optional<double> t_react) {
+                auto params = EgoParameters{};
+                if (a_lon_min.has_value()) {
+                    params.a_lon_min = a_lon_min.value();
+                }
+                if (a_lon_max.has_value()) {
+                    params.a_lon_max = a_lon_max.value();
+                }
+                if (a_lat_min.has_value()) {
+                    params.a_lat_min = a_lat_min.value();
+                }
+                if (a_lat_max.has_value()) {
+                    params.a_lat_max = a_lat_max.value();
+                }
+                if (v_lon_min.has_value()) {
+                    params.v_lon_min = v_lon_min.value();
+                }
+                if (v_lon_max.has_value()) {
+                    params.v_lon_max = v_lon_max.value();
+                }
+                if (v_lat_min.has_value()) {
+                    params.v_lat_min = v_lat_min.value();
+                }
+                if (v_lat_max.has_value()) {
+                    params.v_lat_max = v_lat_max.value();
+                }
+                if (initial_state.has_value()) {
+                    auto [time_step, p_x, p_y, v, acc, phi] = initial_state.value();
+                    params.initial_state = State{time_step, p_x, p_y, v, acc, phi};
+                }
+                if (uncertainty_p_lon.has_value()) {
+                    params.uncertainty_p_lon = uncertainty_p_lon.value();
+                }
+                if (uncertainty_p_lat.has_value()) {
+                    params.uncertainty_p_lat = uncertainty_p_lat.value();
+                }
+                if (uncertainty_v_lon.has_value()) {
+                    params.uncertainty_v_lon = uncertainty_v_lon.value();
+                }
+                if (uncertainty_v_lat.has_value()) {
+                    params.uncertainty_v_lat = uncertainty_v_lat.value();
+                }
+                if (length.has_value()) {
+                    params.length = length.value();
+                }
+                if (width.has_value()) {
+                    params.width = width.value();
+                }
+                if (t_react.has_value()) {
+                    params.t_react = t_react.value();
+                }
+                new (self) EgoParameters{params};
+            },
+            "a_lon_min"_a = std::nullopt, "a_lon_max"_a = std::nullopt, "a_lat_min"_a = std::nullopt,
+            "a_lat_max"_a = std::nullopt, "v_lon_min"_a = std::nullopt, "v_lon_max"_a = std::nullopt,
+            "v_lat_min"_a = std::nullopt, "v_lat_max"_a = std::nullopt, "initial_state"_a = std::nullopt,
+            "uncertainty_p_lon"_a = std::nullopt, "uncertainty_p_lat"_a = std::nullopt,
+            "uncertainty_v_lon"_a = std::nullopt, "uncertainty_v_lat"_a = std::nullopt, "length"_a = std::nullopt,
+            "width"_a = std::nullopt, "t_react"_a = std::nullopt)
+        .def_rw("a_lon_min", &EgoParameters::a_lon_min)
+        .def_rw("a_lon_max", &EgoParameters::a_lon_max)
+        .def_rw("a_lat_min", &EgoParameters::a_lat_min)
+        .def_rw("a_lat_max", &EgoParameters::a_lat_max)
+        .def_rw("v_lon_min", &EgoParameters::v_lon_min)
+        .def_rw("v_lon_max", &EgoParameters::v_lon_max)
+        .def_rw("v_lat_min", &EgoParameters::v_lat_min)
+        .def_rw("v_lat_max", &EgoParameters::v_lat_max)
+        .def_prop_rw(
             "initial_state",
             [](const EgoParameters &params) {
                 const auto &initial_state = params.initial_state;
@@ -162,11 +178,11 @@ void export_ego_parameters(py::module &module) {
                 auto [time_step, p_x, p_y, v, acc, phi] = state;
                 params.initial_state = State{time_step, p_x, p_y, v, acc, phi};
             })
-        .def_readwrite("uncertainty_p_lon", &EgoParameters::uncertainty_p_lon)
-        .def_readwrite("uncertainty_p_lat", &EgoParameters::uncertainty_p_lat)
-        .def_readwrite("uncertainty_v_lon", &EgoParameters::uncertainty_v_lon)
-        .def_readwrite("uncertainty_v_lat", &EgoParameters::uncertainty_v_lat)
-        .def_readwrite("length", &EgoParameters::length)
-        .def_readwrite("width", &EgoParameters::width)
-        .def_readwrite("t_react", &EgoParameters::t_react);
+        .def_rw("uncertainty_p_lon", &EgoParameters::uncertainty_p_lon)
+        .def_rw("uncertainty_p_lat", &EgoParameters::uncertainty_p_lat)
+        .def_rw("uncertainty_v_lon", &EgoParameters::uncertainty_v_lon)
+        .def_rw("uncertainty_v_lat", &EgoParameters::uncertainty_v_lat)
+        .def_rw("length", &EgoParameters::length)
+        .def_rw("width", &EgoParameters::width)
+        .def_rw("t_react", &EgoParameters::t_react);
 }

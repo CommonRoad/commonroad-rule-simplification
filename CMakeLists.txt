@@ -63,23 +63,15 @@ endif ()
 # IMPORTANT: DO NOT MOVE this section, in particular the calls to find_package(Python)
 # and find_package(pybind11), without careful consideration
 if (SKBUILD)
-    # Scikit-Build does not add your site-packages to the search path
-    # automatically, so we need to add it _or_ the pybind11 specific directory
-    # here.
-    execute_process(
-            COMMAND "${PYTHON_EXECUTABLE}" -c
-            "import pybind11; print(pybind11.get_cmake_dir())"
-            OUTPUT_VARIABLE _tmp_dir
-            OUTPUT_STRIP_TRAILING_WHITESPACE)
-    list(APPEND CMAKE_PREFIX_PATH "${_tmp_dir}")
+    find_package(Python 3.8 COMPONENTS Interpreter Development.Module REQUIRED)
 
-    set(Python_FIND_VIRTUALENV FIRST)
-
-    set(PYBIND11_FINDPYTHON ON)
-    find_package(Python 3.7 REQUIRED COMPONENTS Development.Module Interpreter)
-
-    # Now we can find pybind11
-    find_package(pybind11 2.7.0 CONFIG REQUIRED)
+    if (NOT NB_DIR)
+        execute_process(
+                COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
+                OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE NB_DIR)
+    endif ()
+    list(APPEND CMAKE_PREFIX_PATH "${NB_DIR}")
+    find_package(nanobind CONFIG REQUIRED)
 
     # SKBUILD_SELF_CONTAINED controls whether we try to build all dependencies
     # ourselves. This is used in order to build cross-platform wheels
@@ -247,9 +239,9 @@ else ()
     include(ExternalGoogleTest)
 endif ()
 
-# Include pybind if we are not invoked by pip/setup.py
+# Include nanobind if we are not invoked by pip/setup.py
 if (NOT SKBUILD)
-    include(ExternalPybind)
+    include(ExternalNanobind)
 endif ()
 
 include(ExternalDrivabilityChecker)

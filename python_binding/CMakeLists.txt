@@ -15,42 +15,52 @@ if (SKBUILD)
     endif ()
 endif ()
 
-# add pybind module
-if (SKBUILD)
-    find_package(pybind11 2.7.0 QUIET)
-    message(STATUS "The project is built using scikit-build")
-else ()
+if (NOT SKBUILD)
+    find_package(Python 3.8 COMPONENTS Interpreter Development.Module REQUIRED)
     message(STATUS "Adding Python interface for compilation only")
 endif ()
 
-add_library(cr_knowledge_extraction_python OBJECT
+set(python_module_name cr_knowledge_extraction_core)
+nanobind_add_module(${python_module_name} MODULE
         pybind.hpp
         pybind.cpp
 
         helper/world.hpp
         helper/world.cpp
 )
-target_link_libraries(cr_knowledge_extraction_python PRIVATE cr_knowledge_extraction pybind11::module)
-set_property(TARGET cr_knowledge_extraction_python PROPERTY POSITION_INDEPENDENT_CODE ON)
 
-if (SKBUILD)
-    set(python_module_name cr_knowledge_extraction_core)
-    pybind11_add_module(${python_module_name} MODULE $<TARGET_OBJECTS:cr_knowledge_extraction_python>)
+target_precompile_headers(nanobind-static
+        PUBLIC
+        <nanobind/nanobind.h>
+)
 
-    target_link_libraries(${python_module_name} PRIVATE cr_knowledge_extraction)
+nanobind_add_stub(
+        ${python_module_name}_stub
+        MODULE ${python_module_name}
+        OUTPUT ${python_module_name}.pyi
+        PYTHON_PATH $<TARGET_FILE_DIR:${python_module_name}>
+        DEPENDS ${python_module_name}
+        MARKER_FILE py.typed
+        VERBOSE
+)
 
-    install(TARGETS ${python_module_name}
-            LIBRARY DESTINATION cr_knowledge_extraction
-            COMPONENT ${python_module_name}
-    )
+install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/${python_module_name}.pyi
+        ${CMAKE_CURRENT_BINARY_DIR}/py.typed
+        DESTINATION cr_knowledge_extraction
+        COMPONENT PythonModules
+)
 
-    add_custom_target(install-python-modules-${python_module_name}
-            ${CMAKE_COMMAND}
-            -DCMAKE_INSTALL_COMPONENT=${python_module_name}
-            -P "${PROJECT_BINARY_DIR}/cmake_install.cmake"
-            DEPENDS ${python_module_name}
-    )
+target_link_libraries(${python_module_name} PRIVATE cr_knowledge_extraction)
 
-    # include(utils/CheckRuntimeDependencies)
-    # check_python_runtime_dependencies(${python_module_name})
-endif (SKBUILD)
+install(TARGETS ${python_module_name}
+        LIBRARY DESTINATION cr_knowledge_extraction
+        COMPONENT ${python_module_name}
+)
+
+add_custom_target(install-python-modules-${python_module_name}
+        ${CMAKE_COMMAND}
+        -DCMAKE_INSTALL_COMPONENT=${python_module_name}
+        -P "${PROJECT_BINARY_DIR}/cmake_install.cmake"
+        DEPENDS ${python_module_name}
+)

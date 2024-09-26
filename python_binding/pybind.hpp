@@ -1,13 +1,11 @@
 #pragma once
 
-#include <pybind11/pybind11.h>
+#include <nanobind/nanobind.h>
 
-namespace py = pybind11;
+void export_propositions(nanobind::module_ &module);
 
-void export_propositions(py::module &module);
+void export_ego_parameters(nanobind::module_ &module);
 
-void export_ego_parameters(py::module &module);
+void export_extraction_result(nanobind::module_ &module);
 
-void export_extraction_result(py::module &module);
-
-void export_extraction_interface(py::module &module);
+void export_extraction_interface(nanobind::module_ &module);

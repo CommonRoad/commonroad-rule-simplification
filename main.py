@@ -31,7 +31,7 @@ def main():
     # plan route and create clcs
     route = RoutePlanner(scenario, planning_problem).plan_routes().retrieve_first_route()
     reference_path = pycrccosy.Util.resample_polyline(route.reference_path, 2.0)
-    ccs = pycrccosy.CurvilinearCoordinateSystem(reference_path)
+    # ccs = pycrccosy.CurvilinearCoordinateSystem(reference_path)
 
     # specify formula
     # formula = simp.Formula("(G InFrontOf(10) & InSameLane(10)) & (G InFrontOf(12) & InSameLane(12))")
@@ -53,7 +53,7 @@ def main():
     print(simp.Formula.conjunction(formulas))
 
     tic = time.perf_counter()
-    extractor = ExtractionInterface(scenario_path, dt, ego_params, ccs)
+    extractor = ExtractionInterface(scenario_path, dt, ego_params, reference_path)
     toc = time.perf_counter()
     print(f"Extractor initialization time: {toc - tic} seconds")
 
@@ -63,7 +63,7 @@ def main():
     print(simp.Formula.conjunction(augmented))
 
     # multi pass augmentation
-    extractor = ExtractionInterface(scenario_path, dt, ego_params, ccs)  # re-init to make comparison fair
+    extractor = ExtractionInterface(scenario_path, dt, ego_params, reference_path)  # re-init to make comparison fair
     print("Multi pass")
     augmented = extract_and_augment(extractor, formulas, planning_horizon, extraction_mode=1)
     augmented = extract_and_augment(extractor, augmented, planning_horizon, extraction_mode=2)
