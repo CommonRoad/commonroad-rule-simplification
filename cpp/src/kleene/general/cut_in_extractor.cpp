@@ -1,6 +1,7 @@
 #include "cr_knowledge_extraction/kleene/general/cut_in_extractor.hpp"
 
 #include <commonroad_cpp/obstacle/obstacle.h>
+#include <commonroad_cpp/predicates/lane/in_single_lane_predicate.h>
 
 #include <ranges>
 
@@ -10,6 +11,7 @@ std::unordered_map<time_step_t, CutInExtractor::TrueFalseObstacleIds> CutInExtra
     const std::unordered_map<time_step_t, std::unordered_set<std::optional<size_t>>> &relevant_obstacle_ids_over_time)
     const {
     std::unordered_map<time_step_t, TrueFalseObstacleIds> true_false_obstacle_ids;
+    auto in_single_lane = InSingleLanePredicate{};
     for (const auto &[time_step, obstacle_ids] : relevant_obstacle_ids_over_time) {
         for (const auto &obstacle : env_model->get_world()->getObstacles()) {
             if (!obstacle_ids.contains(obstacle->getId())) {
@@ -17,15 +19,14 @@ std::unordered_map<time_step_t, CutInExtractor::TrueFalseObstacleIds> CutInExtra
             }
 
             // Is obstacle in more than one lane?
-            size_t cnt_occupied_lanes;
+            bool is_in_single_lane;
             try {
-                cnt_occupied_lanes =
-                    obstacle->getOccupiedLanes(env_model->get_world()->getRoadNetwork(), time_step).size();
+                is_in_single_lane = in_single_lane.booleanEvaluation(time_step, env_model->get_world(), obstacle);
             } catch (const std::logic_error &e) {
                 // If the time step does not exist, we don't extract any knowledge
                 continue;
             }
-            if (cnt_occupied_lanes <= 1) {
+            if (is_in_single_lane) {
                 // There cannot be a cut in, if the obstacle only occupies a single lane
                 true_false_obstacle_ids[time_step].second.emplace(obstacle->getId());
                 continue;
