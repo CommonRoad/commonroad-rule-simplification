@@ -1,6 +1,7 @@
 import time
 from typing import Dict, Tuple
 
+import crcpp
 import mltl_simplification as simp
 import more_itertools
 from commonroad.common.file_reader import CommonRoadFileReader
@@ -24,6 +25,7 @@ def main():
     # dt = 0.2
     planning_horizon = 30
     planning_problem.initial_state.time_step = int(planning_problem.initial_state.time_step // (dt / scenario.dt))
+    world = crcpp.World(scenario)
 
     # configure ego parameters
     ego_params = EgoParameters(initial_state=initialize_from_planning_problem(planning_problem))
@@ -53,7 +55,7 @@ def main():
     print(simp.Formula.conjunction(formulas))
 
     tic = time.perf_counter()
-    extractor = ExtractionInterface(scenario_path, dt, ego_params, reference_path)
+    extractor = ExtractionInterface(world, ego_params, reference_path)
     toc = time.perf_counter()
     print(f"Extractor initialization time: {toc - tic} seconds")
 
@@ -63,7 +65,7 @@ def main():
     print(simp.Formula.conjunction(augmented))
 
     # multi pass augmentation
-    extractor = ExtractionInterface(scenario_path, dt, ego_params, reference_path)  # re-init to make comparison fair
+    extractor = ExtractionInterface(world, ego_params, reference_path)  # re-init to make comparison fair
     print("Multi pass")
     augmented = extract_and_augment(extractor, formulas, planning_horizon, extraction_mode=1)
     augmented = extract_and_augment(extractor, augmented, planning_horizon, extraction_mode=2)

@@ -1,7 +1,5 @@
 #include "pybind.hpp"
 
-#include "helper/world.hpp"
-
 #include "cr_knowledge_extraction/extraction_interface.hpp"
 
 #include <nanobind/eigen/dense.h>
@@ -43,13 +41,13 @@ void export_extraction_interface(nb::module_ &module) {
     nb::class_<knowledge_extraction::ExtractionInterface>(module, "ExtractionInterface")
         .def(
             "__init__",
-            [](knowledge_extraction::ExtractionInterface *self, const std::string &scenario_path, double dt,
-               const EgoParameters &ego_params, const geometry::EigenPolyline &reference_path) {
-                auto world = pybind_helper::open_world(scenario_path, dt);
+            [](knowledge_extraction::ExtractionInterface *self, World &world, const EgoParameters &ego_params,
+               const geometry::EigenPolyline &reference_path) {
                 auto ego_ccs = std::make_shared<geometry::CurvilinearCoordinateSystem>(reference_path);
-                new (self) knowledge_extraction::ExtractionInterface(std::move(world), ego_ccs, ego_params);
+                new (self)
+                    knowledge_extraction::ExtractionInterface(std::make_shared<World>(world), ego_ccs, ego_params);
             },
-            "scenario_path"_a, "dt"_a, "ego_params"_a, "reference_path"_a)
+            "world"_a, "ego_params"_a, "reference_path"_a)
         .def("extract_all", &knowledge_extraction::ExtractionInterface::extract_all)
         .def("extract_all_but_implications", &knowledge_extraction::ExtractionInterface::extract_all_but_implications)
         .def("extract_kleene", nb::overload_cast<const std::unordered_map<time_step_t, std::vector<std::string>> &>(

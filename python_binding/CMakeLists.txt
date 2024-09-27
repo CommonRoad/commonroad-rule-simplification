@@ -24,9 +24,6 @@ set(python_module_name cr_knowledge_extraction_core)
 nanobind_add_module(${python_module_name} MODULE
         pybind.hpp
         pybind.cpp
-
-        helper/world.hpp
-        helper/world.cpp
 )
 
 target_precompile_headers(nanobind-static
