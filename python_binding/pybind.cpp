@@ -63,6 +63,7 @@ void export_propositions(nb::module_ &module) {
     auto prop = nb::enum_<Proposition>(module, "Proposition")
                     .value("IN_SAME_LANE", Proposition::IN_SAME_LANE)
                     .value("KEEPS_SAFE_DISTANCE_PREC", Proposition::KEEPS_SAFE_DISTANCE_PREC)
+                    .value("CUT_IN", Proposition::CUT_IN)
                     .value("IN_FRONT_OF", Proposition::IN_FRONT_OF)
                     .value("ON_MAIN_CARRIAGEWAY", Proposition::ON_MAIN_CARRIAGEWAY)
                     .value("ON_MAIN_CARRIAGEWAY_RIGHT_LANE", Proposition::ON_MAIN_CARRIAGEWAY_RIGHT_LANE)
