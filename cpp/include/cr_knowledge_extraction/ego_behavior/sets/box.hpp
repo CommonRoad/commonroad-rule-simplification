@@ -28,7 +28,11 @@ template <int N> struct Box {
         auto [other_min, other_max] = other.bounds();
         auto min = own_min.cwiseMax(other_min);
         auto max = own_max.cwiseMin(other_max);
-        return from_bounds(min, max);
+        if ((min.array() <= max.array()).all()) {
+            return from_bounds(min, max);
+        } else {
+            throw std::runtime_error("Intersection leads to empty set, which cannot be represented.");
+        }
     }
 
     Box<N> sum(const Box<N> &other) const { return Box{center + other.center, radius + other.radius}; }
