@@ -25,10 +25,10 @@ std::unordered_map<time_step_t, SafeDistanceExtractor::TrueFalseObstacleIds> Saf
 
         const auto &approximations = env_model->get_ego_approximations();
         auto ego_stopping_s_max = approximations->p_lon_max(time_step) +
-                                  compute_ego_stopping_distance(approximations->v_lon_max(time_step)) +
+                                  compute_ego_stopping_distance(approximations->v_max(time_step)) +
                                   approximations->get_outer_radius();
         auto ego_stopping_s_min = approximations->p_lon_min(time_step) +
-                                  compute_ego_stopping_distance(approximations->v_lon_min(time_step)) +
+                                  compute_ego_stopping_distance(approximations->v_min(time_step)) +
                                   approximations->get_inner_radius();
 
         for (const auto &[obstacle_id, stopping_s] : relevant_obstacle_stopping_s) {

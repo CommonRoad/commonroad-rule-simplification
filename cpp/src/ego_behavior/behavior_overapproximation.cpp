@@ -127,6 +127,27 @@ BehaviorOverapproximation::get_intersected_lanelets(time_step_t time_step) {
     return intersected_lanelets.at(time_step);
 }
 
+std::pair<double, double> BehaviorOverapproximation::get_velocity_approximation(time_step_t time_step) {
+    if (!velocity_approximation.contains(time_step)) {
+        const auto &[min, max] = get_center_approximation(time_step).bounds();
+        auto v_x_max = max(1);
+        auto v_y_max = max(3);
+        auto v_x_min = min(1);
+        auto v_y_min = min(3);
+
+        auto v_max =
+            std::sqrt(std::max(v_x_max * v_x_max, v_x_min * v_x_min) + std::max(v_y_max * v_y_max, v_y_min * v_y_min));
+
+        auto v_x_abs_min = v_x_min >= 0 ? v_x_min : v_x_max <= 0 ? v_x_max : 0;
+        auto v_y_abs_min = v_y_min >= 0 ? v_y_min : v_y_max <= 0 ? v_y_max : 0;
+
+        auto v_min = std::sqrt((v_x_abs_min * v_x_abs_min) + (v_y_abs_min * v_y_abs_min));
+
+        velocity_approximation.emplace(time_step, std::make_pair(v_min, v_max));
+    }
+    return velocity_approximation.at(time_step);
+}
+
 sets::Box2D BehaviorOverapproximation::project_to_positions(const Box4D &state_set) {
     Eigen::Vector2d center = state_set.center({0, 2});
     Eigen::Vector2d radius = state_set.radius({0, 2});

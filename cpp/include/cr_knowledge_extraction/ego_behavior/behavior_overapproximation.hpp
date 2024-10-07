@@ -42,6 +42,8 @@ class BehaviorOverapproximation {
                        std::vector<std::shared_ptr<knowledge_extraction::road_network::CurvilinearLanelet>>>
         intersected_lanelets;
 
+    std::unordered_map<time_step_t, std::pair<double, double>> velocity_approximation;
+
     static sets::Box2D project_to_positions(const sets::Box4D &state_set);
 
   public:
@@ -53,44 +55,48 @@ class BehaviorOverapproximation {
     double get_outer_radius() const { return outer_shape_box.radius(0); }
 
     double p_lon_min(time_step_t time_step) {
-        auto [min, _] = get_center_approximation(time_step).bounds();
+        const auto &[min, _] = get_center_approximation(time_step).bounds();
         return min(0);
     }
 
     double p_lon_max(time_step_t time_step) {
-        auto [_, max] = get_center_approximation(time_step).bounds();
+        const auto &[_, max] = get_center_approximation(time_step).bounds();
         return max(0);
     }
 
     double p_lat_min(time_step_t time_step) {
-        auto [min, _] = get_center_approximation(time_step).bounds();
+        const auto &[min, _] = get_center_approximation(time_step).bounds();
         return min(2);
     }
 
     double p_lat_max(time_step_t time_step) {
-        auto [_, max] = get_center_approximation(time_step).bounds();
+        const auto &[_, max] = get_center_approximation(time_step).bounds();
         return max(2);
     }
 
     double v_lon_min(time_step_t time_step) {
-        auto [min, _] = get_center_approximation(time_step).bounds();
+        const auto &[min, _] = get_center_approximation(time_step).bounds();
         return min(1);
     }
 
     double v_lon_max(time_step_t time_step) {
-        auto [_, max] = get_center_approximation(time_step).bounds();
+        const auto &[_, max] = get_center_approximation(time_step).bounds();
         return max(1);
     }
 
     double v_lat_min(time_step_t time_step) {
-        auto [min, _] = get_center_approximation(time_step).bounds();
+        const auto &[min, _] = get_center_approximation(time_step).bounds();
         return min(3);
     }
 
     double v_lat_max(time_step_t time_step) {
-        auto [_, max] = get_center_approximation(time_step).bounds();
+        const auto &[_, max] = get_center_approximation(time_step).bounds();
         return max(3);
     }
+
+    double v_min(time_step_t time_step) { return get_velocity_approximation(time_step).first; }
+
+    double v_max(time_step_t time_step) { return get_velocity_approximation(time_step).second; }
 
     sets::Box4D get_center_approximation(time_step_t time_step);
 
@@ -101,5 +107,7 @@ class BehaviorOverapproximation {
     sets::Box2D get_occupancy_intersection_approximation(time_step_t time_step);
     const std::vector<std::shared_ptr<knowledge_extraction::road_network::CurvilinearLanelet>> &
     get_intersected_lanelets(time_step_t time_step);
+
+    std::pair<double, double> get_velocity_approximation(time_step_t time_step);
 };
 } // namespace knowledge_extraction::ego_behavior
