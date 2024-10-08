@@ -6,7 +6,7 @@ import numpy as np
 from commonroad.planning.planning_problem import PlanningProblem
 from commonroad.scenario.obstacle import Obstacle
 from commonroad.scenario.scenario import Scenario
-from mltl_simplification import Formula
+from ltl_augmentation import Formula
 
 from cr_knowledge_extraction.traffic_rule.R_G1 import SafeDistanceRule
 from cr_knowledge_extraction.traffic_rule.R_I5 import EnteringVehiclesRule

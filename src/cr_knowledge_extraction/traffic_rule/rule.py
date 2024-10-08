@@ -2,7 +2,7 @@ import abc
 from abc import abstractmethod
 from typing import List, Optional, Set
 
-from mltl_simplification import Formula
+from ltl_augmentation import Formula
 
 
 class TrafficRule(abc.ABC):

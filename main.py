@@ -2,13 +2,13 @@ import time
 from typing import Dict, Tuple
 
 import crcpp
-import mltl_simplification as simp
+import ltl_augmentation as aug
 import more_itertools
 from commonroad.common.file_reader import CommonRoadFileReader
 from commonroad.planning.planning_problem import PlanningProblem
 from commonroad_dc import pycrccosy
 from commonroad_route_planner.route_planner import RoutePlanner
-from mltl_simplification import Formula
+from ltl_augmentation import Formula
 
 from cr_knowledge_extraction import EgoParameters, ExtractionInterface, ExtractionResult
 from cr_knowledge_extraction.formula.formatting import format_formula_for_reach
@@ -36,8 +36,8 @@ def main():
     # ccs = pycrccosy.CurvilinearCoordinateSystem(reference_path)
 
     # specify formula
-    # formula = simp.Formula("(G InFrontOf(10) & InSameLane(10)) & (G InFrontOf(12) & InSameLane(12))")
-    # formula = simp.Formula(
+    # formula = aug.Formula("(G InFrontOf(10) & InSameLane(10)) & (G InFrontOf(12) & InSameLane(12))")
+    # formula = aug.Formula(
     #     """
     #     (G OnMainCarriageway & InFrontOf(103) & OtherOnAccessRamp(103) & (F OtherOnMainCarriageway(103)) ->
     #         !(!OnMainCarriagewayRightLane & F OnMainCarriagewayRightLane)) &
@@ -52,7 +52,7 @@ def main():
             .values()
         )
     )
-    print(simp.Formula.conjunction(formulas))
+    print(aug.Formula.conjunction(formulas))
 
     tic = time.perf_counter()
     extractor = ExtractionInterface(world, ego_params, reference_path)
@@ -62,14 +62,14 @@ def main():
     # single pass augmentation
     print("Single pass")
     augmented = extract_and_augment(extractor, formulas, planning_horizon)
-    print(simp.Formula.conjunction(augmented))
+    print(aug.Formula.conjunction(augmented))
 
     # multi pass augmentation
     extractor = ExtractionInterface(world, ego_params, reference_path)  # re-init to make comparison fair
     print("Multi pass")
     augmented = extract_and_augment(extractor, formulas, planning_horizon, extraction_mode=1)
     augmented = extract_and_augment(extractor, augmented, planning_horizon, extraction_mode=2)
-    print(simp.Formula.conjunction(augmented))
+    print(aug.Formula.conjunction(augmented))
 
     print([format_formula_for_reach(f) for f in formulas])
     print([format_formula_for_reach(f) for f in augmented])
@@ -96,17 +96,17 @@ def extract_and_augment(extractor, formulas, time_steps, verbose=True, extractio
     # augment formula with knowledge
     tic = time.perf_counter()
     knowledge_sequence = convert_to_knowledge_sequence(extracted_knowledge)
-    augmenter = simp.Augmenter(knowledge_sequence)
+    augmenter = aug.Augmenter(knowledge_sequence)
     augmented_formulas = [aug for formula in formulas if not (aug := augmenter.augment(formula)).is_true()]
     toc = time.perf_counter()
     if verbose:
-        print(simp.Formula.conjunction(augmented_formulas))
+        print(aug.Formula.conjunction(augmented_formulas))
     print(f"Augmentation time: {toc - tic} seconds")
 
     return augmented_formulas
 
 
-def convert_to_knowledge_sequence(extracted_knowledge: Dict[int, ExtractionResult]) -> simp.KnowledgeSequence:
+def convert_to_knowledge_sequence(extracted_knowledge: Dict[int, ExtractionResult]) -> aug.KnowledgeSequence:
     knowledge = {
         time_step: (
             result.positive_propositions,
@@ -116,7 +116,7 @@ def convert_to_knowledge_sequence(extracted_knowledge: Dict[int, ExtractionResul
         )
         for time_step, result in extracted_knowledge.items()
     }
-    return simp.KnowledgeSequence(knowledge)
+    return aug.KnowledgeSequence(knowledge)
 
 
 def initialize_from_planning_problem(

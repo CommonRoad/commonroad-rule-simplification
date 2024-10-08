@@ -1,6 +1,6 @@
 from typing import Optional
 
-from mltl_simplification import Formula
+from ltl_augmentation import Formula
 
 from cr_knowledge_extraction.cr_knowledge_extraction_core import Proposition as Prop
 
