@@ -3,10 +3,13 @@
 #include "cr_knowledge_extraction/kleene/braking/safe_distance_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/ego_independent/ego_independent_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/general/cut_in_extractor.hpp"
+#include "cr_knowledge_extraction/kleene/intersection/on_incoming_left_of_extractor.hpp"
+#include "cr_knowledge_extraction/kleene/position/at_traffic_sign_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/position/in_front_of_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/position/in_same_lane_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/position/on_lanelet_with_type_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/position/on_main_carriageway_right_lane_extractor.hpp"
+#include "cr_knowledge_extraction/kleene/position/relevant_traffic_light_extractor.hpp"
 #include "cr_knowledge_extraction/proposition.hpp"
 #include "cr_knowledge_extraction/relationship/equivalence/in_same_lane_equiv_extractor.hpp"
 #include "cr_knowledge_extraction/relationship/implication/in_front_of_impl_extractor.hpp"
@@ -142,6 +145,9 @@ std::optional<std::unique_ptr<kleene::KleeneExtractor>> ExtractionInterface::cre
     case Proposition::ON_MAIN_CARRIAGEWAY:
         return std::make_unique<kleene::position::OnLaneletWithTypeExtractor>(env_model, prop,
                                                                               LaneletType::mainCarriageWay);
+    case Proposition::IN_INTERSECTION:
+        return std::make_unique<kleene::position::OnLaneletWithTypeExtractor>(env_model, prop,
+                                                                              LaneletType::intersection);
     case Proposition::ON_MAIN_CARRIAGEWAY_RIGHT_LANE:
         return std::make_unique<kleene::position::OnMainCarriagewayRightLaneExtractor>(env_model);
     case Proposition::IN_FRONT_OF:
@@ -160,6 +166,12 @@ std::optional<std::unique_ptr<kleene::KleeneExtractor>> ExtractionInterface::cre
         return std::make_unique<kleene::ego_independent::EgoIndependentExtractor>(
             env_model, prop, std::make_unique<OnLaneletWithTypePredicate>(),
             std::vector{lanelet_type_to_string(LaneletType::mainCarriageWay)});
+    case Proposition::RELEVANT_TRAFFIC_LIGHT:
+        return std::make_unique<kleene::position::RelevantTrafficLightExtractor>(env_model);
+    case Proposition::AT_STOP_SIGN:
+        return std::make_unique<kleene::position::AtTrafficSignExtractor>(env_model, prop, TrafficSignTypes::STOP);
+    case Proposition::ON_INCOMING_LEFT_OF:
+        return std::make_unique<kleene::intersection::OnIncomingLeftOfExtractor>(env_model);
     default:
         return std::nullopt;
     }
