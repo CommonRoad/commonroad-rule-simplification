@@ -14,6 +14,13 @@ enum class Proposition {
     ON_MAIN_CARRIAGEWAY_RIGHT_LANE,
     OTHER_ON_ACCESS_RAMP,
     OTHER_ON_MAIN_CARRIAGEWAY,
+    IN_INTERSECTION,
+    AT_STOP_SIGN,
+    STOP_LINE_IN_FRONT,
+    RELEVANT_TRAFFIC_LIGHT,
+    IN_STANDSTILL,
+    ON_INCOMING_LEFT_OF,
+    ON_ONCOMING_OF,
 };
 
 namespace proposition {
@@ -25,6 +32,13 @@ constexpr auto on_main_carriageway = "OnMainCarriageway";
 constexpr auto on_main_carriageway_right_lane = "OnMainCarriagewayRightLane";
 constexpr auto other_on_access_ramp = "OtherOnAccessRamp";
 constexpr auto other_on_main_carriageway = "OtherOnMainCarriageway";
+constexpr auto in_intersection = "InIntersection";
+constexpr auto at_stop_sign = "AtStopSign";
+constexpr auto stop_line_in_front = "StopLineInFront";
+constexpr auto relevant_traffic_light = "RelevantTrafficLight";
+constexpr auto in_standstill = "InStandstill";
+constexpr auto on_incoming_left_of = "OnIncomingLeftOf";
+constexpr auto on_oncoming_of = "OnOncomingOf";
 
 const std::unordered_map<Proposition, std::string> proposition_to_string = {
     {Proposition::IN_SAME_LANE, in_same_lane},
@@ -35,6 +49,13 @@ const std::unordered_map<Proposition, std::string> proposition_to_string = {
     {Proposition::ON_MAIN_CARRIAGEWAY_RIGHT_LANE, on_main_carriageway_right_lane},
     {Proposition::OTHER_ON_ACCESS_RAMP, other_on_access_ramp},
     {Proposition::OTHER_ON_MAIN_CARRIAGEWAY, other_on_main_carriageway},
+    {Proposition::IN_INTERSECTION, in_intersection},
+    {Proposition::AT_STOP_SIGN, at_stop_sign},
+    {Proposition::STOP_LINE_IN_FRONT, stop_line_in_front},
+    {Proposition::RELEVANT_TRAFFIC_LIGHT, relevant_traffic_light},
+    {Proposition::IN_STANDSTILL, in_standstill},
+    {Proposition::ON_INCOMING_LEFT_OF, on_incoming_left_of},
+    {Proposition::ON_ONCOMING_OF, on_oncoming_of},
 };
 
 const std::unordered_map<std::string, Proposition> string_to_proposition = {
@@ -46,6 +67,13 @@ const std::unordered_map<std::string, Proposition> string_to_proposition = {
     {on_main_carriageway_right_lane, Proposition::ON_MAIN_CARRIAGEWAY_RIGHT_LANE},
     {other_on_access_ramp, Proposition::OTHER_ON_ACCESS_RAMP},
     {other_on_main_carriageway, Proposition::OTHER_ON_MAIN_CARRIAGEWAY},
+    {in_intersection, Proposition::IN_INTERSECTION},
+    {at_stop_sign, Proposition::AT_STOP_SIGN},
+    {stop_line_in_front, Proposition::STOP_LINE_IN_FRONT},
+    {relevant_traffic_light, Proposition::RELEVANT_TRAFFIC_LIGHT},
+    {in_standstill, Proposition::IN_STANDSTILL},
+    {on_incoming_left_of, Proposition::ON_INCOMING_LEFT_OF},
+    {on_oncoming_of, Proposition::ON_ONCOMING_OF},
 };
 
 std::string to_string(knowledge_extraction::Proposition proposition, std::optional<size_t> parameter);

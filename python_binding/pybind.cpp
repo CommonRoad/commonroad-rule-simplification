@@ -69,6 +69,13 @@ void export_propositions(nb::module_ &module) {
                     .value("ON_MAIN_CARRIAGEWAY_RIGHT_LANE", Proposition::ON_MAIN_CARRIAGEWAY_RIGHT_LANE)
                     .value("OTHER_ON_ACCESS_RAMP", Proposition::OTHER_ON_ACCESS_RAMP)
                     .value("OTHER_ON_MAIN_CARRIAGEWAY", Proposition::OTHER_ON_MAIN_CARRIAGEWAY)
+                    .value("IN_INTERSECTION", Proposition::IN_INTERSECTION)
+                    .value("AT_STOP_SIGN", Proposition::AT_STOP_SIGN)
+                    .value("STOP_LINE_IN_FRONT", Proposition::STOP_LINE_IN_FRONT)
+                    .value("RELEVANT_TRAFFIC_LIGHT", Proposition::RELEVANT_TRAFFIC_LIGHT)
+                    .value("IN_STANDSTILL", Proposition::IN_STANDSTILL)
+                    .value("ON_INCOMING_LEFT_OF", Proposition::ON_INCOMING_LEFT_OF)
+                    .value("ON_ONCOMING_OF", Proposition::ON_ONCOMING_OF)
                     .def_static("to_string", &knowledge_extraction::proposition::to_string)
                     .def_static("from_string", &knowledge_extraction::proposition::from_string)
                     .def_static("proposition_to_string",
