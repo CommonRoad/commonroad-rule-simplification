@@ -10,17 +10,20 @@ from ltl_augmentation import Formula
 
 from cr_knowledge_extraction.traffic_rule.R_G1 import SafeDistanceRule
 from cr_knowledge_extraction.traffic_rule.R_I5 import EnteringVehiclesRule
+from cr_knowledge_extraction.traffic_rule.R_IN1 import StopSignRule
 
 
 class TrafficRuleInstantiator:
     fov_radius: float
 
     t_c: float
+    t_slw: float
 
-    def __init__(self, fov_radius: float = 200, t_c: float = 3.0):
+    def __init__(self, fov_radius: float = 200, t_c: float = 3.0, t_slw: float = 3.0):
         self.fov_radius = fov_radius
 
         self.t_c = t_c
+        self.t_slw = t_slw
 
     def instantiate(
         self,
@@ -54,6 +57,11 @@ class TrafficRuleInstantiator:
                 return SafeDistanceRule(t_c_time_steps).instantiate(obstacle_ids, start, end)
             case "R_I5" | "EnteringVehiclesRule":
                 return EnteringVehiclesRule().instantiate(obstacle_ids, start, end)
+            case "R-IN1" | "StopSignRule":
+                t_slw_time_steps = math.floor(self.t_slw / dt)
+                if t_slw_time_steps != self.t_slw / dt:
+                    warnings.warn(f"t_slw is not a multiple of dt. Using floor division. t_slw: {self.t_slw}, dt: {dt}")
+                return StopSignRule(t_slw_time_steps).instantiate(obstacle_ids, start, end)
             case _ if rule.startswith("LTL "):
                 return [Formula(rule.removeprefix("LTL "))]
             case _:
