@@ -76,6 +76,12 @@ void export_propositions(nb::module_ &module) {
                     .value("IN_STANDSTILL", Proposition::IN_STANDSTILL)
                     .value("ON_INCOMING_LEFT_OF", Proposition::ON_INCOMING_LEFT_OF)
                     .value("ON_ONCOMING_OF", Proposition::ON_ONCOMING_OF)
+                    .value("TURNING_LEFT", Proposition::TURNING_LEFT)
+                    .value("TURNING_RIGHT", Proposition::TURNING_RIGHT)
+                    .value("GOING_STRAIGHT", Proposition::GOING_STRAIGHT)
+                    .value("OTHER_TURNING_LEFT", Proposition::OTHER_TURNING_LEFT)
+                    .value("OTHER_TURNING_RIGHT", Proposition::OTHER_TURNING_RIGHT)
+                    .value("OTHER_GOING_STRAIGHT", Proposition::OTHER_GOING_STRAIGHT)
                     .def_static("to_string", &knowledge_extraction::proposition::to_string)
                     .def_static("from_string", &knowledge_extraction::proposition::from_string)
                     .def_static("proposition_to_string",

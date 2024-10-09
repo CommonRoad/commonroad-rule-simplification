@@ -51,6 +51,18 @@ def format_formula_for_monitor(formula: Formula) -> str:
             return f"(in_front_of('x_ego', {obs_param}) & keeps_safe_distance_prec('x_ego', {obs_param}))"
         if name == Prop.proposition_to_string(Prop.AT_STOP_SIGN):
             return "at_traffic_sign('x_ego', 'stop')"
+        if name == Prop.proposition_to_string(Prop.TURNING_LEFT):
+            return "turning('x_ego', 'left')"
+        if name == Prop.proposition_to_string(Prop.TURNING_RIGHT):
+            return "turning('x_ego', 'right')"
+        if name == Prop.proposition_to_string(Prop.GOING_STRAIGHT):
+            return "turning('x_ego', 'straight')"
+        if name == Prop.proposition_to_string(Prop.OTHER_TURNING_LEFT):
+            return f"turning('obsid_{parameter}', 'left')"
+        if name == Prop.proposition_to_string(Prop.OTHER_TURNING_RIGHT):
+            return f"turning('obsid_{parameter}', 'right')"
+        if name == Prop.proposition_to_string(Prop.OTHER_GOING_STRAIGHT):
+            return f"turning('obsid_{parameter}', 'straight')"
 
         name = _to_snake(name)
         if parameter:

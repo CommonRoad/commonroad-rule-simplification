@@ -21,6 +21,12 @@ enum class Proposition {
     IN_STANDSTILL,
     ON_INCOMING_LEFT_OF,
     ON_ONCOMING_OF,
+    TURNING_LEFT,
+    TURNING_RIGHT,
+    GOING_STRAIGHT,
+    OTHER_TURNING_LEFT,
+    OTHER_TURNING_RIGHT,
+    OTHER_GOING_STRAIGHT,
 };
 
 namespace proposition {
@@ -39,6 +45,12 @@ constexpr auto relevant_traffic_light = "RelevantTrafficLight";
 constexpr auto in_standstill = "InStandstill";
 constexpr auto on_incoming_left_of = "OnIncomingLeftOf";
 constexpr auto on_oncoming_of = "OnOncomingOf";
+constexpr auto turning_left = "TurningLeft";
+constexpr auto turning_right = "TurningRight";
+constexpr auto going_straight = "GoingStraight";
+constexpr auto other_turning_left = "OtherTurningLeft";
+constexpr auto other_turning_right = "OtherTurningRight";
+constexpr auto other_going_straight = "OtherGoingStraight";
 
 const std::unordered_map<Proposition, std::string> proposition_to_string = {
     {Proposition::IN_SAME_LANE, in_same_lane},
@@ -56,6 +68,12 @@ const std::unordered_map<Proposition, std::string> proposition_to_string = {
     {Proposition::IN_STANDSTILL, in_standstill},
     {Proposition::ON_INCOMING_LEFT_OF, on_incoming_left_of},
     {Proposition::ON_ONCOMING_OF, on_oncoming_of},
+    {Proposition::TURNING_LEFT, turning_left},
+    {Proposition::TURNING_RIGHT, turning_right},
+    {Proposition::GOING_STRAIGHT, going_straight},
+    {Proposition::OTHER_TURNING_LEFT, other_turning_left},
+    {Proposition::OTHER_TURNING_RIGHT, other_turning_right},
+    {Proposition::OTHER_GOING_STRAIGHT, other_going_straight},
 };
 
 const std::unordered_map<std::string, Proposition> string_to_proposition = {
@@ -74,6 +92,12 @@ const std::unordered_map<std::string, Proposition> string_to_proposition = {
     {in_standstill, Proposition::IN_STANDSTILL},
     {on_incoming_left_of, Proposition::ON_INCOMING_LEFT_OF},
     {on_oncoming_of, Proposition::ON_ONCOMING_OF},
+    {turning_left, Proposition::TURNING_LEFT},
+    {turning_right, Proposition::TURNING_RIGHT},
+    {going_straight, Proposition::GOING_STRAIGHT},
+    {other_turning_left, Proposition::OTHER_TURNING_LEFT},
+    {other_turning_right, Proposition::OTHER_TURNING_RIGHT},
+    {other_going_straight, Proposition::OTHER_GOING_STRAIGHT},
 };
 
 std::string to_string(knowledge_extraction::Proposition proposition, std::optional<size_t> parameter);
