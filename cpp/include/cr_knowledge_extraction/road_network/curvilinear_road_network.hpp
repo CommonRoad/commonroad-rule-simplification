@@ -9,12 +9,12 @@
 namespace knowledge_extraction::road_network {
 class CurvilinearRoadNetwork {
   private:
-    const std::unordered_map<size_t, std::shared_ptr<CurvilinearLanelet>> lanelets;
+    const std::vector<std::shared_ptr<CurvilinearLanelet>> lanelets;
 
-    static polygon_type convert_to_ccs(const polygon_type &polygon,
-                                       const std::shared_ptr<geometry::CurvilinearCoordinateSystem> &ccs);
+    static std::vector<polygon_type> convert_to_ccs(const polygon_type &polygon,
+                                                    const std::shared_ptr<geometry::CurvilinearCoordinateSystem> &ccs);
 
-    static std::unordered_map<size_t, std::shared_ptr<CurvilinearLanelet>>
+    static std::vector<std::shared_ptr<CurvilinearLanelet>>
     initialize(const std::shared_ptr<World> &lanelet,
                const std::shared_ptr<geometry::CurvilinearCoordinateSystem> &ego_ccs);
 
@@ -24,8 +24,6 @@ class CurvilinearRoadNetwork {
   public:
     CurvilinearRoadNetwork(const std::shared_ptr<World> &world,
                            const std::shared_ptr<geometry::CurvilinearCoordinateSystem> &ego_ccs);
-
-    std::shared_ptr<CurvilinearLanelet> get_lanelet(size_t lanelet_id) const;
 
     std::vector<std::shared_ptr<CurvilinearLanelet>>
     get_overlapping_lanelets(const knowledge_extraction::ego_behavior::sets::Box2D &bounding_box) const;

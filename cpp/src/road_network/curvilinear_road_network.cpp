@@ -19,31 +19,37 @@ knowledge_extraction::road_network::CurvilinearRoadNetwork::CurvilinearRoadNetwo
     const std::shared_ptr<World> &world, const std::shared_ptr<geometry::CurvilinearCoordinateSystem> &ego_ccs)
     : lanelets(initialize(world, ego_ccs)), rtree(std::make_shared<RTree>()) {
     // Populate boost rtree with bounding boxes of curvilinear lanelets
-    for (const auto &pair : this->lanelets) {
+    for (size_t i = 0; i < lanelets.size(); ++i) {
+        const auto &ccs_lanelet = lanelets[i];
         box bounding_box;
-        bg::envelope(pair.second->curvilinear_polygon, bounding_box);
-        rtree->rtree.insert(std::make_pair(bounding_box, pair.first));
+        bg::envelope(ccs_lanelet->curvilinear_polygon, bounding_box);
+        rtree->rtree.insert(std::make_pair(bounding_box, i));
     }
 }
 
-polygon_type CurvilinearRoadNetwork::convert_to_ccs(const polygon_type &polygon,
-                                                    const std::shared_ptr<geometry::CurvilinearCoordinateSystem> &ccs) {
+std::vector<polygon_type>
+CurvilinearRoadNetwork::convert_to_ccs(const polygon_type &polygon,
+                                       const std::shared_ptr<geometry::CurvilinearCoordinateSystem> &ccs) {
     geometry::EigenPolyline outer_polyline;
     for (const auto &vertex : polygon.outer()) {
         if (ccs->cartesianPointInProjectionDomain(vertex.x(), vertex.y())) {
             outer_polyline.emplace_back(vertex.x(), vertex.y());
         }
     }
-    auto ccs_polyline = ccs->convertListOfPointsToCurvilinearCoords(outer_polyline, 4);
-    polygon_type ccs_polygon;
-    ccs_polygon.outer().reserve(ccs_polyline.size());
-    for (const auto &point : ccs_polyline) {
-        ccs_polygon.outer().emplace_back(point.x(), point.y());
-    }
-    return ccs_polygon;
+    std::vector<geometry::EigenPolyline> transformed{};
+    ccs->convertPolygonToCurvilinearCoords(outer_polyline, transformed);
+    auto ccs_polygons = transformed | std::views::transform([](const auto &ccs_polyline) {
+                            polygon_type ccs_polygon;
+                            ccs_polygon.outer().reserve(ccs_polyline.size());
+                            for (const auto &point : ccs_polyline) {
+                                ccs_polygon.outer().emplace_back(point.x(), point.y());
+                            }
+                            return ccs_polygon;
+                        });
+    return {ccs_polygons.begin(), ccs_polygons.end()};
 }
 
-std::unordered_map<size_t, std::shared_ptr<CurvilinearLanelet>>
+std::vector<std::shared_ptr<CurvilinearLanelet>>
 CurvilinearRoadNetwork::initialize(const std::shared_ptr<World> &world,
                                    const std::shared_ptr<geometry::CurvilinearCoordinateSystem> &ego_ccs) {
     // Remove lanelets that are not convertible to the ego CCS
@@ -56,21 +62,14 @@ CurvilinearRoadNetwork::initialize(const std::shared_ptr<World> &world,
             });
         });
     // Convert to ego CCS
-    auto curvilinear_lanelets =
-        convertible_lanelets | std::views::transform([&](const auto &lanelet) {
-            return std::make_pair(lanelet->getId(), std::make_shared<CurvilinearLanelet>(
-                                                        lanelet, convert_to_ccs(lanelet->getOuterPolygon(), ego_ccs)));
-        });
-    return {curvilinear_lanelets.begin(), curvilinear_lanelets.end()};
-}
-
-std::shared_ptr<CurvilinearLanelet>
-knowledge_extraction::road_network::CurvilinearRoadNetwork::get_lanelet(size_t lanelet_id) const {
-    if (lanelets.contains(lanelet_id)) {
-        return lanelets.at(lanelet_id);
-    } else {
-        throw(std::invalid_argument("Lanelet with ID " + std::to_string(lanelet_id) + " not found."));
+    std::vector<std::shared_ptr<CurvilinearLanelet>> curvilinear_lanelets;
+    for (const auto &lanelet : convertible_lanelets) {
+        auto ccs_polygons = convert_to_ccs(lanelet->getOuterPolygon(), ego_ccs);
+        for (const auto &polygon : ccs_polygons) {
+            curvilinear_lanelets.emplace_back(std::make_shared<CurvilinearLanelet>(lanelet, polygon));
+        }
     }
+    return curvilinear_lanelets;
 }
 
 std::vector<std::shared_ptr<CurvilinearLanelet>>
@@ -85,7 +84,7 @@ knowledge_extraction::road_network::CurvilinearRoadNetwork::get_overlapping_lane
 
     auto overlapping_lanelets =
         relevant_lanelets |
-        std::views::transform([this](const auto &rtree_val) { return get_lanelet(rtree_val.second); }) |
+        std::views::transform([this](const auto &rtree_val) { return lanelets[rtree_val.second]; }) |
         std::views::filter(
             [&bg_box](const auto &lanelet) { return bg::intersects(lanelet->curvilinear_polygon, bg_box); });
 
