@@ -43,6 +43,12 @@ def format_formula_for_monitor(formula: Formula) -> str:
                 f"(in_same_lane({obs_param}, 'x_ego') & !(in_single_lane({obs_param}))"
                 + f" & orientation_towards({obs_param}, 'x_ego'))"
             )
+        if name == Prop.proposition_to_string(Prop.KEEPS_SAFE_DISTANCE_PREC):
+            # We need to rewrite the safe distance predicate here, because its implementation in the environment model
+            # does not match its definition from the paper. According to the paper, it should be false, when the
+            # following vehicle is not behind the leading vehicle, but the implementation sets it to true
+            obs_param = f"'obsid_{parameter}'"
+            return f"(in_front_of('x_ego', {obs_param}) & keeps_safe_distance_prec('x_ego', {obs_param}))"
 
         name = _to_snake(name)
         if parameter:
