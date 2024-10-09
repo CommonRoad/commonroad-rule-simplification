@@ -21,6 +21,9 @@ enum class Proposition {
     IN_STANDSTILL,
     ON_INCOMING_LEFT_OF,
     ON_ONCOMING_OF,
+    IN_INTERSECTION_CONFLICT_AREA,
+    OTHER_IN_INTERSECTION_CONFLICT_AREA,
+    CAUSES_BRAKING_INTERSECTION,
 
     TURNING_LEFT,
     TURNING_RIGHT,
@@ -76,6 +79,9 @@ constexpr auto relevant_traffic_light = "RelevantTrafficLight";
 constexpr auto in_standstill = "InStandstill";
 constexpr auto on_incoming_left_of = "OnIncomingLeftOf";
 constexpr auto on_oncoming_of = "OnOncomingOf";
+constexpr auto in_intersection_conflict_area = "InIntersectionConflictArea";
+constexpr auto other_in_intersection_conflict_area = "OtherInIntersectionConflictArea";
+constexpr auto causes_braking_intersection = "CausesBrakingIntersection";
 
 constexpr auto turning_left = "TurningLeft";
 constexpr auto turning_right = "TurningRight";
@@ -130,6 +136,9 @@ const std::unordered_map<Proposition, std::string> proposition_to_string = {
     {Proposition::IN_STANDSTILL, in_standstill},
     {Proposition::ON_INCOMING_LEFT_OF, on_incoming_left_of},
     {Proposition::ON_ONCOMING_OF, on_oncoming_of},
+    {Proposition::IN_INTERSECTION_CONFLICT_AREA, in_intersection_conflict_area},
+    {Proposition::OTHER_IN_INTERSECTION_CONFLICT_AREA, other_in_intersection_conflict_area},
+    {Proposition::CAUSES_BRAKING_INTERSECTION, causes_braking_intersection},
 
     {Proposition::TURNING_LEFT, turning_left},
     {Proposition::TURNING_RIGHT, turning_right},
@@ -185,6 +194,9 @@ const std::unordered_map<std::string, Proposition> string_to_proposition = {
     {in_standstill, Proposition::IN_STANDSTILL},
     {on_incoming_left_of, Proposition::ON_INCOMING_LEFT_OF},
     {on_oncoming_of, Proposition::ON_ONCOMING_OF},
+    {in_intersection_conflict_area, Proposition::IN_INTERSECTION_CONFLICT_AREA},
+    {other_in_intersection_conflict_area, Proposition::OTHER_IN_INTERSECTION_CONFLICT_AREA},
+    {causes_braking_intersection, Proposition::CAUSES_BRAKING_INTERSECTION},
 
     {turning_left, Proposition::TURNING_LEFT},
     {turning_right, Proposition::TURNING_RIGHT},

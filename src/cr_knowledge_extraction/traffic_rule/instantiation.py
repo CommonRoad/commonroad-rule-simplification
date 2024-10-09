@@ -51,18 +51,25 @@ class TrafficRuleInstantiator:
     ) -> List[Formula]:
         match rule:
             case "R_G1" | "SafeDistanceRule":
-                t_c_time_steps = math.floor(self.t_c / dt)
-                if t_c_time_steps != self.t_c / dt:
-                    warnings.warn(f"t_c is not a multiple of dt. Using floor division. t_c: {self.t_c}, dt: {dt}")
-                return SafeDistanceRule(t_c_time_steps).instantiate(obstacle_ids, start, end)
+                return SafeDistanceRule(self.t_c_time_steps(dt)).instantiate(obstacle_ids, start, end)
             case "R_I5" | "EnteringVehiclesRule":
                 return EnteringVehiclesRule().instantiate(obstacle_ids, start, end)
             case "R-IN1" | "StopSignRule":
-                t_slw_time_steps = math.floor(self.t_slw / dt)
-                if t_slw_time_steps != self.t_slw / dt:
-                    warnings.warn(f"t_slw is not a multiple of dt. Using floor division. t_slw: {self.t_slw}, dt: {dt}")
-                return StopSignRule(t_slw_time_steps).instantiate(obstacle_ids, start, end)
+                return StopSignRule(self.t_slw_time_steps(dt)).instantiate(obstacle_ids, start, end)
             case _ if rule.startswith("LTL "):
                 return [Formula(rule.removeprefix("LTL "))]
             case _:
                 raise ValueError(f"Unknown rule: {rule}")
+
+    def t_c_time_steps(self, dt: float) -> int:
+        return self._in_time_steps("t_c", self.t_c, dt)
+
+    def t_slw_time_steps(self, dt: float) -> int:
+        return self._in_time_steps("t_slw", self.t_slw, dt)
+
+    @staticmethod
+    def _in_time_steps(name: str, value: float, dt: float) -> int:
+        time_steps = math.floor(value / dt)
+        if time_steps != value / dt:
+            warnings.warn(f"{name} is not a multiple of dt. Using floor division. {name}: {value}, dt: {dt}")
+        return time_steps

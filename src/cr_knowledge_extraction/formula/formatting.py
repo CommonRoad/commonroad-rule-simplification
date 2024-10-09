@@ -51,6 +51,8 @@ def format_formula_for_monitor(formula: Formula) -> str:
             return f"(in_front_of('x_ego', {obs_param}) & keeps_safe_distance_prec('x_ego', {obs_param}))"
         if name == Prop.proposition_to_string(Prop.AT_STOP_SIGN):
             return "at_traffic_sign('x_ego', 'stop')"
+        if name == Prop.proposition_to_string(Prop.OTHER_IN_INTERSECTION_CONFLICT_AREA):
+            return f"in_intersection_conflict_area('obsid_{parameter}', 'x_ego')"
 
         if name == Prop.proposition_to_string(Prop.TURNING_LEFT):
             return "turning('x_ego', 'left')"

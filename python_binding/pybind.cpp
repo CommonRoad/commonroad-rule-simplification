@@ -76,6 +76,9 @@ void export_propositions(nb::module_ &module) {
                     .value("IN_STANDSTILL", Proposition::IN_STANDSTILL)
                     .value("ON_INCOMING_LEFT_OF", Proposition::ON_INCOMING_LEFT_OF)
                     .value("ON_ONCOMING_OF", Proposition::ON_ONCOMING_OF)
+                    .value("IN_INTERSECTION_CONFLICT_AREA", Proposition::IN_INTERSECTION_CONFLICT_AREA)
+                    .value("OTHER_IN_INTERSECTION_CONFLICT_AREA", Proposition::OTHER_IN_INTERSECTION_CONFLICT_AREA)
+                    .value("CAUSES_BRAKING_INTERSECTION", Proposition::CAUSES_BRAKING_INTERSECTION)
 
                     .value("TURNING_LEFT", Proposition::TURNING_LEFT)
                     .value("TURNING_RIGHT", Proposition::TURNING_RIGHT)
