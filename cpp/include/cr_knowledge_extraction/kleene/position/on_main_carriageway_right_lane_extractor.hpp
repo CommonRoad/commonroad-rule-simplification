@@ -5,7 +5,11 @@
 namespace knowledge_extraction::kleene::position {
 class OnMainCarriagewayRightLaneExtractor : public KleeneExtractor {
   private:
-    static bool is_mcw_right_lane_lanelet(const std::shared_ptr<Lanelet> &lanelet);
+    static bool is_mcw(const std::shared_ptr<Lanelet> &lanelet);
+
+    static bool is_rightmost(const std::shared_ptr<Lanelet> &lanelet);
+
+    static bool is_neighbour_opposite(const std::shared_ptr<Lanelet> &lanelet);
 
   public:
     OnMainCarriagewayRightLaneExtractor(std::shared_ptr<knowledge_extraction::env_model::EnvironmentModel> env_model)

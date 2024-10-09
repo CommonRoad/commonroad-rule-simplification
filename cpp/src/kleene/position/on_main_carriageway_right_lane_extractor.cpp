@@ -16,8 +16,9 @@ OnMainCarriagewayRightLaneExtractor::extract(
         const auto &approximations = env_model->get_ego_approximations();
 
         auto cannot_be_true =
-            std::ranges::none_of(approximations->get_covered_lanelets(time_step), [this](const auto &ccs_lanelet) {
-                return is_mcw_right_lane_lanelet(ccs_lanelet->lanelet);
+            std::ranges::all_of(approximations->get_covered_lanelets(time_step), [](const auto &ccs_lanelet) {
+                const auto &lanelet = ccs_lanelet->lanelet;
+                return !is_mcw(lanelet);
             });
         if (cannot_be_true) {
             true_false_obstacle_ids[time_step].second.insert(std::nullopt);
@@ -25,8 +26,9 @@ OnMainCarriagewayRightLaneExtractor::extract(
         }
 
         auto must_be_true =
-            std::ranges::all_of(approximations->get_intersected_lanelets(time_step), [this](const auto &ccs_lanelet) {
-                return is_mcw_right_lane_lanelet(ccs_lanelet->lanelet);
+            std::ranges::all_of(approximations->get_intersected_lanelets(time_step), [](const auto &ccs_lanelet) {
+                const auto &lanelet = ccs_lanelet->lanelet;
+                return is_mcw(lanelet) && (is_rightmost(lanelet) || is_neighbour_opposite(lanelet));
             });
         if (must_be_true) {
             true_false_obstacle_ids[time_step].first.insert(std::nullopt);
@@ -36,9 +38,15 @@ OnMainCarriagewayRightLaneExtractor::extract(
     return true_false_obstacle_ids;
 }
 
-bool OnMainCarriagewayRightLaneExtractor::is_mcw_right_lane_lanelet(const std::shared_ptr<Lanelet> &lanelet) {
-    return (lanelet->getAdjacentRight().adj == nullptr ||
-            ((lanelet->getAdjacentRight().adj != nullptr) && (!lanelet->getAdjacentRight().oppositeDir) &&
-             !lanelet->getAdjacentRight().adj->hasLaneletType(LaneletType::mainCarriageWay))) &&
-           lanelet->hasLaneletType(LaneletType::mainCarriageWay);
+bool OnMainCarriagewayRightLaneExtractor::is_mcw(const std::shared_ptr<Lanelet> &lanelet) {
+    return lanelet->hasLaneletType(LaneletType::mainCarriageWay);
+}
+
+bool OnMainCarriagewayRightLaneExtractor::is_rightmost(const std::shared_ptr<Lanelet> &lanelet) {
+    return lanelet->getAdjacentRight().adj == nullptr ||
+           lanelet->getAdjacentRight().oppositeDir != lanelet->getAdjacentRight().adj->getAdjacentLeft().oppositeDir;
+}
+
+bool OnMainCarriagewayRightLaneExtractor::is_neighbour_opposite(const std::shared_ptr<Lanelet> &lanelet) {
+    return lanelet->getAdjacentRight().oppositeDir;
 }
