@@ -12,6 +12,8 @@ from cr_knowledge_extraction.traffic_rule.R_G1 import SafeDistanceRule
 from cr_knowledge_extraction.traffic_rule.R_I5 import EnteringVehiclesRule
 from cr_knowledge_extraction.traffic_rule.R_IN1 import StopSignRule
 from cr_knowledge_extraction.traffic_rule.R_IN3 import RightBeforeLeftRule
+from cr_knowledge_extraction.traffic_rule.R_IN4 import PriorityRule
+from cr_knowledge_extraction.traffic_rule.R_IN5 import TurningLeftRule
 
 
 class TrafficRuleInstantiator:
@@ -67,6 +69,14 @@ class TrafficRuleInstantiator:
                 return StopSignRule(self.t_slw_time_steps(dt)).instantiate(obstacle_ids, start, end)
             case "R-IN3" | "RightBeforeLeftRule":
                 return RightBeforeLeftRule(self.t_ia_time_steps(dt), self.t_ib_time_steps(dt)).instantiate(
+                    obstacle_ids, start, end
+                )
+            case "R-IN4" | "PriorityRule":
+                return PriorityRule(self.t_ia_time_steps(dt), self.t_ib_time_steps(dt)).instantiate(
+                    obstacle_ids, start, end
+                )
+            case "R-IN5" | "TurningLeftRule":
+                return TurningLeftRule(self.t_ia_time_steps(dt), self.t_ib_time_steps(dt)).instantiate(
                     obstacle_ids, start, end
                 )
             case _ if rule.startswith("LTL "):
