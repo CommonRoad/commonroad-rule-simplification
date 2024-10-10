@@ -17,12 +17,13 @@ class NotEndangerRule(TrafficRule, abc.ABC):
     def _make_consequence(self, obstacle_id: int) -> Formula:
         return Formula.disjunction(
             [
-                Formula.always(Formula.ap(Prop.NotEndanger())),
-                Formula.negation(Formula.ap(Prop.IN_INTERSECTION)),
+                Formula.always(self._make_not_endanger_intersection(obstacle_id)),
+                Formula.negation(Formula.ap(Prop.InIntersection())),
             ]
         )
 
     def _make_not_endanger_intersection(self, obstacle_id: int) -> Formula:
+        obstacle_id = str(obstacle_id)
         t_ib_part = Formula.implication(
             Formula.ap(Prop.InIntersectionConflictArea(), obstacle_id),
             Formula.conjunction(
