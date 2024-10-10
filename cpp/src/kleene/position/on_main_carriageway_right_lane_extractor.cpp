@@ -15,19 +15,15 @@ OnMainCarriagewayRightLaneExtractor::extract(
 
         const auto &approximations = env_model->get_ego_approximations();
 
-        auto cannot_be_true =
-            std::ranges::all_of(approximations->get_covered_lanelets(time_step), [](const auto &ccs_lanelet) {
-                const auto &lanelet = ccs_lanelet->lanelet;
-                return !is_mcw(lanelet);
-            });
+        auto cannot_be_true = std::ranges::all_of(approximations->get_covered_lanelets(time_step),
+                                                  [](const auto &lanelet) { return !is_mcw(lanelet); });
         if (cannot_be_true) {
             true_false_obstacle_ids[time_step].second.insert(std::nullopt);
             continue;
         }
 
         auto must_be_true =
-            std::ranges::all_of(approximations->get_intersected_lanelets(time_step), [](const auto &ccs_lanelet) {
-                const auto &lanelet = ccs_lanelet->lanelet;
+            std::ranges::all_of(approximations->get_intersected_lanelets(time_step), [](const auto &lanelet) {
                 return is_mcw(lanelet) && (is_rightmost(lanelet) || is_neighbour_opposite(lanelet));
             });
         if (must_be_true) {

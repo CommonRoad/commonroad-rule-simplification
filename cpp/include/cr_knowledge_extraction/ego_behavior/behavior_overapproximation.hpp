@@ -33,14 +33,10 @@ class BehaviorOverapproximation {
     static sets::Box4D make_initial_center_approximation(const EgoParameters &ego_params);
 
     std::unordered_map<time_step_t, sets::Box2D> occupancy_approximation;
-    std::unordered_map<time_step_t,
-                       std::vector<std::shared_ptr<knowledge_extraction::road_network::CurvilinearLanelet>>>
-        covered_lanelets;
+    std::unordered_map<time_step_t, std::vector<std::shared_ptr<Lanelet>>> covered_lanelets;
 
     std::unordered_map<time_step_t, sets::Box2D> occupancy_intersection_approximation;
-    std::unordered_map<time_step_t,
-                       std::vector<std::shared_ptr<knowledge_extraction::road_network::CurvilinearLanelet>>>
-        intersected_lanelets;
+    std::unordered_map<time_step_t, std::vector<std::shared_ptr<Lanelet>>> intersected_lanelets;
 
     std::unordered_map<time_step_t, std::pair<double, double>> velocity_approximation;
 
@@ -101,12 +97,10 @@ class BehaviorOverapproximation {
     sets::Box4D get_center_approximation(time_step_t time_step);
 
     sets::Box2D get_occupancy_approximation(time_step_t time_step);
-    const std::vector<std::shared_ptr<knowledge_extraction::road_network::CurvilinearLanelet>> &
-    get_covered_lanelets(time_step_t time_step);
+    const std::vector<std::shared_ptr<Lanelet>> &get_covered_lanelets(time_step_t time_step);
 
     sets::Box2D get_occupancy_intersection_approximation(time_step_t time_step);
-    const std::vector<std::shared_ptr<knowledge_extraction::road_network::CurvilinearLanelet>> &
-    get_intersected_lanelets(time_step_t time_step);
+    const std::vector<std::shared_ptr<Lanelet>> &get_intersected_lanelets(time_step_t time_step);
 
     std::pair<double, double> get_velocity_approximation(time_step_t time_step);
 };

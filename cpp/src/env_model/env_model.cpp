@@ -21,10 +21,8 @@ EnvironmentModel::make_ego_approximations(const std::shared_ptr<World> &world,
     auto theta = geometric_operations::subtractOrientations(initial_state.getGlobalOrientation(), ccs_orientation);
     initial_state.setCurvilinearOrientation(theta);
 
-    auto dt = world->getDt();
-
     return std::make_shared<ego_behavior::BehaviorOverapproximation>(
-        dt, ego_params, road_network::CurvilinearRoadNetwork{world, ego_ccs});
+        world->getDt(), ego_params, road_network::CurvilinearRoadNetwork{world->getRoadNetwork(), ego_ccs});
 }
 
 std::optional<double> EnvironmentModel::get_obstacle_rear_impl(size_t time_step,

@@ -98,8 +98,7 @@ sets::Box2D BehaviorOverapproximation::get_occupancy_approximation(time_step_t t
     return occupancy_approximation.at(time_step);
 }
 
-const std::vector<std::shared_ptr<CurvilinearLanelet>> &
-BehaviorOverapproximation::get_covered_lanelets(time_step_t time_step) {
+const std::vector<std::shared_ptr<Lanelet>> &BehaviorOverapproximation::get_covered_lanelets(time_step_t time_step) {
     if (!covered_lanelets.contains(time_step)) {
         auto occ_approx = get_occupancy_approximation(time_step);
         auto lanelets = ccs_road_network.get_overlapping_lanelets(occ_approx);
@@ -117,7 +116,7 @@ sets::Box2D BehaviorOverapproximation::get_occupancy_intersection_approximation(
     return occupancy_intersection_approximation.at(time_step);
 }
 
-const std::vector<std::shared_ptr<CurvilinearLanelet>> &
+const std::vector<std::shared_ptr<Lanelet>> &
 BehaviorOverapproximation::get_intersected_lanelets(time_step_t time_step) {
     if (!intersected_lanelets.contains(time_step)) {
         auto occ_int_approx = get_occupancy_intersection_approximation(time_step);

@@ -38,7 +38,7 @@ std::unordered_map<time_step_t, CutInExtractor::TrueFalseObstacleIds> CutInExtra
             const auto &ego_covered_lanelets = env_model->get_ego_approximations()->get_covered_lanelets(time_step);
             auto cannot_be_true =
                 std::ranges::none_of(ego_covered_lanelets, [&obstacle_lanelet_ids](const auto &lanelet) {
-                    return obstacle_lanelet_ids.contains(lanelet->lanelet->getId());
+                    return obstacle_lanelet_ids.contains(lanelet->getId());
                 });
             if (cannot_be_true) {
                 true_false_obstacle_ids[time_step].second.emplace(obstacle->getId());

@@ -15,8 +15,8 @@ std::unordered_map<time_step_t, OnLaneletWithTypeExtractor::TrueFalseObstacleIds
         const auto &approximations = env_model->get_ego_approximations();
 
         auto cannot_be_true =
-            std::ranges::none_of(approximations->get_covered_lanelets(time_step), [this](const auto &ccs_lanelet) {
-                return ccs_lanelet->lanelet->getLaneletTypes().contains(lanelet_type);
+            std::ranges::none_of(approximations->get_covered_lanelets(time_step), [this](const auto &lanelet) {
+                return lanelet->getLaneletTypes().contains(lanelet_type);
             });
         if (cannot_be_true) {
             true_false_obstacle_ids[time_step].second.insert(std::nullopt);
@@ -24,8 +24,8 @@ std::unordered_map<time_step_t, OnLaneletWithTypeExtractor::TrueFalseObstacleIds
         }
 
         auto must_be_true =
-            std::ranges::all_of(approximations->get_intersected_lanelets(time_step), [this](const auto &ccs_lanelet) {
-                return ccs_lanelet->lanelet->getLaneletTypes().contains(lanelet_type);
+            std::ranges::all_of(approximations->get_intersected_lanelets(time_step), [this](const auto &lanelet) {
+                return lanelet->getLaneletTypes().contains(lanelet_type);
             });
         if (must_be_true) {
             true_false_obstacle_ids[time_step].first.insert(std::nullopt);

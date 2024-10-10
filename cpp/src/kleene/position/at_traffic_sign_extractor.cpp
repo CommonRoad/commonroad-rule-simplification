@@ -32,18 +32,16 @@ std::unordered_map<time_step_t, AtTrafficSignExtractor::TrueFalseObstacleIds> At
         const auto &approximations = env_model->get_ego_approximations();
 
         auto cannot_be_true = std::ranges::none_of(
-            approximations->get_covered_lanelets(time_step), [&relevant_lanelet_ids](const auto &ccs_lanelet) {
-                return relevant_lanelet_ids.contains(ccs_lanelet->lanelet->getId());
-            });
+            approximations->get_covered_lanelets(time_step),
+            [&relevant_lanelet_ids](const auto &lanelet) { return relevant_lanelet_ids.contains(lanelet->getId()); });
         if (cannot_be_true) {
             true_false_obstacle_ids[time_step].second.insert(std::nullopt);
             continue;
         }
 
-        auto must_be_true = std::ranges::all_of(approximations->get_intersected_lanelets(time_step),
-                                                [&relevant_lanelet_ids](const auto &ccs_lanelet) {
-                                                    return relevant_lanelet_ids.contains(ccs_lanelet->lanelet->getId());
-                                                });
+        auto must_be_true = std::ranges::all_of(
+            approximations->get_intersected_lanelets(time_step),
+            [&relevant_lanelet_ids](const auto &lanelet) { return relevant_lanelet_ids.contains(lanelet->getId()); });
         if (must_be_true) {
             true_false_obstacle_ids[time_step].first.insert(std::nullopt);
             continue;

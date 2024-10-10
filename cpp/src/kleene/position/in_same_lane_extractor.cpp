@@ -27,7 +27,7 @@ std::unordered_map<time_step_t, InSameLaneExtractor::TrueFalseObstacleIds> InSam
 
         for (const auto &[obstacle_id, lanelet_ids] : relevant_obstacle_lanes) {
             auto cannot_be_true = std::ranges::none_of(ego_covered_lanelets, [&lanelet_ids](const auto &lanelet) {
-                return lanelet_ids.contains(lanelet->lanelet->getId());
+                return lanelet_ids.contains(lanelet->getId());
             });
             if (cannot_be_true) {
                 true_false_obstacle_ids[time_step].second.emplace(obstacle_id);
@@ -35,7 +35,7 @@ std::unordered_map<time_step_t, InSameLaneExtractor::TrueFalseObstacleIds> InSam
             }
 
             auto must_be_true = std::ranges::all_of(ego_intersected_lanelets, [&lanelet_ids](const auto &lanelet) {
-                return lanelet_ids.contains(lanelet->lanelet->getId());
+                return lanelet_ids.contains(lanelet->getId());
             });
             if (must_be_true) {
                 true_false_obstacle_ids[time_step].first.emplace(obstacle_id);
