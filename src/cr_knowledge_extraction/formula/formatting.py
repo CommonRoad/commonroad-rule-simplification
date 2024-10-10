@@ -68,42 +68,42 @@ def format_formula_for_monitor(formula: Formula) -> str:
             return f"turning('obsid_{parameter}', 'straight')"
 
         if name == Prop.proposition_to_string(Prop.SAME_LEFT_LEFT_PRIORITY):
-            return "same_priority('x_ego', 'obsid_{parameter}', 'left', 'left')"
+            return f"same_priority('x_ego', 'obsid_{parameter}', 'left', 'left')"
         if name == Prop.proposition_to_string(Prop.SAME_LEFT_RIGHT_PRIORITY):
-            return "same_priority('x_ego', 'obsid_{parameter}', 'left', 'right')"
+            return f"same_priority('x_ego', 'obsid_{parameter}', 'left', 'right')"
         if name == Prop.proposition_to_string(Prop.SAME_LEFT_STRAIGHT_PRIORITY):
-            return "same_priority('x_ego', 'obsid_{parameter}', 'left', 'straight')"
+            return f"same_priority('x_ego', 'obsid_{parameter}', 'left', 'straight')"
         if name == Prop.proposition_to_string(Prop.SAME_RIGHT_LEFT_PRIORITY):
-            return "same_priority('x_ego', 'obsid_{parameter}', 'right', 'left')"
+            return f"same_priority('x_ego', 'obsid_{parameter}', 'right', 'left')"
         if name == Prop.proposition_to_string(Prop.SAME_RIGHT_RIGHT_PRIORITY):
-            return "same_priority('x_ego', 'obsid_{parameter}', 'right', 'right')"
+            return f"same_priority('x_ego', 'obsid_{parameter}', 'right', 'right')"
         if name == Prop.proposition_to_string(Prop.SAME_RIGHT_STRAIGHT_PRIORITY):
-            return "same_priority('x_ego', 'obsid_{parameter}', 'right', 'straight')"
+            return f"same_priority('x_ego', 'obsid_{parameter}', 'right', 'straight')"
         if name == Prop.proposition_to_string(Prop.SAME_STRAIGHT_LEFT_PRIORITY):
-            return "same_priority('x_ego', 'obsid_{parameter}', 'straight', 'left')"
+            return f"same_priority('x_ego', 'obsid_{parameter}', 'straight', 'left')"
         if name == Prop.proposition_to_string(Prop.SAME_STRAIGHT_RIGHT_PRIORITY):
-            return "same_priority('x_ego', 'obsid_{parameter}', 'straight', 'right')"
+            return f"same_priority('x_ego', 'obsid_{parameter}', 'straight', 'right')"
         if name == Prop.proposition_to_string(Prop.SAME_STRAIGHT_STRAIGHT_PRIORITY):
-            return "same_priority('x_ego', 'obsid_{parameter}', 'straight', 'straight')"
+            return f"same_priority('x_ego', 'obsid_{parameter}', 'straight', 'straight')"
 
         if name == Prop.proposition_to_string(Prop.HAS_LEFT_LEFT_PRIORITY):
-            return "has_priority('x_ego', 'obsid_{parameter}', 'left', 'left')"
+            return f"has_priority('x_ego', 'obsid_{parameter}', 'left', 'left')"
         if name == Prop.proposition_to_string(Prop.HAS_LEFT_RIGHT_PRIORITY):
-            return "has_priority('x_ego', 'obsid_{parameter}', 'left', 'right')"
+            return f"has_priority('x_ego', 'obsid_{parameter}', 'left', 'right')"
         if name == Prop.proposition_to_string(Prop.HAS_LEFT_STRAIGHT_PRIORITY):
-            return "has_priority('x_ego', 'obsid_{parameter}', 'left', 'straight')"
+            return f"has_priority('x_ego', 'obsid_{parameter}', 'left', 'straight')"
         if name == Prop.proposition_to_string(Prop.HAS_RIGHT_LEFT_PRIORITY):
-            return "has_priority('x_ego', 'obsid_{parameter}', 'right', 'left')"
+            return f"has_priority('x_ego', 'obsid_{parameter}', 'right', 'left')"
         if name == Prop.proposition_to_string(Prop.HAS_RIGHT_RIGHT_PRIORITY):
-            return "has_priority('x_ego', 'obsid_{parameter}', 'right', 'right')"
+            return f"has_priority('x_ego', 'obsid_{parameter}', 'right', 'right')"
         if name == Prop.proposition_to_string(Prop.HAS_RIGHT_STRAIGHT_PRIORITY):
-            return "has_priority('x_ego', 'obsid_{parameter}', 'right', 'straight')"
+            return f"has_priority('x_ego', 'obsid_{parameter}', 'right', 'straight')"
         if name == Prop.proposition_to_string(Prop.HAS_STRAIGHT_LEFT_PRIORITY):
-            return "has_priority('x_ego', 'obsid_{parameter}', 'straight', 'left')"
+            return f"has_priority('x_ego', 'obsid_{parameter}', 'straight', 'left')"
         if name == Prop.proposition_to_string(Prop.HAS_STRAIGHT_RIGHT_PRIORITY):
-            return "has_priority('x_ego', 'obsid_{parameter}', 'straight', 'right')"
+            return f"has_priority('x_ego', 'obsid_{parameter}', 'straight', 'right')"
         if name == Prop.proposition_to_string(Prop.HAS_STRAIGHT_STRAIGHT_PRIORITY):
-            return "has_priority('x_ego', 'obsid_{parameter}', 'straight', 'straight')"
+            return f"has_priority('x_ego', 'obsid_{parameter}', 'straight', 'straight')"
 
         if name == Prop.proposition_to_string(Prop.OTHER_HAS_LEFT_LEFT_PRIORITY):
             return f"has_priority('obsid_{parameter}', 'x_ego', 'left', 'left')"
