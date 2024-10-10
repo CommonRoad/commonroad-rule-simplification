@@ -48,6 +48,7 @@ class TrafficRuleInstantiator:
             for obs in scenario.obstacles
             if obs.state_at_time(start) is not None
             and obs.prediction.final_time_step >= end
+            and scenario.lanelet_network.find_lanelet_by_position([obs.state_at_time(start).position])[0]
             and np.linalg.norm(obs.state_at_time(start).position - initial_position) <= self.fov_radius
             and consider_obstacle(obs)
         }
