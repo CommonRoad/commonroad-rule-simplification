@@ -64,7 +64,12 @@ std::optional<bool> OnIncomingLeftOfExtractor::is_on_incoming_left_of(
     const std::unordered_set<size_t> &ego_incomings_could, const std::unordered_set<size_t> &ego_incomings_must) const {
     const auto &road_network = env_model->get_world()->getRoadNetwork();
 
-    auto obs_lanelets = obstacle->getOccupiedLaneletsByShape(road_network, time_step);
+    std::vector<std::shared_ptr<Lanelet>> obs_lanelets;
+    try {
+        obs_lanelets = obstacle->getOccupiedLaneletsByShape(road_network, time_step);
+    } catch (const std::logic_error &e) {
+        return std::nullopt;
+    }
     if (std::ranges::none_of(obs_lanelets,
                              [](const auto &lanelet) { return lanelet->hasLaneletType(LaneletType::incoming); })) {
         return false;
