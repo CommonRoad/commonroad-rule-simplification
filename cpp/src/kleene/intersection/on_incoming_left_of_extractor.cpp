@@ -3,7 +3,6 @@
 #include <commonroad_cpp/obstacle/obstacle.h>
 #include <commonroad_cpp/roadNetwork/intersection/intersection.h>
 #include <commonroad_cpp/roadNetwork/lanelet/lane.h>
-#include <commonroad_cpp/roadNetwork/road_network.h>
 
 #include <ranges>
 
@@ -21,32 +20,15 @@ std::unordered_map<time_step_t, OnIncomingLeftOfExtractor::TrueFalseObstacleIds>
                 return obstacle_ids.contains(obstacle->getId());
             });
 
-        auto ego_incomings_could_ =
-            env_model->get_ego_approximations()->get_covered_lanelets(time_step) |
-            std::views::filter([](const auto &lanelet) { return lanelet->hasLaneletType(LaneletType::incoming); }) |
-            std::views::transform([&road_network](const auto &lanelet) {
-                auto incoming = road_network->findIncomingGroupByLanelet(lanelet);
-                if (!incoming) {
-                    throw std::runtime_error{"missing incoming (ego)"};
-                }
-                return incoming->getId();
-            });
-        std::unordered_set<size_t> ego_incomings_could{ego_incomings_could_.begin(), ego_incomings_could_.end()};
+        auto left_of_incomings_could = get_incoming_left_of_ids_from_lanelets(
+            env_model->get_ego_approximations()->get_covered_lanelets(time_step), road_network);
 
-        auto ego_incomings_must_ =
-            env_model->get_ego_approximations()->get_intersected_lanelets(time_step) |
-            std::views::filter([](const auto &lanelet) { return lanelet->hasLaneletType(LaneletType::incoming); }) |
-            std::views::transform([&road_network](const auto &lanelet) {
-                auto incoming = road_network->findIncomingGroupByLanelet(lanelet);
-                if (!incoming) {
-                    throw std::runtime_error{"missing incoming (ego)"};
-                }
-                return incoming->getId();
-            });
-        std::unordered_set<size_t> ego_incomings_must{ego_incomings_must_.begin(), ego_incomings_must_.end()};
+        auto left_of_incomings_must = get_incoming_left_of_ids_from_lanelets(
+            env_model->get_ego_approximations()->get_intersected_lanelets(time_step), road_network);
 
         for (const auto &obstacle : relevant_obstacles) {
-            auto is_left_of = is_on_incoming_left_of(time_step, obstacle, ego_incomings_could, ego_incomings_must);
+            auto is_left_of =
+                is_on_incoming_left_of(time_step, obstacle, left_of_incomings_could, left_of_incomings_must);
             if (is_left_of.has_value()) {
                 if (is_left_of.value()) {
                     true_false_obstacle_ids[time_step].first.emplace(obstacle->getId());
@@ -59,9 +41,15 @@ std::unordered_map<time_step_t, OnIncomingLeftOfExtractor::TrueFalseObstacleIds>
     return true_false_obstacle_ids;
 }
 
-std::optional<bool> OnIncomingLeftOfExtractor::is_on_incoming_left_of(
-    const time_step_t &time_step, const std::shared_ptr<Obstacle> &obstacle,
-    const std::unordered_set<size_t> &ego_incomings_could, const std::unordered_set<size_t> &ego_incomings_must) const {
+std::optional<bool>
+OnIncomingLeftOfExtractor::is_on_incoming_left_of(const time_step_t &time_step,
+                                                  const std::shared_ptr<Obstacle> &obstacle,
+                                                  const std::unordered_set<size_t> &left_of_incomings_could,
+                                                  const std::unordered_set<size_t> &left_of_incomings_must) const {
+    if (left_of_incomings_could.empty()) {
+        return false;
+    }
+
     const auto &road_network = env_model->get_world()->getRoadNetwork();
 
     std::vector<std::shared_ptr<Lanelet>> obs_lanelets;
@@ -74,24 +62,49 @@ std::optional<bool> OnIncomingLeftOfExtractor::is_on_incoming_left_of(
                              [](const auto &lanelet) { return lanelet->hasLaneletType(LaneletType::incoming); })) {
         return false;
     }
-    for (const auto &lanelet : obstacle->getReferenceLane(road_network, time_step)->getContainedLanelets()) {
-        if (!lanelet->hasLaneletType(LaneletType::incoming)) {
-            continue;
-        }
-        auto incoming = road_network->findIncomingGroupByLanelet(lanelet);
-        if (!incoming) {
-            throw std::runtime_error{"missing incoming (obstacle)"};
-        }
-        if (!incoming->getIsLeftOf()) {
-            throw std::runtime_error{"missing 'left of' incoming"};
-        }
-        auto left_of = incoming->getIsLeftOf();
-        if (!ego_incomings_could.contains(left_of->getId())) {
-            return false;
-        }
-        if (ego_incomings_must.contains(left_of->getId())) {
-            return true;
-        }
+
+    auto obs_incomings_ =
+        obstacle->getReferenceLane(road_network, time_step)->getContainedLanelets() |
+        std::views::filter([](const auto &lanelet) { return lanelet->hasLaneletType(LaneletType::incoming); }) |
+        std::views::transform([&road_network](const auto &lanelet) {
+            auto incoming = road_network->findIncomingGroupByLanelet(lanelet);
+            if (!incoming) {
+                throw std::runtime_error{"missing incoming (obstacle)"};
+            }
+            return incoming->getId();
+        });
+    std::unordered_set<size_t> obs_incomings{obs_incomings_.begin(), obs_incomings_.end()};
+
+    if (std::ranges::none_of(left_of_incomings_could, [&obs_incomings](const auto &left_of_incoming_id) {
+            return obs_incomings.contains(left_of_incoming_id);
+        })) {
+        return false;
     }
+
+    if (std::ranges::all_of(left_of_incomings_must, [&obs_incomings](const auto &left_of_incoming_id) {
+            return obs_incomings.contains(left_of_incoming_id);
+        })) {
+        return true;
+    }
+
     return std::nullopt;
+}
+
+std::unordered_set<size_t>
+OnIncomingLeftOfExtractor::get_incoming_left_of_ids_from_lanelets(const std::vector<std::shared_ptr<Lanelet>> &lanelets,
+                                                                  const std::shared_ptr<RoadNetwork> &road_network) {
+    auto left_of_ids =
+        lanelets |
+        std::views::filter([](const auto &lanelet) { return lanelet->hasLaneletType(LaneletType::incoming); }) |
+        std::views::transform([&road_network](const auto &lanelet) {
+            auto incoming = road_network->findIncomingGroupByLanelet(lanelet);
+            if (!incoming) {
+                throw std::runtime_error{"missing incoming (ego)"};
+            }
+            if (!incoming->getIsLeftOf()) {
+                throw std::runtime_error{"missing 'left of' incoming"};
+            }
+            return incoming->getIsLeftOf()->getId();
+        });
+    return {left_of_ids.begin(), left_of_ids.end()};
 }
