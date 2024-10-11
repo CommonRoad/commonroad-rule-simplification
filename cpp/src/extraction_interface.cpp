@@ -4,6 +4,7 @@
 #include "cr_knowledge_extraction/kleene/ego_independent/ego_independent_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/general/cut_in_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/intersection/on_incoming_left_of_extractor.hpp"
+#include "cr_knowledge_extraction/kleene/intersection/other_turning_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/position/at_traffic_sign_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/position/in_front_of_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/position/in_same_lane_extractor.hpp"
@@ -172,6 +173,13 @@ std::optional<std::unique_ptr<kleene::KleeneExtractor>> ExtractionInterface::cre
         return std::make_unique<kleene::position::AtTrafficSignExtractor>(env_model, prop, TrafficSignTypes::STOP);
     case Proposition::ON_INCOMING_LEFT_OF:
         return std::make_unique<kleene::intersection::OnIncomingLeftOfExtractor>(env_model);
+    case Proposition::OTHER_TURNING_LEFT:
+        return std::make_unique<kleene::intersection::OtherTurningExtractor>(env_model, prop, TurningDirection::left);
+    case Proposition::OTHER_GOING_STRAIGHT:
+        return std::make_unique<kleene::intersection::OtherTurningExtractor>(env_model, prop,
+                                                                             TurningDirection::straight);
+    case Proposition::OTHER_TURNING_RIGHT:
+        return std::make_unique<kleene::intersection::OtherTurningExtractor>(env_model, prop, TurningDirection::right);
     default:
         return std::nullopt;
     }

@@ -10,6 +10,7 @@ set(CR_KNOWLEDGE_EXTRACTION_SRC_FILES
         src/kleene/ego_independent/ego_independent_extractor.cpp
         src/kleene/general/cut_in_extractor.cpp
         src/kleene/intersection/on_incoming_left_of_extractor.cpp
+        src/kleene/intersection/other_turning_extractor.cpp
         src/kleene/position/at_traffic_sign_extractor.cpp
         src/kleene/position/in_front_of_extractor.cpp
         src/kleene/position/in_same_lane_extractor.cpp
@@ -38,6 +39,7 @@ set(CR_KNOWLEDGE_EXTRACTION_HDR_FILES
         include/cr_knowledge_extraction/kleene/ego_independent/ego_independent_extractor.hpp
         include/cr_knowledge_extraction/kleene/general/cut_in_extractor.hpp
         include/cr_knowledge_extraction/kleene/intersection/on_incoming_left_of_extractor.hpp
+        include/cr_knowledge_extraction/kleene/intersection/other_turning_extractor.hpp
         include/cr_knowledge_extraction/kleene/position/at_traffic_sign_extractor.hpp
         include/cr_knowledge_extraction/kleene/position/in_front_of_extractor.hpp
         include/cr_knowledge_extraction/kleene/position/in_same_lane_extractor.hpp
