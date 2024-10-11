@@ -12,6 +12,7 @@
 #include "cr_knowledge_extraction/kleene/position/on_main_carriageway_right_lane_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/position/relevant_traffic_light_extractor.hpp"
 #include "cr_knowledge_extraction/proposition.hpp"
+#include "cr_knowledge_extraction/relationship/equivalence/in_intersection_conflict_area_equiv_extractor.hpp"
 #include "cr_knowledge_extraction/relationship/equivalence/in_same_lane_equiv_extractor.hpp"
 #include "cr_knowledge_extraction/relationship/implication/in_front_of_impl_extractor.hpp"
 #include "cr_knowledge_extraction/relationship/implication/safe_distance_impl_extractor.hpp"
@@ -190,6 +191,8 @@ ExtractionInterface::create_relationship_extractor(Proposition prop) {
     switch (prop) {
     case Proposition::IN_SAME_LANE:
         return std::make_unique<relationship::equivalence::InSameLaneEquivExtractor>(env_model);
+    case Proposition::IN_INTERSECTION_CONFLICT_AREA:
+        return std::make_unique<relationship::equivalence::InIntersectionConflictAreaEquivExtractor>(env_model);
     case Proposition::IN_FRONT_OF:
         return std::make_unique<relationship::implication::InFrontOfImplExtractor>(env_model);
     case Proposition::KEEPS_SAFE_DISTANCE_PREC:
