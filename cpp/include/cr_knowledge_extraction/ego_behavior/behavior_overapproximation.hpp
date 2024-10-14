@@ -4,8 +4,8 @@
 #include "cr_knowledge_extraction/ego_behavior/sets/box.hpp"
 #include "cr_knowledge_extraction/road_network/curvilinear_road_network.hpp"
 
+#include <Eigen/Dense>
 #include <commonroad_cpp/auxiliaryDefs/types_and_definitions.h>
-#include <eigen3/Eigen/Dense>
 
 namespace knowledge_extraction::ego_behavior {
 class BehaviorOverapproximation {
