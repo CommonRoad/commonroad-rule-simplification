@@ -45,7 +45,7 @@ test = [
 #]
 build = [
     "scikit-build-core~=0.8.0",
-    "pybind11~=2.11.1",
+    "nanobind~=2.2.0",
     "pathspec>=0.12.1",
     "pyproject-metadata>=0.7.1",
     "cmake>=3.24",
@@ -57,7 +57,7 @@ dev = [
 [build-system]
 requires = [
     "scikit-build-core~=0.8.0",
-    "nanobind~=2.0",
+    "nanobind~=2.2.0",
 ]
 build-backend = "scikit_build_core.build"
 
