@@ -5,6 +5,7 @@
 #include <commonroad_cpp/predicates/lane/on_similar_oriented_lanelet_with_type_predicate.h>
 #include <commonroad_cpp/predicates/lane/on_similar_oriented_lanelet_without_type_predicate.h>
 #include <commonroad_cpp/roadNetwork/lanelet/lane.h>
+#include <commonroad_cpp/roadNetwork/regulatoryElements/regulatory_elements_utils.h>
 
 using namespace knowledge_extraction::env_model;
 
@@ -215,4 +216,19 @@ EnvironmentModel::get_turning_directions(const std::shared_ptr<Obstacle> &obstac
     turning_directions_cache.emplace(obstacle_id, result);
 
     return turning_directions_cache.at(obstacle_id);
+}
+
+std::optional<int> EnvironmentModel::get_priority(size_t time_step, const std::shared_ptr<Obstacle> &obstacle,
+                                                  TurningDirection dir) {
+    auto obstacle_id = obstacle->getId();
+    auto key = std::make_tuple(time_step, obstacle_id, dir);
+    if (priority_cache.contains(key)) {
+        return priority_cache.at(key);
+    }
+
+    auto priority = regulatory_elements_utils::getPriority(time_step, world->getRoadNetwork(), obstacle, dir);
+
+    priority_cache.emplace(key, priority);
+
+    return priority;
 }

@@ -17,6 +17,7 @@ set(CR_KNOWLEDGE_EXTRACTION_SRC_FILES
         src/kleene/position/on_lanelet_with_type_extractor.cpp
         src/kleene/position/on_main_carriageway_right_lane_extractor.cpp
         src/kleene/position/relevant_traffic_light_extractor.cpp
+        src/kleene/regulatory/priority_extractor.cpp
 
         src/relationship/equivalence/in_intersection_conflict_area_equiv_extractor.cpp
         src/relationship/equivalence/in_same_lane_equiv_extractor.cpp
@@ -47,6 +48,7 @@ set(CR_KNOWLEDGE_EXTRACTION_HDR_FILES
         include/cr_knowledge_extraction/kleene/position/on_lanelet_with_type_extractor.hpp
         include/cr_knowledge_extraction/kleene/position/on_main_carriageway_right_lane_extractor.hpp
         include/cr_knowledge_extraction/kleene/position/relevant_traffic_light_extractor.hpp
+        include/cr_knowledge_extraction/kleene/regulatory/priority_extractor.hpp
 
         include/cr_knowledge_extraction/relationship/relationship_extractor.hpp
         include/cr_knowledge_extraction/relationship/equivalence/in_intersection_conflict_area_equiv_extractor.hpp

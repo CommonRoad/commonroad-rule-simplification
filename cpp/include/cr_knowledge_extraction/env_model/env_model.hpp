@@ -39,6 +39,10 @@ class EnvironmentModel {
     std::unordered_map<size_t, std::unordered_set<TurningDirection>> turning_directions_cache;
     std::unordered_set<TurningDirection> get_turning_directions_impl(const std::shared_ptr<Obstacle> &obstacle);
 
+    std::unordered_map<std::tuple<time_step_t, size_t, TurningDirection>, std::optional<int>,
+                       boost::hash<std::tuple<time_step_t, size_t, TurningDirection>>>
+        priority_cache;
+
   public:
     EnvironmentModel(std::shared_ptr<World> world, std::shared_ptr<geometry::CurvilinearCoordinateSystem> ego_ccs,
                      const knowledge_extraction::ego_behavior::EgoParameters &ego_params,
@@ -64,5 +68,6 @@ class EnvironmentModel {
     std::optional<std::set<size_t>> get_obstacle_lane_ids(size_t time_step, const std::shared_ptr<Obstacle> &obstacle);
     std::optional<double> get_stopping_s(size_t time_step, const std::shared_ptr<Obstacle> &obstacle);
     const std::unordered_set<TurningDirection> &get_turning_directions(const std::shared_ptr<Obstacle> &obstacle);
+    std::optional<int> get_priority(size_t time_step, const std::shared_ptr<Obstacle> &obstacle, TurningDirection dir);
 };
 } // namespace knowledge_extraction::env_model

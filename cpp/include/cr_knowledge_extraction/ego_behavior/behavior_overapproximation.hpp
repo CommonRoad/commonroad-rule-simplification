@@ -34,6 +34,9 @@ class BehaviorOverapproximation {
 
     std::unordered_map<time_step_t, sets::Box2D> occupancy_approximation;
     std::unordered_map<time_step_t, std::vector<std::shared_ptr<Lanelet>>> covered_lanelets;
+    std::unordered_map<std::pair<time_step_t, TurningDirection>, std::pair<int, int>,
+                       boost::hash<std::pair<time_step_t, TurningDirection>>>
+        priority_range;
 
     std::unordered_map<time_step_t, sets::Box2D> occupancy_intersection_approximation;
     std::unordered_map<time_step_t, std::vector<std::shared_ptr<Lanelet>>> intersected_lanelets;
@@ -102,6 +105,8 @@ class BehaviorOverapproximation {
     sets::Box2D get_occupancy_intersection_approximation(time_step_t time_step);
     const std::vector<std::shared_ptr<Lanelet>> &get_intersected_lanelets(time_step_t time_step);
 
-    std::pair<double, double> get_velocity_approximation(time_step_t time_step);
+    const std::pair<double, double> &get_velocity_approximation(time_step_t time_step);
+
+    const std::pair<int, int> &get_priority_range(time_step_t time_step, TurningDirection dir);
 };
 } // namespace knowledge_extraction::ego_behavior

@@ -1,6 +1,9 @@
 #include "cr_knowledge_extraction/ego_behavior/behavior_overapproximation.hpp"
 
+#include <commonroad_cpp/roadNetwork/regulatoryElements/regulatory_elements_utils.h>
+
 #include <numbers>
+#include <ranges>
 #include <utility>
 
 using namespace knowledge_extraction::ego_behavior;
@@ -126,7 +129,7 @@ BehaviorOverapproximation::get_intersected_lanelets(time_step_t time_step) {
     return intersected_lanelets.at(time_step);
 }
 
-std::pair<double, double> BehaviorOverapproximation::get_velocity_approximation(time_step_t time_step) {
+const std::pair<double, double> &BehaviorOverapproximation::get_velocity_approximation(time_step_t time_step) {
     if (!velocity_approximation.contains(time_step)) {
         const auto &[min, max] = get_center_approximation(time_step).bounds();
         auto v_x_max = max(1);
@@ -145,6 +148,22 @@ std::pair<double, double> BehaviorOverapproximation::get_velocity_approximation(
         velocity_approximation.emplace(time_step, std::make_pair(v_min, v_max));
     }
     return velocity_approximation.at(time_step);
+}
+
+const std::pair<int, int> &BehaviorOverapproximation::get_priority_range(time_step_t time_step, TurningDirection dir) {
+    auto key = std::make_pair(time_step, dir);
+
+    if (!priority_range.contains(key)) {
+        auto ego_covered_lanelets = get_covered_lanelets(time_step);
+        assert(!ego_covered_lanelets.empty());
+        auto priorities = ego_covered_lanelets | std::views::transform([&dir](const auto &lanelet) {
+                              return regulatory_elements_utils::extractPriorityTrafficSign({lanelet}, dir);
+                          });
+        auto [min, max] = std::ranges::minmax_element(priorities.begin(), priorities.end());
+        priority_range.emplace(std::make_pair(time_step, dir), std::make_pair(*min, *max));
+    }
+
+    return priority_range.at(key);
 }
 
 sets::Box2D BehaviorOverapproximation::project_to_positions(const Box4D &state_set) {
