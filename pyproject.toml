@@ -45,10 +45,12 @@ test = [
 #]
 build = [
     "scikit-build-core~=0.8.0",
-    "nanobind~=2.2.0",
+    "nanobind~=2.0.0",
     "pathspec>=0.12.1",
     "pyproject-metadata>=0.7.1",
+    "typing_extensions~=4.12.2",
     "cmake>=3.24",
+    "commonroad-drivability-checker>=2024.1", # Required to load the Python module for stub generation
 ]
 dev = [
     "pre-commit>=3.7.0",
@@ -56,8 +58,11 @@ dev = [
 
 [build-system]
 requires = [
-    "scikit-build-core~=0.8.0",
+    "scikit-build-core~=0.10.7",
     "nanobind~=2.2.0",
+    "typing_extensions~=4.12.2",
+    "cmake>=3.24",
+    "commonroad-drivability-checker>=2024.1", # Required to load the Python module for stub generation
 ]
 build-backend = "scikit_build_core.build"
 
