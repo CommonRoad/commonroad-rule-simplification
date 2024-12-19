@@ -14,8 +14,8 @@ from commonroad_dc import pycrccosy
 from commonroad_route_planner.route_planner import RoutePlanner
 from ltl_augmentation import Formula
 
-from cr_rule_simplification import EgoParameters
 from cr_rule_simplification.instantiation.traffic_rule_instantiator import TrafficRuleInstantiator
+from cr_rule_simplification.knowledge_extraction import EgoParameters
 from cr_rule_simplification.simplification.traffic_rule_simplifier import TrafficRuleSimplifier
 
 

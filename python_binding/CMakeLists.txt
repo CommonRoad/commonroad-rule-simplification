@@ -20,7 +20,7 @@ if (NOT SKBUILD)
     message(STATUS "Adding Python interface for compilation only")
 endif ()
 
-set(python_module_name cr_knowledge_extraction_core)
+set(python_module_name knowledge_extraction_core)
 nanobind_add_module(${python_module_name} MODULE
         pybind.hpp
         pybind.cpp
@@ -41,17 +41,18 @@ nanobind_add_stub(
         VERBOSE
 )
 
+set(install_destination cr_rule_simplification/knowledge_extraction)
 install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/${python_module_name}.pyi
         ${CMAKE_CURRENT_BINARY_DIR}/py.typed
-        DESTINATION cr_rule_simplification
+        DESTINATION ${install_destination}
         COMPONENT PythonModules
 )
 
 target_link_libraries(${python_module_name} PRIVATE cr_knowledge_extraction)
 
 install(TARGETS ${python_module_name}
-        LIBRARY DESTINATION cr_rule_simplification
+        LIBRARY DESTINATION ${install_destination}
         COMPONENT ${python_module_name}
 )
 

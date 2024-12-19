@@ -4,7 +4,7 @@ import crcpp
 from commonroad_dc import pycrccosy
 from ltl_augmentation import Augmenter, Formula, KnowledgeSequence
 
-import cr_rule_simplification.cr_knowledge_extraction_core as core
+import cr_rule_simplification.knowledge_extraction.knowledge_extraction_core as core
 from cr_rule_simplification.knowledge_extraction.knowledge_extractor import KnowledgeExtractor
 
 

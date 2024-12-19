@@ -2,7 +2,7 @@ from typing import Optional
 
 from ltl_augmentation import Formula
 
-from cr_rule_simplification.cr_knowledge_extraction_core import Proposition as Prop
+from cr_rule_simplification.knowledge_extraction.knowledge_extraction_core import Proposition as Prop
 
 
 def format_formula_for_reach(formula: Formula) -> str:
