@@ -1,5 +1,5 @@
 [project]
-name = "cr_knowledge_extraction"
+name = "cr_rule_simplification"
 version = "0.1.0"
 readme = { file = "README.md", content-type = "text/markdown" }
 requires-python = ">=3.10,<3.11"
@@ -7,7 +7,7 @@ requires-python = ">=3.10,<3.11"
 authors = [
     { name = "Cyber-Physical Systems Group - Technical University of Munich", email = "commonroad@lists.lrz.de" }
 ]
-description = "A Toolbox for Extracting Knowledge for Traffic Rule Augmentation from CommonRoad Scenarios"
+description = "A Toolbox for Simplifying Traffic Rules in CommonRoad Scenarios"
 keywords = [
     "autonomous vehicles",
     "automated driving",

@@ -2,8 +2,8 @@ import abc
 
 from ltl_augmentation import Formula
 
-from cr_knowledge_extraction.cr_knowledge_extraction_core import Proposition as Prop
-from cr_knowledge_extraction.traffic_rule.rule import TrafficRule
+from cr_rule_simplification.cr_knowledge_extraction_core import Proposition as Prop
+from cr_rule_simplification.instantiation.rule import TrafficRule
 
 
 class NotEndangerRule(TrafficRule, abc.ABC):

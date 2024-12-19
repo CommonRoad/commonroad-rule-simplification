@@ -44,14 +44,14 @@ nanobind_add_stub(
 install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/${python_module_name}.pyi
         ${CMAKE_CURRENT_BINARY_DIR}/py.typed
-        DESTINATION cr_knowledge_extraction
+        DESTINATION cr_rule_simplification
         COMPONENT PythonModules
 )
 
 target_link_libraries(${python_module_name} PRIVATE cr_knowledge_extraction)
 
 install(TARGETS ${python_module_name}
-        LIBRARY DESTINATION cr_knowledge_extraction
+        LIBRARY DESTINATION cr_rule_simplification
         COMPONENT ${python_module_name}
 )
 

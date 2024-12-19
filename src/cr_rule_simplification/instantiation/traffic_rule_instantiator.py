@@ -8,12 +8,12 @@ from commonroad.scenario.obstacle import Obstacle
 from commonroad.scenario.scenario import Scenario
 from ltl_augmentation import Formula
 
-from cr_knowledge_extraction.traffic_rule.R_G1 import SafeDistanceRule
-from cr_knowledge_extraction.traffic_rule.R_I5 import EnteringVehiclesRule
-from cr_knowledge_extraction.traffic_rule.R_IN1 import StopSignRule
-from cr_knowledge_extraction.traffic_rule.R_IN3 import RightBeforeLeftRule
-from cr_knowledge_extraction.traffic_rule.R_IN4 import PriorityRule
-from cr_knowledge_extraction.traffic_rule.R_IN5 import TurningLeftRule
+from cr_rule_simplification.instantiation.R_G1 import SafeDistanceRule
+from cr_rule_simplification.instantiation.R_I5 import EnteringVehiclesRule
+from cr_rule_simplification.instantiation.R_IN1 import StopSignRule
+from cr_rule_simplification.instantiation.R_IN3 import RightBeforeLeftRule
+from cr_rule_simplification.instantiation.R_IN4 import PriorityRule
+from cr_rule_simplification.instantiation.R_IN5 import TurningLeftRule
 
 
 class TrafficRuleInstantiator:

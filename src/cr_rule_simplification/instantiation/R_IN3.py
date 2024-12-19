@@ -2,8 +2,8 @@ from typing import List, Optional, Set
 
 from ltl_augmentation import Formula
 
-from cr_knowledge_extraction.cr_knowledge_extraction_core import Proposition as Prop
-from cr_knowledge_extraction.traffic_rule.not_endanger_rule import NotEndangerRule
+from cr_rule_simplification.cr_knowledge_extraction_core import Proposition as Prop
+from cr_rule_simplification.instantiation.not_endanger_rule import NotEndangerRule
 
 
 class RightBeforeLeftRule(NotEndangerRule):

@@ -1,18 +1,22 @@
+import copy
 import time
-from typing import Dict, Tuple
+from typing import Tuple
 
 import crcpp
-import ltl_augmentation as aug
 import more_itertools
 from commonroad.common.file_reader import CommonRoadFileReader
-from commonroad.planning.planning_problem import PlanningProblem
+from commonroad.common.util import Interval
+from commonroad.planning.planning_problem import PlanningProblem, PlanningProblemSet
+from commonroad.scenario.scenario import Scenario
+from commonroad.scenario.state import InitialState
+from commonroad.scenario.trajectory import Trajectory
 from commonroad_dc import pycrccosy
 from commonroad_route_planner.route_planner import RoutePlanner
 from ltl_augmentation import Formula
 
-from cr_knowledge_extraction import EgoParameters, ExtractionInterface, ExtractionResult
-from cr_knowledge_extraction.formula.formatting import format_formula_for_reach
-from cr_knowledge_extraction.traffic_rule.instantiation import TrafficRuleInstantiator
+from cr_rule_simplification import EgoParameters
+from cr_rule_simplification.instantiation.traffic_rule_instantiator import TrafficRuleInstantiator
+from cr_rule_simplification.simplification.traffic_rule_simplifier import TrafficRuleSimplifier
 
 
 def main():
@@ -20,11 +24,10 @@ def main():
     # scenario_path = "cpp/tests/scenarios/interstate_simple.xml"
     scenario_path = "scenarios/DEU_MerzenichRather-2_8814400_T-14549.xml"
     scenario, planning_problems = CommonRoadFileReader(scenario_path).open()
+    dt = 0.16
+    scenario, planning_problems = resample_scenario(scenario, planning_problems, dt)
     planning_problem = list(planning_problems.planning_problem_dict.values())[0]
-    dt = 0.08
-    # dt = 0.2
-    planning_horizon = 30
-    planning_problem.initial_state.time_step = int(planning_problem.initial_state.time_step // (dt / scenario.dt))
+    planning_horizon = 15
     world = crcpp.World(scenario)
 
     # configure ego parameters
@@ -33,90 +36,28 @@ def main():
     # plan route and create clcs
     route = RoutePlanner(scenario, planning_problem).plan_routes().retrieve_first_route()
     reference_path = pycrccosy.Util.resample_polyline(route.reference_path, 2.0)
-    # ccs = pycrccosy.CurvilinearCoordinateSystem(reference_path)
+    ccs = pycrccosy.CurvilinearCoordinateSystem(reference_path)
 
-    # specify formula
-    # formula = aug.Formula("(G InFrontOf(10) & InSameLane(10)) & (G InFrontOf(12) & InSameLane(12))")
-    # formula = aug.Formula(
-    #     """
-    #     (G OnMainCarriageway & InFrontOf(103) & OtherOnAccessRamp(103) & (F OtherOnMainCarriageway(103)) ->
-    #         !(!OnMainCarriagewayRightLane & F OnMainCarriagewayRightLane)) &
-    #     (G OnMainCarriageway & InFrontOf(102) & OtherOnAccessRamp(102) & (F OtherOnMainCarriageway(102)) ->
-    #         !(!OnMainCarriagewayRightLane & F OnMainCarriagewayRightLane))
-    #     """
-    # )
-    formulas = list(
+    # instantiate traffic rules
+    tic = time.perf_counter()
+    rules = list(
         more_itertools.flatten(
             TrafficRuleInstantiator()
-            .instantiate(["R_G1", "R_I5"], scenario, planning_problem, time_steps=planning_horizon)
+            .instantiate(["R_I5"], scenario, planning_problem, time_steps=planning_horizon)
             .values()
         )
     )
-    print(aug.Formula.conjunction(formulas))
-
-    tic = time.perf_counter()
-    extractor = ExtractionInterface(world, ego_params, reference_path)
     toc = time.perf_counter()
-    print(f"Extractor initialization time: {toc - tic} seconds")
+    print(Formula.conjunction(rules))
+    print(f"Instantiation took {toc - tic:0.4f} seconds")
 
-    # single pass augmentation
-    print("Single pass")
-    augmented = extract_and_augment(extractor, formulas, planning_horizon)
-    print(aug.Formula.conjunction(augmented))
-
-    # multi pass augmentation
-    extractor = ExtractionInterface(world, ego_params, reference_path)  # re-init to make comparison fair
-    print("Multi pass")
-    augmented = extract_and_augment(extractor, formulas, planning_horizon, extraction_mode=1)
-    augmented = extract_and_augment(extractor, augmented, planning_horizon, extraction_mode=2)
-    print(aug.Formula.conjunction(augmented))
-
-    print([format_formula_for_reach(f) for f in formulas])
-    print([format_formula_for_reach(f) for f in augmented])
-
-
-def extract_and_augment(extractor, formulas, time_steps, verbose=True, extraction_mode=0):
-    # extract scenario knowledge
+    # simplify traffic rules
     tic = time.perf_counter()
-    relevant_aps = Formula.conjunction(formulas).relevant_aps(time_steps)
-    match extraction_mode:
-        case 1:
-            extracted_knowledge = extractor.extract_kleene(relevant_aps)
-        case 2:
-            extracted_knowledge = extractor.extract_relationships(relevant_aps)
-        case 3:
-            extracted_knowledge = extractor.extract_equivalences(relevant_aps)
-        case _:
-            extracted_knowledge = extractor.extract_all(relevant_aps)
+    simplifier = TrafficRuleSimplifier(world, ego_params, ccs)
+    simplified_rules = simplifier.simplify(rules, planning_horizon)
     toc = time.perf_counter()
-    if verbose:
-        print_knowledge(extracted_knowledge)
-    print(f"Extraction time: {toc - tic} seconds")
-
-    # augment formula with knowledge
-    tic = time.perf_counter()
-    knowledge_sequence = convert_to_knowledge_sequence(extracted_knowledge)
-    augmenter = aug.Augmenter(knowledge_sequence)
-    augmented_formulas = [aug for formula in formulas if not (aug := augmenter.augment(formula)).is_true()]
-    toc = time.perf_counter()
-    if verbose:
-        print(aug.Formula.conjunction(augmented_formulas))
-    print(f"Augmentation time: {toc - tic} seconds")
-
-    return augmented_formulas
-
-
-def convert_to_knowledge_sequence(extracted_knowledge: Dict[int, ExtractionResult]) -> aug.KnowledgeSequence:
-    knowledge = {
-        time_step: (
-            result.positive_propositions,
-            result.negative_propositions,
-            result.implications,
-            result.equivalences,
-        )
-        for time_step, result in extracted_knowledge.items()
-    }
-    return aug.KnowledgeSequence(knowledge)
+    print(Formula.conjunction(simplified_rules))
+    print(f"Simplification took {toc - tic:0.4f} seconds")
 
 
 def initialize_from_planning_problem(
@@ -127,14 +68,87 @@ def initialize_from_planning_problem(
     return state.time_step, state.position[0], state.position[1], state.velocity, 0, state.orientation
 
 
-def print_knowledge(extracted_knowledge):
-    for time_step, result in sorted(extracted_knowledge.items()):
-        print("====================================")
-        print(f"Time step: {time_step}")
-        print(f"Positive: {', '.join(result.positive_propositions)}")
-        print(f"Negative: {', '.join(result.negative_propositions)}")
-        print(f"Implications: {', '.join(f'{a} -> {b}' for a, b in result.implications)}")
-        print(f"Equivalences: {', '.join(f'{a} <-> {b}' for a, b in result.equivalences)}")
+def resample_scenario(
+    scenario: Scenario, planning_problems: PlanningProblemSet, new_dt: float
+) -> Tuple[Scenario, PlanningProblemSet]:
+    """Resamples a scenario to a new time step size (only works for scenarios with trajectory predictions)."""
+    assert new_dt > 0, "New time step size must be positive"
+    assert scenario.dt <= new_dt, "New time step size must be larger than the old one"
+    assert new_dt % scenario.dt == 0, "New time step size must be a multiple of the old one"
+
+    scenario_downsampled = copy.deepcopy(scenario)
+    pps_downsampled = copy.deepcopy(planning_problems)
+
+    step_width = int(round(new_dt / scenario.dt))
+
+    if step_width == 1:
+        return scenario_downsampled, pps_downsampled
+
+    for planning_problem in pps_downsampled.planning_problem_dict.values():
+        planning_problem.initial_state.time_step = planning_problem.initial_state.time_step // step_width
+        planning_problem.goal.state_list = _resample_state_list(planning_problem.goal.state_list, step_width)
+
+    scenario_downsampled.dt = new_dt
+    for obs in scenario_downsampled.dynamic_obstacles:
+        prediction_state_list = obs.prediction.trajectory.state_list
+        if obs.initial_state.time_step % step_width != 0:
+            # find minimum time step in prediction that is a multiple of step_width
+            step = min(
+                state.time_step
+                for state in prediction_state_list
+                if state.time_step % step_width == 0 and state.time_step >= obs.initial_state.time_step
+            )
+            initial_state = obs.prediction.trajectory.state_at_time_step(step)
+            prediction_state_list.remove(initial_state)
+            obs.initial_state = initial_state.convert_state_to_state(InitialState())
+
+            obs.initial_signal_state = obs.signal_state_at_time_step(step)
+            if obs.initial_signal_state:
+                obs.signal_series.remove(obs.initial_signal_state)
+
+            # Unset initial lanelet info
+            obs.initial_center_lanelet_ids = None
+            obs.initial_shape_lanelet_ids = None
+        obs.initial_state.time_step //= step_width
+        if obs.initial_signal_state:
+            obs.initial_signal_state.time_step //= step_width
+        resampled_prediction_state_list = _resample_state_list(prediction_state_list, step_width)
+        if resampled_prediction_state_list:
+            obs.prediction.trajectory = Trajectory(
+                resampled_prediction_state_list[0].time_step, resampled_prediction_state_list
+            )
+        else:
+            obs.prediction = None
+        obs.history = _resample_state_list(obs.history, step_width)
+        obs.signal_series = _resample_state_list(obs.signal_series, step_width)
+        obs.signal_history = _resample_state_list(obs.signal_history, step_width)
+        # unset meta information states
+        # TODO: Implement once this is needed
+        obs.initial_meta_information_state = None
+        obs.meta_information_series = None
+
+    for traffic_light in scenario_downsampled.lanelet_network.traffic_lights:
+        traffic_light.traffic_light_cycle.time_offset //= step_width
+        for cycle_element in traffic_light.traffic_light_cycle.cycle_elements:
+            cycle_element.duration //= step_width
+
+    return scenario_downsampled, pps_downsampled
+
+
+def _resample_state_list(state_list: list, step_width: int) -> list:
+    """Resamples a list of states with the given step width."""
+    state_list = [
+        state
+        for state in state_list
+        if (isinstance(state.time_step, int) and state.time_step % step_width == 0)
+        or (isinstance(state.time_step, Interval) and state.time_step.length >= step_width)
+    ]
+    for state in state_list:
+        if isinstance(state.time_step, Interval):
+            state.time_step = Interval(state.time_step.start // step_width, state.time_step.end // step_width)
+        else:
+            state.time_step //= step_width
+    return state_list
 
 
 if __name__ == "__main__":
