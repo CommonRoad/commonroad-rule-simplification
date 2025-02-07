@@ -51,7 +51,7 @@ class KnowledgeExtractor:
 
     @staticmethod
     def _convert_extraction_results_to_knowledge_sequence(
-        extraction_results: Dict[int, core.ExtractionResult]
+        extraction_results: Dict[int, core.ExtractionResult],
     ) -> KnowledgeSequence:
         """Convert the extraction results to a KnowledgeSequence.
 

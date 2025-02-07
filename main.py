@@ -3,7 +3,6 @@ import time
 from commonroad.common.file_reader import CommonRoadFileReader
 from commonroad_dc import pycrccosy
 from commonroad_route_planner.route_planner import RoutePlanner
-
 from cr_rule_simplification import TrafficRuleFacade
 
 
