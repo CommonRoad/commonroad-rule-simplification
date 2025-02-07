@@ -15,6 +15,7 @@ keywords = [
     "temporal logic",
 ]
 dependencies = [
+    "ltl_augmentation@git+ssh://git@gitlab.lrz.de/cps/ltl-augmentation.git#main",
     "commonroad-io>=2024.2",
     "commonroad-drivability-checker>=2024.1",
     "commonroad-route-planner>=2024.1, <2024.2",
@@ -50,7 +51,6 @@ build = [
     "pyproject-metadata>=0.7.1",
     "typing_extensions~=4.12.2",
     "cmake>=3.24",
-    "commonroad-drivability-checker>=2024.1", # Required to load the Python module for stub generation
 ]
 dev = [
     "pre-commit>=3.7.0",
@@ -62,7 +62,6 @@ requires = [
     "nanobind~=2.2.0",
     "typing_extensions~=4.12.2",
     "cmake>=3.24",
-    "commonroad-drivability-checker>=2024.1", # Required to load the Python module for stub generation
 ]
 build-backend = "scikit_build_core.build"
 
