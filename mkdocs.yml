@@ -1,0 +1,72 @@
+site_name: "Environment Model API documentation"
+
+theme:
+  name: material
+  logo: assets/commonroad_white150.png
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: sphinx
+            show_submodules: True
+  - mkdoxy:
+      projects:
+        knowledge-extraction:
+          src-dirs: "cpp/src cpp/include"
+          full-doc: True
+          doxy-cfg:
+            FILE_PATTERNS: "*.cpp *.h*"
+            RECURSIVE: True
+            EXTRACT_ALL: True
+            EXTRACT_PACKAGE: True
+            EXTRACT_STATIC: True
+            EXTRACT_ANON_NSPACES: True
+            JAVADOC_AUTOBRIEF: True
+            TEMPLATE_RELATIONS: True
+
+nav:
+  - Home:
+      - "index.md"
+  - Python API Documentation:
+      - Facade: "reference/facade.md"
+      - Formula: "reference/formula.md"
+      - Instantiation: "reference/instantiation.md"
+      - Knowledge Extraction: "reference/knowledge_extraction.md"
+      - Simplification: "reference/simplification.md"
+  - C++ API Documentation:
+      - "Links": "knowledge-extraction/links.md"
+      - "Classes":
+          - "Class List": "knowledge-extraction/annotated.md"
+          - "Class Index": "knowledge-extraction/classes.md"
+          - "Class Hierarchy": "knowledge-extraction/hierarchy.md"
+          - "Class Members": "knowledge-extraction/class_members.md"
+          - "Class Member Functions": "knowledge-extraction/class_member_functions.md"
+          - "Class Member Variables": "knowledge-extraction/class_member_variables.md"
+          - "Class Member Typedefs": "knowledge-extraction/class_member_typedefs.md"
+          - "Class Member Enumerations": "knowledge-extraction/class_member_enums.md"
+      - "Namespaces":
+          - "Namespace List": "knowledge-extraction/namespaces.md"
+          - "Namespace Members": "knowledge-extraction/namespace_members.md"
+          - "Namespace Member Functions": "knowledge-extraction/namespace_member_functions.md"
+          - "Namespace Member Variables": "knowledge-extraction/namespace_member_variables.md"
+          - "Namespace Member Typedefs": "knowledge-extraction/namespace_member_typedefs.md"
+          - "Namespace Member Enumerations": "knowledge-extraction/namespace_member_enums.md"
+      - "Functions": "knowledge-extraction/functions.md"
+      - "Variables": "knowledge-extraction/variables.md"
+      - "Macros": "knowledge-extraction/macros.md"
+      - "Files": "knowledge-extraction/files.md"
+
+markdown_extensions:
+  - pymdownx.arithmatex:
+      generic: true
+
+extra_javascript:
+  - js/katex.js
+  - https://unpkg.com/katex@0/dist/katex.min.js
+  - https://unpkg.com/katex@0/dist/contrib/auto-render.min.js
+
+extra_css:
+  - https://unpkg.com/katex@0/dist/katex.min.css

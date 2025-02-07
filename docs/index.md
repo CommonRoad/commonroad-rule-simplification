@@ -1,10 +1,15 @@
-## CommonRoad-Knowledge-Extraction: Extract Scenario-Specific Knowledge to Simplify Traffic Rules
+# CommonRoad Rule Simplification
 
-### System Requirements
+CommonRoad Rule Simplification is a toolbox for simplifying complex traffic rules for concrete traffic situations in the CommonRoad framework.
+The simplification is based on scenario-specific knowledge, which is extracted from the CommonRoad scenario.
+By augmenting the traffic rule specifications with this knowledge, we obtain a simplified rule set that is tailored to the concrete traffic situation at hand.
+Thus, the simplified rules are more efficient to use in subsequent motion planning tasks.
+
+## System Requirements
 
 The software is written in Python 3.10 and C++-20, and was tested on Ubuntu 22.04.
 
-### Building from Source
+## Building from Source
 
 > **Note:** The build process automatically includes other internal repositories via Git.
 > Thus, an SSH key in your LRZ GitLab account is required.
@@ -16,7 +21,7 @@ The software is written in Python 3.10 and C++-20, and was tested on Ubuntu 22.0
 > installed on your system to build the package.
 > Please refer to the [Rust installation guide](https://www.rust-lang.org/tools/install) for further information.
 
-#### Third-Party Dependencies
+### Third-Party Dependencies
 
 While most of these dependencies are added automatically during the build process, you can install them manually via
 your package manager to speed up the build process.
@@ -37,7 +42,7 @@ your package manager to speed up the build process.
 
 The additional Python dependencies are listed in `pyproject.toml`.
 
-#### Building the Code
+### Building the Code
 
 1. Install C++ dependencies:
 
@@ -73,23 +78,6 @@ for further information on configuring CMake arguments via our build system (`sc
 > **Note**: Building the package in Debug mode (see above) significantly increases the computation time of the C++
 > backend. Please make sure you are building in Release mode (default setting) if you require fast computations.
 
-### Running the Code
+## Running the Code
 
 Run the example script `main.py`.
-
-### Documentation
-
-To generate the documentation, first make sure that you have installed the documentation dependencies listed in `pyproject.toml`.
-Then, you can generate the documentation by running:
-```bash
-mkdocs build
-```
-
-To view the documentation, you can start a local server by running:
-```bash
-mkdocs serve
-```
-
-### Development
-
-Check out the [README_FOR_DEVS](./readme/README_FOR_DEVS.md) for information on setting up your development environment.

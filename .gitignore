@@ -11,6 +11,9 @@ __pycache__/
 # Output directory
 output/
 
+# Built documentation
+site/
+
 # build
 build/
 cmake-build-*/

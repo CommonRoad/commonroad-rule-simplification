@@ -39,11 +39,12 @@ classifiers = [
 test = [
     "pytest>=6.2.2",
 ]
-#docs = [
-#    "Sphinx>=4.5.0",
-#    "sphinx-autodoc-typehints>=1.18.1",
-#    "m2r2>=0.3.0",
-#]
+docs = [
+    "mkdocs~=1.6.1",
+    "mkdocs-material~=9.5.42",
+    "mkdoxy~=1.2.4",
+    "mkdocstrings-python~=1.8",
+]
 build = [
     "scikit-build-core~=0.8.0",
     "nanobind~=2.0.0",
