@@ -1,7 +1,6 @@
 ## Using Pre-Commit Hooks
 
-This project uses [pre-commit](https://pre-commit.com/) to ensure that formatters and linters automatically run when
-committing files.
+This project uses [pre-commit](https://pre-commit.com/) to ensure that formatters and linters automatically run when committing files.
 To use pre-commit, install it via pip:
 
 ```bash
@@ -23,13 +22,16 @@ pre-commit run --all-files
 
 ## Editable Install (experimental)
 
-1. Install the C++ dependencies as described [above](#third-party-dependencies).
+1. Install the C++ dependencies as described in the [README](../README.md).
 
 2. Install the Python build dependencies (required to make `--no-build-isolation` work in the next step):
 
 ```bash
-pip install -r requirements_build.txt
+pip install scikit-build-core~=0.8.0 nanobind~=2.0.0 pathspec>=0.12.1 pyproject-metadata>=0.7.1 typing_extensions~=4.12.2 cmake>=3.24
 ```
+
+> **Note:** The versions of the dependencies might have changed from the time of writing this README. Please check the
+> optional build dependencies in the [`pyproject.toml`](../pyproject.toml) file for the latest versions.
 
 3. Build the package and install it in editable mode with automatic rebuilds.
 
