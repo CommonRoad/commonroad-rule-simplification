@@ -8,7 +8,8 @@ from cr_rule_simplification.knowledge_extraction.knowledge_extraction_core impor
 
 class TurningLeftRule(NotEndangerRule):
     """
-    Rule R-IN5:
+    Rule R-IN5 from Maierhofer et al. (2022):
+
     G (
         (
             turning_left(x_ego) & on_oncoming_of(x_o, x_ego)

@@ -8,7 +8,8 @@ from cr_rule_simplification.knowledge_extraction.knowledge_extraction_core impor
 
 class StopSignRule(TrafficRule):
     """
-    Rule R-IN1:
+    Rule R-IN1 from Maierhofer et al. (2022):
+
     G(
         stop_line_in_front(x_ego) & X !stop_line_in_front(x_ego)
         & at_traffic_sign(x_ego, stop)

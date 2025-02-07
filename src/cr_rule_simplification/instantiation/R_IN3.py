@@ -8,7 +8,8 @@ from cr_rule_simplification.knowledge_extraction.knowledge_extraction_core impor
 
 class RightBeforeLeftRule(NotEndangerRule):
     """
-    Rule R-IN3:
+    Rule R-IN3 from Maierhofer et al. (2022):
+
     G (
         (
             on_incoming_left_of(x_ego, x_o) & !relevant_traffic_light(x_ego)

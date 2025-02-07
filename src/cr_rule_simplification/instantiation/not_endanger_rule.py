@@ -7,10 +7,17 @@ from cr_rule_simplification.knowledge_extraction.knowledge_extraction_core impor
 
 
 class NotEndangerRule(TrafficRule, abc.ABC):
+    """Base class for rules using the "not_endanger_intersection" meta-predicate from Maierhofer et al. (2022)."""
+
     _t_ia: int
     _t_ib: int
 
     def __init__(self, t_ia: int, t_ib: int):
+        """Create a new NotEndangerRule.
+
+        :param t_ia: The parameter $t_{ia}$.
+        :param t_ib: The parameter $t_{ib}$.
+        """
         self._t_ia = t_ia
         self._t_ib = t_ib
 

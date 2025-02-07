@@ -8,7 +8,8 @@ from cr_rule_simplification.knowledge_extraction.knowledge_extraction_core impor
 
 class SafeDistanceRule(TrafficRule):
     """
-    Rule R_G1
+    Rule R_G1 from Maierhofer et al. (2020):
+
     G (
     in_same_lane(x_ego, x_o)
     & in_front_of(x_ego, x_o)

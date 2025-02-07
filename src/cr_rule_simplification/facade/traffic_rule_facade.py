@@ -16,6 +16,12 @@ from cr_rule_simplification.simplification.traffic_rule_simplifier import Traffi
 
 
 class TrafficRuleFacade:
+    """Facade for the traffic rule simplification pipeline.
+
+    This class provides a high-level interface to the traffic rule simplification pipeline. It will instantiate and
+    simplify traffic rules based on a given scenario and planning problem.
+    """
+
     scenario: Scenario
     world: crcpp.World
     planning_problem: PlanningProblem
@@ -32,6 +38,15 @@ class TrafficRuleFacade:
         configuration: Configuration = Configuration(),
         world: Optional[crcpp.World] = None,
     ):
+        """Create a new TrafficRuleFacade.
+
+        :param scenario: The CommonRoad scenario.
+        :param planning_problem: The planning problem.
+        :param ccs: The curvilinear coordinate system.
+        :param configuration: The configuration parameters for the traffic rule simplification pipeline.
+        :param world: The C++ world object corresponding to the scenario. If not provided, it will be created from the
+            scenario.
+        """
         self.scenario = scenario
         self.planning_problem = planning_problem
         self.ccs = ccs
@@ -68,6 +83,14 @@ class TrafficRuleFacade:
     def get_simplified_traffic_rules(
         self, rules: List[str], planning_horizon: int, consider_obstacle: Callable[[Obstacle], bool] = lambda obs: True
     ) -> List[Formula]:
+        """Get simplified traffic rules for a given list of rule names.
+
+        :param rules: The list of rule names.
+        :param planning_horizon: The planning horizon to consider in the traffic rules.
+        :param consider_obstacle: A function that returns True for each obstacle that should be considered in the
+            traffic rules.
+        :return: The list of simplified traffic rules.
+        """
         naive_rules = self._instantiator.instantiate(
             rules, self.scenario, self.planning_problem, planning_horizon, consider_obstacle
         )
@@ -80,12 +103,28 @@ class TrafficRuleFacade:
     def get_simplified_traffic_rules_for_reach(
         self, rules: List[str], planning_horizon: int, consider_obstacle: Callable[[Obstacle], bool] = lambda obs: True
     ) -> List[str]:
+        """Get simplified traffic rules for a given list of rule names formatted for use with CommonRoad-Reach-Flow.
+
+        :param rules: The list of rule names.
+        :param planning_horizon: The planning horizon to consider in the traffic rules.
+        :param consider_obstacle: A function that returns True for each obstacle that should be considered in the
+            traffic rules.
+        :return: The list of simplified traffic rules.
+        """
         simplified_rules = self.get_simplified_traffic_rules(rules, planning_horizon, consider_obstacle)
         return [format_formula_for_reach(rule) for rule in simplified_rules]
 
     def get_simplified_traffic_rules_for_monitor(
         self, rules: List[str], planning_horizon: int, consider_obstacle: Callable[[Obstacle], bool] = lambda obs: True
     ) -> List[str]:
+        """Get simplified traffic rules for a given list of rule names formatted for use with the CommonRoad-Monitor.
+
+        :param rules: The list of rule names.
+        :param planning_horizon: The planning horizon to consider in the traffic rules.
+        :param consider_obstacle: A function that returns True for each obstacle that should be considered in the
+            traffic rules.
+        :return: The list of simplified traffic rules.
+        """
         simplified_rules = self.get_simplified_traffic_rules(rules, planning_horizon, consider_obstacle)
         return [format_formula_for_monitor(rule) for rule in simplified_rules]
 
@@ -93,6 +132,12 @@ class TrafficRuleFacade:
     def _initialize_from_planning_problem(
         planning_problem: PlanningProblem,
     ) -> Tuple[int, float, float, float, float, float]:
+        """Unpack the values from the initial state of a planning problem.
+
+        :param planning_problem: The planning problem.
+        :return: The initial state as a tuple of time step, x position, y position, velocity, acceleration, and
+            orientation.
+        """
         state = planning_problem.initial_state
         return (
             state.time_step,

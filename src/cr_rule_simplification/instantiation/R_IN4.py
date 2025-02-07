@@ -8,7 +8,7 @@ from cr_rule_simplification.knowledge_extraction.knowledge_extraction_core impor
 
 class PriorityRule(NotEndangerRule):
     """
-    Rule R-IN4:
+    Rule R-IN4 from Maierhofer et al. (2022):
     G (
         (
             (turning_right(x_ego) & turning_right(x_o) & has_priority(x_o, x_ego, right, right))

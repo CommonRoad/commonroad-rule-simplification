@@ -8,7 +8,8 @@ from cr_rule_simplification.knowledge_extraction.knowledge_extraction_core impor
 
 class EnteringVehiclesRule(TrafficRule):
     """
-    Rule R_I5
+    Rule R_I5 from Maierhofer et al. (2020):
+
     G(
         on_main_carriageway(x_ego)
         & in_front_of(x_ego, x_o)

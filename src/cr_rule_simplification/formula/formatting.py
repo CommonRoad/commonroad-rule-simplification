@@ -6,6 +6,12 @@ from cr_rule_simplification.knowledge_extraction.knowledge_extraction_core impor
 
 
 def format_formula_for_reach(formula: Formula) -> str:
+    """Format a formula for use with CommonRoad-Reach-Flow.
+
+    :param formula: The formula.
+    :return: The formatted formula.
+    """
+
     def format_literal_reach(name: str, parameter: Optional[str]) -> str:
         if name == Prop.proposition_to_string(Prop.OTHER_ON_ACCESS_RAMP):
             name = "OnAccessRamp"
@@ -24,6 +30,12 @@ def format_formula_for_reach(formula: Formula) -> str:
 
 
 def format_formula_for_monitor(formula: Formula) -> str:
+    """Format a formula for use with the CommonRoad-Monitor.
+
+    :param formula: The formula.
+    :return: The formatted formula.
+    """
+
     def format_literal_monitor(name: str, parameter: Optional[str]) -> str:
         if name in {"true", "false"}:
             return name
@@ -138,4 +150,9 @@ def format_formula_for_monitor(formula: Formula) -> str:
 
 
 def _to_snake(s: str) -> str:
+    """Convert a camel case string to snake case.
+
+    :param s: The camel case string.
+    :return: The snake case string.
+    """
     return "".join("_" + c.lower() if c.isupper() else c for c in s).lstrip("_")
