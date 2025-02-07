@@ -18,11 +18,7 @@ namespace nb = nanobind;
 using namespace nb::literals;
 
 NB_MODULE(knowledge_extraction_core, module) {
-    // Import the Python bindings of the curvilinear coordinate system to ensure that the necessary types are bound
-    nb::module_::import_("commonroad_dc.pycrccosy");
-    nb::module_::import_("crcpp");
-
-    module.doc() = "C++ extension for commonroad-knowledge-extraction.";
+    module.doc() = "C++ extension for knowledge extraction from CommonRoad scenarios.";
 
     export_propositions(module);
     export_ego_parameters(module);
@@ -30,7 +26,7 @@ NB_MODULE(knowledge_extraction_core, module) {
     export_extraction_interface(module);
 }
 
-void export_extraction_result(nb::module_ &module) {
+void export_extraction_result(const nb::module_ &module) {
     nb::class_<knowledge_extraction::ExtractionResult>(module, "ExtractionResult")
         .def_ro("positive_propositions", &knowledge_extraction::ExtractionResult::positive_propositions)
         .def_ro("negative_propositions", &knowledge_extraction::ExtractionResult::negative_propositions)
@@ -38,7 +34,7 @@ void export_extraction_result(nb::module_ &module) {
         .def_ro("equivalences", &knowledge_extraction::ExtractionResult::equivalences);
 }
 
-void export_extraction_interface(nb::module_ &module) {
+void export_extraction_interface(const nb::module_ &module) {
     nb::class_<knowledge_extraction::ExtractionInterface>(module, "ExtractionInterface")
         .def(
             "__init__",
@@ -60,7 +56,7 @@ void export_extraction_interface(nb::module_ &module) {
         .def("extract_implications", &knowledge_extraction::ExtractionInterface::extract_implications);
 }
 
-void export_propositions(nb::module_ &module) {
+void export_propositions(const nb::module_ &module) {
     auto prop = nb::enum_<Proposition>(module, "Proposition")
                     .value("IN_SAME_LANE", Proposition::IN_SAME_LANE)
                     .value("KEEPS_SAFE_DISTANCE_PREC", Proposition::KEEPS_SAFE_DISTANCE_PREC)
@@ -137,7 +133,7 @@ void export_propositions(nb::module_ &module) {
     }
 }
 
-void export_ego_parameters(nb::module_ &module) {
+void export_ego_parameters(const nb::module_ &module) {
     nb::class_<EgoParameters>(module, "EgoParameters")
         .def(
             "__init__",
