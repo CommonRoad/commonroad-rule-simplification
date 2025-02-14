@@ -31,23 +31,27 @@ target_precompile_headers(nanobind-static
         <nanobind/nanobind.h>
 )
 
-nanobind_add_stub(
-        ${python_module_name}_stub
-        MODULE ${python_module_name}
-        OUTPUT ${python_module_name}.pyi
-        PYTHON_PATH $<TARGET_FILE_DIR:${python_module_name}>
-        DEPENDS ${python_module_name}
-        MARKER_FILE py.typed
-        VERBOSE
-)
-
 set(install_destination cr_rule_simplification/knowledge_extraction)
-install(FILES
-        ${CMAKE_CURRENT_BINARY_DIR}/${python_module_name}.pyi
-        ${CMAKE_CURRENT_BINARY_DIR}/py.typed
-        DESTINATION ${install_destination}
-        COMPONENT PythonModules
-)
+
+if (SKBUILD)
+    # only add Python typing stubs if we are building with scikit-build, otherwise, Python dependencies might be missing
+    nanobind_add_stub(
+            ${python_module_name}_stub
+            MODULE ${python_module_name}
+            OUTPUT ${python_module_name}.pyi
+            PYTHON_PATH $<TARGET_FILE_DIR:${python_module_name}>
+            DEPENDS ${python_module_name}
+            MARKER_FILE py.typed
+            VERBOSE
+    )
+
+    install(FILES
+            ${CMAKE_CURRENT_BINARY_DIR}/${python_module_name}.pyi
+            ${CMAKE_CURRENT_BINARY_DIR}/py.typed
+            DESTINATION ${install_destination}
+            COMPONENT PythonModules
+    )
+endif ()
 
 target_link_libraries(${python_module_name} PRIVATE cr_knowledge_extraction)
 

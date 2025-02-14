@@ -74,11 +74,13 @@ minimum-version = "0.8"
 cmake.version = ">=3.24"
 
 [tool.cibuildwheel]
-skip = ["pp*", "*-musllinux*"]
+skip = ["pp*", "*-musllinux_i686"]
 archs = ["x86_64"]
-environment = { PIP_DISABLE_PIP_VERSION_CHECK = "1" }
+environment = { PATH = "$HOME/.cargo/bin:$PATH", PIP_DISABLE_PIP_VERSION_CHECK = "1" }
 build-verbosity = 1
 test-extras = ["test"]
+# required since ltl_augmentation is not yet available on PyPI, so we build the wheel from source
+before-build = "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain=stable --profile=minimal -y"
 
 [tool.ruff]
 line-length = 120
