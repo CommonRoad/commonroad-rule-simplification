@@ -236,8 +236,21 @@ const std::unordered_map<std::string, Proposition> string_to_proposition = {
     {other_has_straight_straight_priority, Proposition::OTHER_HAS_STRAIGHT_STRAIGHT_PRIORITY},
 };
 
+/**
+ * Convert a proposition to its string representation.
+ *
+ * @param proposition The proposition to convert.
+ * @param parameter The optional predicate parameter.
+ * @return The string representation of the proposition.
+ */
 std::string to_string(knowledge_extraction::Proposition proposition, std::optional<size_t> parameter);
 
+/**
+ * Parse a proposition with parameter from a string.
+ *
+ * @param proposition The proposition string.
+ * @return The parsed proposition and its parameter (if it has one).
+ */
 std::pair<Proposition, std::optional<size_t>> from_string(const std::string &proposition);
 } // namespace proposition
 } // namespace knowledge_extraction
