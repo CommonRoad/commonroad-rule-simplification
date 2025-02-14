@@ -75,7 +75,7 @@ minimum-version = "0.8"
 cmake.version = ">=3.24"
 
 [tool.cibuildwheel]
-skip = ["pp*", "*-musllinux_i686"]
+skip = ["pp*", "*-musllinux*"]
 archs = ["x86_64"]
 environment = { PATH = "$HOME/.cargo/bin:$PATH", PIP_DISABLE_PIP_VERSION_CHECK = "1" }
 build-verbosity = 1
