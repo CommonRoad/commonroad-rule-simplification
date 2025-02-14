@@ -36,11 +36,11 @@ class EnvironmentModel {
     ObstacleCache<std::optional<double>> stopping_s_cache;
     std::optional<double> get_stopping_s_impl(size_t time_step, const std::shared_ptr<Obstacle> &obstacle);
 
-    std::unordered_map<size_t, std::unordered_set<TurningDirection>> turning_directions_cache;
-    std::unordered_set<TurningDirection> get_turning_directions_impl(const std::shared_ptr<Obstacle> &obstacle);
+    std::unordered_map<size_t, std::unordered_set<Direction>> turning_directions_cache;
+    std::unordered_set<Direction> get_turning_directions_impl(const std::shared_ptr<Obstacle> &obstacle);
 
-    std::unordered_map<std::tuple<time_step_t, size_t, TurningDirection>, std::optional<int>,
-                       boost::hash<std::tuple<time_step_t, size_t, TurningDirection>>>
+    std::unordered_map<std::tuple<time_step_t, size_t, Direction>, std::optional<int>,
+                       boost::hash<std::tuple<time_step_t, size_t, Direction>>>
         priority_cache;
 
   public:
@@ -133,7 +133,7 @@ class EnvironmentModel {
      * @param obstacle The obstacle.
      * @return The possible turning directions.
      */
-    const std::unordered_set<TurningDirection> &get_turning_directions(const std::shared_ptr<Obstacle> &obstacle);
+    const std::unordered_set<Direction> &get_turning_directions(const std::shared_ptr<Obstacle> &obstacle);
 
     /**
      * Get the priority of the obstacle for the given turning direction.
@@ -143,6 +143,6 @@ class EnvironmentModel {
      * @param dir The turning direction.
      * @return The priority or std::nullopt if there was an error when determining the priorities.
      */
-    std::optional<int> get_priority(size_t time_step, const std::shared_ptr<Obstacle> &obstacle, TurningDirection dir);
+    std::optional<int> get_priority(size_t time_step, const std::shared_ptr<Obstacle> &obstacle, Direction dir);
 };
 } // namespace knowledge_extraction::env_model

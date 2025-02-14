@@ -5,11 +5,11 @@
 namespace knowledge_extraction::kleene::intersection {
 class OtherTurningExtractor : public KleeneExtractor {
   private:
-    const TurningDirection direction;
+    const Direction direction;
 
   public:
     OtherTurningExtractor(std::shared_ptr<knowledge_extraction::env_model::EnvironmentModel> env_model,
-                          Proposition prop, TurningDirection direction)
+                          Proposition prop, Direction direction)
         : KleeneExtractor(std::move(env_model), prop), direction(direction) {}
 
     std::unordered_map<time_step_t, TrueFalseObstacleIds>

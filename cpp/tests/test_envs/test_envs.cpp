@@ -10,10 +10,10 @@ TestEnvironments::TestEnvironments() : interstate_simple(setup_interstate_simple
 const std::string TestEnvironments::test_scenario_dir = "../cpp/tests/scenarios/";
 
 std::shared_ptr<EnvironmentModel> TestEnvironments::setup_interstate_simple() {
-    auto [obstacles, road_network, step_size] =
-        InputUtils::getDataFromCommonRoad(test_scenario_dir + "interstate_simple.xml");
-    auto world = std::make_shared<World>("interstate_simple", 0, road_network, std::vector<std::shared_ptr<Obstacle>>{},
-                                         obstacles, step_size);
+    auto scenario = InputUtils::getDataFromCommonRoad(test_scenario_dir + "interstate_simple.xml");
+    auto world =
+        std::make_shared<World>("interstate_simple", 0, scenario.roadNetwork, std::vector<std::shared_ptr<Obstacle>>{},
+                                scenario.obstacles, scenario.timeStepSize);
 
     // reference path aligned with cartesian axes so that CCS coordinates are equal to cartesian coordinates
     geometry::EigenPolyline reference_path{{-250, 0}, {0, 0}, {250, 0}};
@@ -23,9 +23,9 @@ std::shared_ptr<EnvironmentModel> TestEnvironments::setup_interstate_simple() {
 }
 
 std::shared_ptr<EnvironmentModel> TestEnvironments::setup_two_lanes() {
-    auto [obstacles, road_network, step_size] = InputUtils::getDataFromCommonRoad(test_scenario_dir + "two_lanes.xml");
-    auto world = std::make_shared<World>("two_lanes", 0, road_network, std::vector<std::shared_ptr<Obstacle>>{},
-                                         obstacles, step_size);
+    auto scenario = InputUtils::getDataFromCommonRoad(test_scenario_dir + "two_lanes.xml");
+    auto world = std::make_shared<World>("two_lanes", 0, scenario.roadNetwork, std::vector<std::shared_ptr<Obstacle>>{},
+                                         scenario.obstacles, scenario.timeStepSize);
 
     // reference path aligned with cartesian axes so that CCS coordinates are equal to cartesian coordinates
     geometry::EigenPolyline reference_path{{-250, 0}, {0, 0}, {250, 0}};

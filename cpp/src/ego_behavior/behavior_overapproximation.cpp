@@ -150,7 +150,7 @@ const std::pair<double, double> &BehaviorOverapproximation::get_velocity_approxi
     return velocity_approximation.at(time_step);
 }
 
-const std::pair<int, int> &BehaviorOverapproximation::get_priority_range(time_step_t time_step, TurningDirection dir) {
+const std::pair<int, int> &BehaviorOverapproximation::get_priority_range(time_step_t time_step, Direction dir) {
     auto key = std::make_pair(time_step, dir);
 
     if (!priority_range.contains(key)) {

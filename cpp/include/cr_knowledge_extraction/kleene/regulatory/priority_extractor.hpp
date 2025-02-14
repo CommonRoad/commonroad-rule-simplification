@@ -8,8 +8,8 @@ class PriorityExtractor : public KleeneExtractor {
     enum class PriorityMode : std::uint8_t { EGO_HAS_PRIORITY, OTHER_HAS_PRIORITY, SAME_PRIORITY };
 
   private:
-    const TurningDirection ego_turn;
-    const TurningDirection other_turn;
+    const Direction ego_turn;
+    const Direction other_turn;
 
     const PriorityMode mode;
 
@@ -19,7 +19,7 @@ class PriorityExtractor : public KleeneExtractor {
 
   public:
     PriorityExtractor(std::shared_ptr<knowledge_extraction::env_model::EnvironmentModel> env_model, Proposition prop,
-                      PriorityMode mode, TurningDirection ego_turn, TurningDirection other_turn)
+                      PriorityMode mode, Direction ego_turn, Direction other_turn)
         : KleeneExtractor(std::move(env_model), prop), ego_turn(ego_turn), other_turn(other_turn), mode(mode) {}
 
     std::unordered_map<time_step_t, TrueFalseObstacleIds>

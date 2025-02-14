@@ -176,123 +176,122 @@ std::optional<std::unique_ptr<kleene::KleeneExtractor>> ExtractionInterface::cre
     case Proposition::ON_INCOMING_LEFT_OF:
         return std::make_unique<kleene::intersection::OnIncomingLeftOfExtractor>(env_model);
     case Proposition::OTHER_TURNING_LEFT:
-        return std::make_unique<kleene::intersection::OtherTurningExtractor>(env_model, prop, TurningDirection::left);
+        return std::make_unique<kleene::intersection::OtherTurningExtractor>(env_model, prop, Direction::left);
     case Proposition::OTHER_GOING_STRAIGHT:
-        return std::make_unique<kleene::intersection::OtherTurningExtractor>(env_model, prop,
-                                                                             TurningDirection::straight);
+        return std::make_unique<kleene::intersection::OtherTurningExtractor>(env_model, prop, Direction::straight);
     case Proposition::OTHER_TURNING_RIGHT:
-        return std::make_unique<kleene::intersection::OtherTurningExtractor>(env_model, prop, TurningDirection::right);
+        return std::make_unique<kleene::intersection::OtherTurningExtractor>(env_model, prop, Direction::right);
 
     case Proposition::SAME_LEFT_LEFT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::SAME_PRIORITY, TurningDirection::left,
-            TurningDirection::left);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::SAME_PRIORITY, Direction::left,
+            Direction::left);
     case Proposition::SAME_LEFT_STRAIGHT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::SAME_PRIORITY, TurningDirection::left,
-            TurningDirection::straight);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::SAME_PRIORITY, Direction::left,
+            Direction::straight);
     case Proposition::SAME_LEFT_RIGHT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::SAME_PRIORITY, TurningDirection::left,
-            TurningDirection::right);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::SAME_PRIORITY, Direction::left,
+            Direction::right);
     case Proposition::SAME_STRAIGHT_LEFT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::SAME_PRIORITY,
-            TurningDirection::straight, TurningDirection::left);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::SAME_PRIORITY, Direction::straight,
+            Direction::left);
     case Proposition::SAME_STRAIGHT_STRAIGHT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::SAME_PRIORITY,
-            TurningDirection::straight, TurningDirection::straight);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::SAME_PRIORITY, Direction::straight,
+            Direction::straight);
     case Proposition::SAME_STRAIGHT_RIGHT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::SAME_PRIORITY,
-            TurningDirection::straight, TurningDirection::right);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::SAME_PRIORITY, Direction::straight,
+            Direction::right);
     case Proposition::SAME_RIGHT_LEFT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::SAME_PRIORITY,
-            TurningDirection::right, TurningDirection::left);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::SAME_PRIORITY, Direction::right,
+            Direction::left);
     case Proposition::SAME_RIGHT_STRAIGHT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::SAME_PRIORITY,
-            TurningDirection::right, TurningDirection::straight);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::SAME_PRIORITY, Direction::right,
+            Direction::straight);
     case Proposition::SAME_RIGHT_RIGHT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::SAME_PRIORITY,
-            TurningDirection::right, TurningDirection::right);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::SAME_PRIORITY, Direction::right,
+            Direction::right);
 
     case Proposition::HAS_LEFT_LEFT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::EGO_HAS_PRIORITY,
-            TurningDirection::left, TurningDirection::left);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::EGO_HAS_PRIORITY, Direction::left,
+            Direction::left);
     case Proposition::HAS_LEFT_STRAIGHT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::EGO_HAS_PRIORITY,
-            TurningDirection::left, TurningDirection::straight);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::EGO_HAS_PRIORITY, Direction::left,
+            Direction::straight);
     case Proposition::HAS_LEFT_RIGHT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::EGO_HAS_PRIORITY,
-            TurningDirection::left, TurningDirection::right);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::EGO_HAS_PRIORITY, Direction::left,
+            Direction::right);
     case Proposition::HAS_STRAIGHT_LEFT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::EGO_HAS_PRIORITY,
-            TurningDirection::straight, TurningDirection::left);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::EGO_HAS_PRIORITY, Direction::straight,
+            Direction::left);
     case Proposition::HAS_STRAIGHT_STRAIGHT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::EGO_HAS_PRIORITY,
-            TurningDirection::straight, TurningDirection::straight);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::EGO_HAS_PRIORITY, Direction::straight,
+            Direction::straight);
     case Proposition::HAS_STRAIGHT_RIGHT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::EGO_HAS_PRIORITY,
-            TurningDirection::straight, TurningDirection::right);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::EGO_HAS_PRIORITY, Direction::straight,
+            Direction::right);
     case Proposition::HAS_RIGHT_LEFT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::EGO_HAS_PRIORITY,
-            TurningDirection::right, TurningDirection::left);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::EGO_HAS_PRIORITY, Direction::right,
+            Direction::left);
     case Proposition::HAS_RIGHT_STRAIGHT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::EGO_HAS_PRIORITY,
-            TurningDirection::right, TurningDirection::straight);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::EGO_HAS_PRIORITY, Direction::right,
+            Direction::straight);
     case Proposition::HAS_RIGHT_RIGHT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::EGO_HAS_PRIORITY,
-            TurningDirection::right, TurningDirection::right);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::EGO_HAS_PRIORITY, Direction::right,
+            Direction::right);
 
     case Proposition::OTHER_HAS_LEFT_LEFT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::OTHER_HAS_PRIORITY,
-            TurningDirection::left, TurningDirection::left);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::OTHER_HAS_PRIORITY, Direction::left,
+            Direction::left);
     case Proposition::OTHER_HAS_LEFT_STRAIGHT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::OTHER_HAS_PRIORITY,
-            TurningDirection::left, TurningDirection::straight);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::OTHER_HAS_PRIORITY, Direction::left,
+            Direction::straight);
     case Proposition::OTHER_HAS_LEFT_RIGHT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::OTHER_HAS_PRIORITY,
-            TurningDirection::left, TurningDirection::right);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::OTHER_HAS_PRIORITY, Direction::left,
+            Direction::right);
     case Proposition::OTHER_HAS_STRAIGHT_LEFT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
             env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::OTHER_HAS_PRIORITY,
-            TurningDirection::straight, TurningDirection::left);
+            Direction::straight, Direction::left);
     case Proposition::OTHER_HAS_STRAIGHT_STRAIGHT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
             env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::OTHER_HAS_PRIORITY,
-            TurningDirection::straight, TurningDirection::straight);
+            Direction::straight, Direction::straight);
     case Proposition::OTHER_HAS_STRAIGHT_RIGHT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
             env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::OTHER_HAS_PRIORITY,
-            TurningDirection::straight, TurningDirection::right);
+            Direction::straight, Direction::right);
     case Proposition::OTHER_HAS_RIGHT_LEFT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::OTHER_HAS_PRIORITY,
-            TurningDirection::right, TurningDirection::left);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::OTHER_HAS_PRIORITY, Direction::right,
+            Direction::left);
     case Proposition::OTHER_HAS_RIGHT_STRAIGHT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::OTHER_HAS_PRIORITY,
-            TurningDirection::right, TurningDirection::straight);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::OTHER_HAS_PRIORITY, Direction::right,
+            Direction::straight);
     case Proposition::OTHER_HAS_RIGHT_RIGHT_PRIORITY:
         return std::make_unique<kleene::regulatory::PriorityExtractor>(
-            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::OTHER_HAS_PRIORITY,
-            TurningDirection::right, TurningDirection::right);
+            env_model, prop, kleene::regulatory::PriorityExtractor::PriorityMode::OTHER_HAS_PRIORITY, Direction::right,
+            Direction::right);
 
     default:
         return std::nullopt;

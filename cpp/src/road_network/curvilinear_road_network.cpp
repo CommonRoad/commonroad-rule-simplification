@@ -25,7 +25,9 @@ knowledge_extraction::road_network::CurvilinearRoadNetwork::get_overlapping_lane
         }
 
         // Query the Cartesian road network using the polygon
-        return road_network->findOccupiedLaneletsByShape(bg_polygon);
+        multi_polygon_type bg_multi_polygon;
+        bg_multi_polygon.push_back(bg_polygon);
+        return road_network->findOccupiedLaneletsByShape(bg_multi_polygon);
     } catch (const geometry::CurvilinearProjectionDomainError &e) {
         // If we cannot convert from the CCS, be conservative and return all lanelets
         return road_network->getLaneletNetwork();

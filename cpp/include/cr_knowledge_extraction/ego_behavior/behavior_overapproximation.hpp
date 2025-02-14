@@ -34,8 +34,8 @@ class BehaviorOverapproximation {
 
     std::unordered_map<time_step_t, sets::Box2D> occupancy_approximation;
     std::unordered_map<time_step_t, std::vector<std::shared_ptr<Lanelet>>> covered_lanelets;
-    std::unordered_map<std::pair<time_step_t, TurningDirection>, std::pair<int, int>,
-                       boost::hash<std::pair<time_step_t, TurningDirection>>>
+    std::unordered_map<std::pair<time_step_t, Direction>, std::pair<int, int>,
+                       boost::hash<std::pair<time_step_t, Direction>>>
         priority_range;
 
     std::unordered_map<time_step_t, sets::Box2D> occupancy_intersection_approximation;
@@ -238,6 +238,6 @@ class BehaviorOverapproximation {
      * @param dir The turning direction.
      * @return A pair of minimum and maximum priority.
      */
-    const std::pair<int, int> &get_priority_range(time_step_t time_step, TurningDirection dir);
+    const std::pair<int, int> &get_priority_range(time_step_t time_step, Direction dir);
 };
 } // namespace knowledge_extraction::ego_behavior

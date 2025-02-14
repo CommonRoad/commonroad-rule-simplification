@@ -116,8 +116,7 @@ std::optional<double> EnvironmentModel::get_stopping_s(size_t time_step, const s
     return result;
 }
 
-std::unordered_set<TurningDirection>
-EnvironmentModel::get_turning_directions_impl(const std::shared_ptr<Obstacle> &obstacle) {
+std::unordered_set<Direction> EnvironmentModel::get_turning_directions_impl(const std::shared_ptr<Obstacle> &obstacle) {
     auto on_lanelet_with_type = OnSimilarOrientedLaneletWithTypePredicate{};
     auto not_on_lanelet_with_type = OnSimilarOrientedLaneletWithoutTypePredicate{};
 
@@ -187,24 +186,24 @@ EnvironmentModel::get_turning_directions_impl(const std::shared_ptr<Obstacle> &o
 
     // We are done, directions that do not yet have a value are set to true, since we have a weak until
     const auto &[mode, left, straight, right] = state;
-    std::unordered_set<TurningDirection> directions;
+    std::unordered_set<Direction> directions;
     if (mode >= 2) {
         // In mode 0 or 1, we have not entered the intersection yet, so we did not fulfill the eventuality
         if (left) {
-            directions.insert(TurningDirection::left);
+            directions.insert(Direction::left);
         }
         if (straight) {
-            directions.insert(TurningDirection::straight);
+            directions.insert(Direction::straight);
         }
         if (right) {
-            directions.insert(TurningDirection::right);
+            directions.insert(Direction::right);
         }
     }
 
     return directions;
 }
 
-const std::unordered_set<TurningDirection> &
+const std::unordered_set<Direction> &
 EnvironmentModel::get_turning_directions(const std::shared_ptr<Obstacle> &obstacle) {
     auto obstacle_id = obstacle->getId();
     if (turning_directions_cache.contains(obstacle_id)) {
@@ -219,7 +218,7 @@ EnvironmentModel::get_turning_directions(const std::shared_ptr<Obstacle> &obstac
 }
 
 std::optional<int> EnvironmentModel::get_priority(size_t time_step, const std::shared_ptr<Obstacle> &obstacle,
-                                                  TurningDirection dir) {
+                                                  Direction dir) {
     auto obstacle_id = obstacle->getId();
     auto key = std::make_tuple(time_step, obstacle_id, dir);
     if (priority_cache.contains(key)) {

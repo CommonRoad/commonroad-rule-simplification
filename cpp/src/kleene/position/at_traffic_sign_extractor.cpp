@@ -1,5 +1,6 @@
 #include "cr_knowledge_extraction/kleene/position/at_traffic_sign_extractor.hpp"
 
+#include <commonroad_cpp/roadNetwork/regulatoryElements/traffic_sign.h>
 #include <commonroad_cpp/roadNetwork/road_network.h>
 
 #include <ranges>
