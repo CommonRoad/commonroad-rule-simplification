@@ -1,4 +1,4 @@
-## CommonRoad-Knowledge-Extraction: Extract Scenario-Specific Knowledge to Simplify Traffic Rules
+## CommonRoad Rule Simplification: Extract Scenario-Specific Knowledge to Simplify Traffic Rules
 
 ### System Requirements
 
