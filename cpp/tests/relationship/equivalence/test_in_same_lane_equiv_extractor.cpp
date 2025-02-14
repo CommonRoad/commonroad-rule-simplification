@@ -10,29 +10,20 @@ using knowledge_extraction::relationship::RelationshipType;
 using testing::UnorderedElementsAreArray;
 
 TEST_F(InSameLaneEquivExtractorTest, InterstateSimple) {
-    auto extractor = InSameLaneEquivExtractor{test_envs.interstate_simple};
+    auto extractor = InSameLaneEquivExtractor{test_envs.two_lanes};
     auto relevant_obstacle_ids_over_time = std::unordered_map<time_step_t, std::unordered_set<std::optional<size_t>>>{
-        {0, {100, 101, 102, 103, 104, 105}},
-        {1, {100, 101, 102, 104, 105}},
-        //        {18, {100, 101, 102, 103, 104, 105}},
-        {26, {100, 101, 102, 103, 104, 105}},
+        {0, {7, 8, 9}},
+        {1, {7, 9}},
+        {2, {7, 8}},
     };
     auto implications_over_time = extractor.extract(relevant_obstacle_ids_over_time);
 
     EXPECT_THAT(implications_over_time.at(0), UnorderedElementsAreArray({
-                                                  std::tuple{RelationshipType::EQUIVALENCE, 100, 104},
-                                                  {RelationshipType::EQUIVALENCE, 102, 103},
+                                                  std::tuple{RelationshipType::EQUIVALENCE, 7, 8},
                                               }));
-    EXPECT_THAT(implications_over_time.at(1), UnorderedElementsAreArray({
-                                                  std::tuple{RelationshipType::EQUIVALENCE, 100, 104},
+    EXPECT_TRUE(implications_over_time.at(1).empty());
+    EXPECT_THAT(implications_over_time.at(2), UnorderedElementsAreArray({
+                                                  std::tuple{RelationshipType::EQUIVALENCE, 7, 8},
                                               }));
-    // The map appears to be broken so that only 103 and 104 are in the same lane at this time
-    //    EXPECT_THAT(implications_over_time.at(18), UnorderedElementsAreArray({
-    //                                                  std::tuple{RelationshipType::EQUIVALENCE, 100, 103},
-    //                                                  {RelationshipType::EQUIVALENCE, 103, 104},
-    //                                              }));
-    EXPECT_THAT(implications_over_time.at(26), UnorderedElementsAreArray({
-                                                   std::tuple{RelationshipType::EQUIVALENCE, 100, 104},
-                                               }));
-    EXPECT_TRUE(implications_over_time[2].empty());
+    EXPECT_TRUE(implications_over_time[3].empty());
 }

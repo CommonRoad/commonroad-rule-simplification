@@ -7,9 +7,11 @@
 
 struct TestEnvironments {
     std::shared_ptr<knowledge_extraction::env_model::EnvironmentModel> interstate_simple;
+    std::shared_ptr<knowledge_extraction::env_model::EnvironmentModel> two_lanes;
 
     TestEnvironments();
 
     static const std::string test_scenario_dir;
     static std::shared_ptr<knowledge_extraction::env_model::EnvironmentModel> setup_interstate_simple();
+    static std::shared_ptr<knowledge_extraction::env_model::EnvironmentModel> setup_two_lanes();
 };
