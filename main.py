@@ -1,8 +1,8 @@
 import time
 
+import commonroad_route_planner.fast_api.fast_api as route_planner
 from commonroad.common.file_reader import CommonRoadFileReader
 from commonroad_dc import pycrccosy
-from commonroad_route_planner.route_planner import RoutePlanner
 from cr_rule_simplification import TrafficRuleFacade
 
 
@@ -15,7 +15,9 @@ def main():
     planning_problem = list(planning_problems.planning_problem_dict.values())[0]
 
     # plan route and create clcs
-    route = RoutePlanner(scenario, planning_problem).plan_routes().retrieve_first_route()
+    route = route_planner.generate_reference_path_from_lanelet_network_and_planning_problem(
+        scenario.lanelet_network, planning_problem
+    )
     reference_path = pycrccosy.Util.resample_polyline(route.reference_path, 2.0)
     ccs = pycrccosy.CurvilinearCoordinateSystem(reference_path)
 
