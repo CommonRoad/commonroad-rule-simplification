@@ -27,7 +27,7 @@ pre-commit run --all-files
 2. Install the Python build dependencies (required to make `--no-build-isolation` work in the next step):
 
 ```bash
-pip install scikit-build-core~=0.8.0 nanobind~=2.2.0 pathspec>=0.12.1 pyproject-metadata>=0.7.1 typing_extensions~=4.12.2 cmake>=3.24
+pip install scikit-build-core~=0.10.7 nanobind~=2.2.0 pathspec>=0.12.1 pyproject-metadata>=0.7.1 typing_extensions~=4.12.2 cmake>=3.24
 ```
 
 > **Note:** The versions of the dependencies might have changed from the time of writing this README. Please check the

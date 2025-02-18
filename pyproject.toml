@@ -47,8 +47,8 @@ docs = [
     "mkdocstrings-python~=1.8",
 ]
 build = [
-    "scikit-build-core~=0.8.0",
-    "nanobind~=2.0.0",
+    "scikit-build-core~=0.10.7",
+    "nanobind~=2.2.0",
     "pathspec>=0.12.1",
     "pyproject-metadata>=0.7.1",
     "typing_extensions~=4.12.2",
