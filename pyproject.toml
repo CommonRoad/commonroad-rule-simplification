@@ -17,8 +17,8 @@ keywords = [
 dependencies = [
     "ltl_augmentation@git+ssh://git@gitlab.lrz.de/cps/ltl-augmentation.git#main",
     "commonroad_cpp@git+ssh://git@gitlab.lrz.de/cps/commonroad/environment-model.git@e639e3abb96d3faf13b925aa88da5ca680aee690", # if you change the commit here also update the cmake dependency
-    "commonroad-io>=2024.2",
-    "commonroad-drivability-checker>=2024.1",
+    "commonroad-io~=2024.2",
+    "commonroad-drivability-checker~=2024.1",
     "commonroad-route-planner~=2025.0",
     "numpy>=1.22.0, <2.0",
     "more-itertools~=10.5.0",
