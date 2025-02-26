@@ -69,14 +69,18 @@ void ExtractionInterface::extract_kleene(const RelevantObstacles &relevant_obsta
         if (extractor.has_value()) {
             auto kleene_values = extractor.value()->extract(relevant_obstacles_over_time);
             for (auto &[time_step, positive_negative] : kleene_values) {
+                // The time steps for the knowledge start at initial_time_step
+                // but the formula always starts evaluation at time_step 0
+                // so we need to account for this offset here
+                auto formula_time_step = time_step - initial_time_step;
                 std::ranges::move(positive_negative.first | std::views::transform([&prop](const auto &obstacle_id) {
                                       return proposition::to_string(prop, obstacle_id);
                                   }),
-                                  std::back_inserter(result[time_step].positive_propositions));
+                                  std::back_inserter(result[formula_time_step].positive_propositions));
                 std::ranges::move(positive_negative.second | std::views::transform([&prop](const auto &obstacle_id) {
                                       return proposition::to_string(prop, obstacle_id);
                                   }),
-                                  std::back_inserter(result[time_step].negative_propositions));
+                                  std::back_inserter(result[formula_time_step].negative_propositions));
             }
         }
     }
@@ -118,15 +122,21 @@ void ExtractionInterface::extract_relationships(const ExtractionInterface::Relev
             auto [lhs, rhs] = extractor.value()->get_propositions();
             auto relationships = extractor.value()->extract(relevant_obstacles_over_time);
             for (auto &[time_step, relations] : relationships) {
+                // The time steps for the knowledge start at initial_time_step
+                // but the formula always starts evaluation at time_step 0
+                // so we need to account for this offset here
+                auto formula_time_step = time_step - initial_time_step;
                 for (const auto &rel : relations) {
                     switch (std::get<0>(rel)) {
                     case relationship::RelationshipType::IMPLICATION:
-                        result[time_step].implications.emplace_back(proposition::to_string(lhs, std::get<1>(rel)),
-                                                                    proposition::to_string(rhs, std::get<2>(rel)));
+                        result[formula_time_step].implications.emplace_back(
+                            proposition::to_string(lhs, std::get<1>(rel)),
+                            proposition::to_string(rhs, std::get<2>(rel)));
                         break;
                     case relationship::RelationshipType::EQUIVALENCE:
-                        result[time_step].equivalences.emplace_back(proposition::to_string(lhs, std::get<1>(rel)),
-                                                                    proposition::to_string(rhs, std::get<2>(rel)));
+                        result[formula_time_step].equivalences.emplace_back(
+                            proposition::to_string(lhs, std::get<1>(rel)),
+                            proposition::to_string(rhs, std::get<2>(rel)));
                         break;
                     default:
                         break;
@@ -315,13 +325,17 @@ ExtractionInterface::create_relationship_extractor(Proposition prop) {
 }
 
 ExtractionInterface::RelevantObstacles ExtractionInterface::compute_relevant_obstacles(
-    const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions) {
+    const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions) const {
     RelevantObstacles relevant_obstacles_over_time_per_prop{};
     for (const auto &[time_step, propositions] : relevant_propositions) {
+        // The time steps for the relevant propositions always start at 0 (since LTL evaluation starts at 0),
+        // but we might have an initial time step in the scenario that is different from 0
+        // so we need to account for this offset here
+        auto scenario_time_step = initial_time_step + time_step;
         for (const auto &prop : propositions) {
             try {
                 auto [prop_enum, param] = proposition::from_string(prop);
-                relevant_obstacles_over_time_per_prop[prop_enum][time_step].insert(param);
+                relevant_obstacles_over_time_per_prop[prop_enum][scenario_time_step].insert(param);
             } catch (const std::logic_error &e) {
                 // Unknown propositions are simply ignored with a warning
                 spdlog::warn("Unknown proposition: {}. No knowledge will be extracted for this proposition!", prop);

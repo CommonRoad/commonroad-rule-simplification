@@ -27,6 +27,7 @@ struct ExtractionResult {
 class ExtractionInterface {
   private:
     std::shared_ptr<env_model::EnvironmentModel> env_model;
+    time_step_t initial_time_step;
 
     std::optional<std::unique_ptr<kleene::KleeneExtractor>> create_kleene_extractor(Proposition prop);
 
@@ -42,8 +43,8 @@ class ExtractionInterface {
      * @param relevant_propositions The propositions that are relevant for extraction at each time step.
      * @return A map from propositions to relevant obstacle IDs over time. We use std::nullopt to mark the ego vehicle.
      */
-    static RelevantObstacles
-    compute_relevant_obstacles(const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions);
+    RelevantObstacles compute_relevant_obstacles(
+        const std::unordered_map<time_step_t, std::vector<std::string>> &relevant_propositions) const;
 
     /**
      * Extract Kleene knowledge for the relevant obstacles.
@@ -76,7 +77,8 @@ class ExtractionInterface {
     ExtractionInterface(std::shared_ptr<World> world, std::shared_ptr<geometry::CurvilinearCoordinateSystem> ego_ccs,
                         const ego_behavior::EgoParameters &ego_params)
         : env_model(std::make_shared<env_model::EnvironmentModel>(std::move(world), std::move(ego_ccs), ego_params,
-                                                                  PredicateParameters{})) {}
+                                                                  PredicateParameters{})),
+          initial_time_step(ego_params.initial_state.getTimeStep()) {}
     // TODO: Make predicate parameters configurable from Python
 
     /**
