@@ -64,6 +64,7 @@ void export_propositions(const nb::module_ &module) {
                     .value("IN_FRONT_OF", Proposition::IN_FRONT_OF)
                     .value("ON_MAIN_CARRIAGEWAY", Proposition::ON_MAIN_CARRIAGEWAY)
                     .value("ON_MAIN_CARRIAGEWAY_RIGHT_LANE", Proposition::ON_MAIN_CARRIAGEWAY_RIGHT_LANE)
+                    .value("ON_MAIN_CARRIAGEWAY_LEFT_LANE", Proposition::ON_MAIN_CARRIAGEWAY_LEFT_LANE)
                     .value("OTHER_ON_ACCESS_RAMP", Proposition::OTHER_ON_ACCESS_RAMP)
                     .value("OTHER_ON_MAIN_CARRIAGEWAY", Proposition::OTHER_ON_MAIN_CARRIAGEWAY)
                     .value("IN_INTERSECTION", Proposition::IN_INTERSECTION)

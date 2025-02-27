@@ -17,8 +17,6 @@ def format_formula_for_reach(formula: Formula) -> str:
             name = "OnAccessRamp"
         elif name == Prop.proposition_to_string(Prop.OTHER_ON_MAIN_CARRIAGEWAY):
             name = "OnMainCarriageway"
-        elif name == Prop.proposition_to_string(Prop.ON_MAIN_CARRIAGEWAY_RIGHT_LANE):
-            name = "OnRightLane"
         elif name == Prop.proposition_to_string(Prop.IN_FRONT_OF):
             name = "Behind"
         if parameter:
@@ -47,6 +45,8 @@ def format_formula_for_monitor(formula: Formula) -> str:
             return "on_lanelet_with_type('x_ego', 'maincarriageway')"
         if name == Prop.proposition_to_string(Prop.ON_MAIN_CARRIAGEWAY_RIGHT_LANE):
             return "rightmost_lane_with_type('x_ego', 'maincarriageway')"
+        if name == Prop.proposition_to_string(Prop.ON_MAIN_CARRIAGEWAY_LEFT_LANE):
+            return "leftmost_lane_with_type('x_ego', 'maincarriageway')"
         if name == Prop.proposition_to_string(Prop.IN_SAME_LANE):
             return f"in_same_lane('obsid_{parameter}', 'x_ego')"
         if name == Prop.proposition_to_string(Prop.CUT_IN):

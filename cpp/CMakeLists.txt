@@ -15,6 +15,7 @@ set(CR_KNOWLEDGE_EXTRACTION_SRC_FILES
         src/kleene/position/in_front_of_extractor.cpp
         src/kleene/position/in_same_lane_extractor.cpp
         src/kleene/position/on_lanelet_with_type_extractor.cpp
+        src/kleene/position/on_main_carriageway_left_lane_extractor.cpp
         src/kleene/position/on_main_carriageway_right_lane_extractor.cpp
         src/kleene/position/relevant_traffic_light_extractor.cpp
         src/kleene/regulatory/priority_extractor.cpp
@@ -46,6 +47,7 @@ set(CR_KNOWLEDGE_EXTRACTION_HDR_FILES
         include/cr_knowledge_extraction/kleene/position/in_front_of_extractor.hpp
         include/cr_knowledge_extraction/kleene/position/in_same_lane_extractor.hpp
         include/cr_knowledge_extraction/kleene/position/on_lanelet_with_type_extractor.hpp
+        include/cr_knowledge_extraction/kleene/position/on_main_carriageway_left_lane_extractor.hpp
         include/cr_knowledge_extraction/kleene/position/on_main_carriageway_right_lane_extractor.hpp
         include/cr_knowledge_extraction/kleene/position/relevant_traffic_light_extractor.hpp
         include/cr_knowledge_extraction/kleene/regulatory/priority_extractor.hpp

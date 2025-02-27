@@ -9,6 +9,7 @@
 #include "cr_knowledge_extraction/kleene/position/in_front_of_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/position/in_same_lane_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/position/on_lanelet_with_type_extractor.hpp"
+#include "cr_knowledge_extraction/kleene/position/on_main_carriageway_left_lane_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/position/on_main_carriageway_right_lane_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/position/relevant_traffic_light_extractor.hpp"
 #include "cr_knowledge_extraction/kleene/regulatory/priority_extractor.hpp"
@@ -163,6 +164,8 @@ std::optional<std::unique_ptr<kleene::KleeneExtractor>> ExtractionInterface::cre
                                                                               LaneletType::intersection);
     case Proposition::ON_MAIN_CARRIAGEWAY_RIGHT_LANE:
         return std::make_unique<kleene::position::OnMainCarriagewayRightLaneExtractor>(env_model);
+    case Proposition::ON_MAIN_CARRIAGEWAY_LEFT_LANE:
+        return std::make_unique<kleene::position::OnMainCarriagewayLeftLaneExtractor>(env_model);
     case Proposition::IN_FRONT_OF:
         return std::make_unique<kleene::position::InFrontOfExtractor>(env_model);
     case Proposition::IN_SAME_LANE:

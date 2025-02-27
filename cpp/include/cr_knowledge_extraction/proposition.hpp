@@ -12,6 +12,7 @@ enum class Proposition {
     IN_FRONT_OF,
     ON_MAIN_CARRIAGEWAY,
     ON_MAIN_CARRIAGEWAY_RIGHT_LANE,
+    ON_MAIN_CARRIAGEWAY_LEFT_LANE,
     OTHER_ON_ACCESS_RAMP,
     OTHER_ON_MAIN_CARRIAGEWAY,
     IN_INTERSECTION,
@@ -70,6 +71,7 @@ constexpr auto cut_in = "CutIn";
 constexpr auto in_front_of = "InFrontOf";
 constexpr auto on_main_carriageway = "OnMainCarriageway";
 constexpr auto on_main_carriageway_right_lane = "OnMainCarriagewayRightLane";
+constexpr auto on_main_carriageway_left_lane = "OnMainCarriagewayLeftLane";
 constexpr auto other_on_access_ramp = "OtherOnAccessRamp";
 constexpr auto other_on_main_carriageway = "OtherOnMainCarriageway";
 constexpr auto in_intersection = "InIntersection";
@@ -127,6 +129,7 @@ const std::unordered_map<Proposition, std::string> proposition_to_string = {
     {Proposition::IN_FRONT_OF, in_front_of},
     {Proposition::ON_MAIN_CARRIAGEWAY, on_main_carriageway},
     {Proposition::ON_MAIN_CARRIAGEWAY_RIGHT_LANE, on_main_carriageway_right_lane},
+    {Proposition::ON_MAIN_CARRIAGEWAY_LEFT_LANE, on_main_carriageway_left_lane},
     {Proposition::OTHER_ON_ACCESS_RAMP, other_on_access_ramp},
     {Proposition::OTHER_ON_MAIN_CARRIAGEWAY, other_on_main_carriageway},
     {Proposition::IN_INTERSECTION, in_intersection},
@@ -185,6 +188,7 @@ const std::unordered_map<std::string, Proposition> string_to_proposition = {
     {in_front_of, Proposition::IN_FRONT_OF},
     {on_main_carriageway, Proposition::ON_MAIN_CARRIAGEWAY},
     {on_main_carriageway_right_lane, Proposition::ON_MAIN_CARRIAGEWAY_RIGHT_LANE},
+    {on_main_carriageway_left_lane, Proposition::ON_MAIN_CARRIAGEWAY_LEFT_LANE},
     {other_on_access_ramp, Proposition::OTHER_ON_ACCESS_RAMP},
     {other_on_main_carriageway, Proposition::OTHER_ON_MAIN_CARRIAGEWAY},
     {in_intersection, Proposition::IN_INTERSECTION},
