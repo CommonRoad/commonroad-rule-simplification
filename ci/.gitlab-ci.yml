@@ -16,7 +16,7 @@ stages:
   - source "$HOME/.cargo/env"
 
 default:
-  image: $CI_REGISTRY/cps/rapid-prototyping-setup/ci-lite:1.0
+  image: $CI_REGISTRY/tum-cps/commonroad-docker/ci-base:2025.2
   before_script:
     - *update-git-config
 
