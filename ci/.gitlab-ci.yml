@@ -85,7 +85,7 @@ build-test:
 ### build wheels ###
 build-sdist:
   stage: build-wheels
-  image: $CI_REGISTRY/cps/rapid-prototyping-setup/wheelenv:1.0
+  image: $CI_REGISTRY/tum-cps/commonroad-docker/wheelenv:2025.2
   script:
     - python3 --version
     - python3 -m build --sdist
@@ -130,7 +130,7 @@ build-wheel-cibw:
   # Use the privileged runner as required for Docker-in-Docker (dind)
   tags:
     - dind
-  image: $CI_REGISTRY/cps/rapid-prototyping-setup/wheelenv:1.0
+  image: $CI_REGISTRY/tum-cps/commonroad-docker/wheelenv:2025.2
   # make a docker daemon available for cibuildwheel to use
   services:
     - name: docker:20.10-dind
@@ -152,7 +152,7 @@ build-wheel-cibw:
     # We only use the artifacts (sdist/wheels) from previous jobs, so skip all Git operations
     GIT_STRATEGY: none
   script:
-    - cibuildwheel dist/*.tar.gz
+    - pipx run 'cibuildwheel == 2.*' dist/*.tar.gz
   needs:
     - job: build-sdist
       artifacts: true
@@ -227,7 +227,7 @@ build-docs:
 ### deploy wheels ###
 upload-wheel-internal:
   stage: deploy
-  image: $CI_REGISTRY/cps/rapid-prototyping-setup/wheelenv:1.0
+  image: $CI_REGISTRY/tum-cps/commonroad-docker/wheelenv:2025.2
   variables:
     TWINE_USERNAME: gitlab-ci-token
     TWINE_PASSWORD: ${CI_JOB_TOKEN}
