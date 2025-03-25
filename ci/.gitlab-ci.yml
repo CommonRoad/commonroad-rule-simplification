@@ -19,6 +19,7 @@ default:
   image: $CI_REGISTRY/tum-cps/commonroad-docker/ci-base:2025.2
   before_script:
     - *update-git-config
+    - apt-get update && apt-get install -y --no-install-recommends python3-dev
 
 variables:
   CXX_TEST_TARGET: "cr_knowledge_extraction_test"
@@ -32,7 +33,7 @@ pre_commit:
   stage: static-check
   image: python:3.10-slim-bullseye
   before_script:
-    - apt-get update && apt-get install -y git
+    - apt-get update && apt-get install -y --no-install-recommends git
   script:
     - pip install pre-commit
     - pre-commit run --all-files --show-diff-on-failure
@@ -210,7 +211,7 @@ build-docs:
     - job: build-wheel
       artifacts: true
   before_script:
-    - apt-get update && apt-get install -y git doxygen
+    - apt-get update && apt-get install -y --no-install-recommends git doxygen
     - *install-rust
     - *update-git-config
     - pip install pip-tools
