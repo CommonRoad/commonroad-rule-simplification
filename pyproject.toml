@@ -52,7 +52,7 @@ build = [
     "pathspec>=0.12.1",
     "pyproject-metadata>=0.7.1",
     "typing_extensions~=4.12.2",
-    "cmake>=3.24",
+    "cmake (>=3.24, <4.0)",
 ]
 dev = [
     "pre-commit>=3.7.0",
@@ -64,14 +64,14 @@ requires = [
     "scikit-build-core~=0.10.7",
     "nanobind~=2.2.0",
     "typing_extensions~=4.12.2",
-    "cmake>=3.24",
+    "cmake (>=3.24, <4.0)",
 ]
 build-backend = "scikit_build_core.build"
 
 [tool.scikit-build]
 build-dir = "build/{build_type}_{wheel_tag}"
 
-minimum-version = "0.8"
+minimum-version = "build-system.requires"
 cmake.version = ">=3.24"
 
 [tool.cibuildwheel]
