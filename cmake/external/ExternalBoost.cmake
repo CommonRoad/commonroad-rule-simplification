@@ -1,27 +1,37 @@
 include(FetchContent)
 
-find_package(Boost 1.70)
-
-if (Boost_FOUND)
-    message(STATUS "Boost - SYSTEM")
-    return()
-endif ()
-
-message(STATUS "Boost - falling back to external version")
-
-FetchContent_Declare(boost_src
-        URL https://archives.boost.io/release/1.80.0/source/boost_1_80_0.tar.gz
-        URL_HASH SHA256=4b2136f98bdd1f5857f1c3dea9ac2018effe65286cf251534b6ae20cc45e1847
+FetchContent_Declare(
+        Boost
+        URL https://github.com/boostorg/boost/releases/download/boost-1.87.0/boost-1.87.0-cmake.tar.xz
+        URL_HASH SHA256=7da75f171837577a52bbf217e17f8ea576c7c246e4594d617bfde7fafd408be5
+        DOWNLOAD_EXTRACT_TIMESTAMP ON
+        EXCLUDE_FROM_ALL
+        SYSTEM
+        FIND_PACKAGE_ARGS 1.87 OPTIONAL_COMPONENTS program_options filesystem CONFIG
 )
-FetchContent_MakeAvailable(boost_src)
 
-# Enable this for debugging Boost discovery
-# set(Boost_DEBUG ON)
+# Specify the libraries we need in order to reduce compile times
+# NOTE: The Boost docs mention that you should determine transitive dependencies
+# by using `boostdep --brief`, however this does not appear to be necesary
+set(BOOST_INCLUDE_LIBRARIES geometry program_options filesystem stacktrace)
 
-set(Boost_NO_SYSTEM_PATHS ON)
-set(BOOST_ROOT ${boost_src_SOURCE_DIR})
-set(Boost_NO_BOOST_CMAKE ON)
+FetchContent_MakeAvailable(Boost)
 
-find_package(Boost 1.80.0 MODULE REQUIRED)
-message(VERBOSE "Boost - found: ${Boost_FOUND} (version ${Boost_VERSION})")
-message(VERBOSE "Boost - Boost_INCLUDE_DIRS=${Boost_INCLUDE_DIRS}")
+# Fix Boost::stacktrace CMake configuration
+# (they export an include directory that references the build directory)
+foreach(target boost_stacktrace_backtrace boost_stacktrace_addr2line)
+    if(TARGET ${target})
+        # get_target_property(includes ${target} INTERFACE_INCLUDE_DIRECTORIES)
+        # message(STATUS "Boost includes: ${includes}")
+        set_property(TARGET ${target} PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+                $<BUILD_INTERFACE:${includes}>
+                $<INSTALL_INTERFACE:include>
+        )
+    endif()
+endforeach()
+
+foreach(target boost_stacktrace_backtrace boost_stacktrace_addr2line boost_stacktrace_basic boost_stacktrace_from_exception)
+    if(TARGET ${target})
+        set_property(TARGET ${target} PROPERTY LINK_LIBRARIES_ONLY_TARGETS OFF)
+    endif()
+endforeach()

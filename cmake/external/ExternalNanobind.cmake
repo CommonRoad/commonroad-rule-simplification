@@ -7,7 +7,7 @@ FetchContent_Declare_Fallback(
         nanobind
 
         GIT_REPOSITORY https://github.com/wjakob/nanobind.git
-        GIT_TAG v2.1.0
+        GIT_TAG v2.2.0
 
         FIND_PACKAGE_ARGS
 )

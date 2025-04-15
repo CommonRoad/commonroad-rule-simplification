@@ -16,11 +16,11 @@ keywords = [
 ]
 dependencies = [
     "ltl_augmentation@git+ssh://git@gitlab.lrz.de/cps/ltl-augmentation.git#main",
-    "commonroad_cpp@git+ssh://git@gitlab.lrz.de/cps/commonroad/environment-model.git@d08ba0db480e0d4126e4bf2ce589b6eaa9e40ed6", # if you change the commit here also update the cmake dependency
+    "commonroad_cpp@git+ssh://git@gitlab.lrz.de/cps/commonroad/environment-model.git@81a1da3442798b658c654c7e54dcbea21111aee2", # if you change the commit here also update the cmake dependency
     "commonroad-io~=2024.2",
     "commonroad-drivability-checker~=2024.1",
     "commonroad-route-planner~=2025.0.1",
-    "numpy>=1.22.0, <2.0",
+    "numpy (>=1.22.0, <3.0)",
     "more-itertools~=10.5.0",
 ]
 
@@ -47,12 +47,11 @@ docs = [
     "mkdocstrings-python~=1.8",
 ]
 build = [
-    "scikit-build-core~=0.10.7",
+    "scikit-build-core~=0.11.0",
     "nanobind~=2.2.0",
     "pathspec>=0.12.1",
     "pyproject-metadata>=0.7.1",
     "typing_extensions~=4.12.2",
-    "cmake (>=3.24, <4.0)",
 ]
 dev = [
     "pre-commit>=3.7.0",
@@ -61,10 +60,9 @@ dev = [
 
 [build-system]
 requires = [
-    "scikit-build-core~=0.10.7",
+    "scikit-build-core~=0.11.0",
     "nanobind~=2.2.0",
     "typing_extensions~=4.12.2",
-    "cmake (>=3.24, <4.0)",
 ]
 build-backend = "scikit_build_core.build"
 
