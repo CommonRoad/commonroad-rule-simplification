@@ -80,10 +80,6 @@ endif ()
 # select C++ standard for this target and all dependent targets
 target_compile_features(cr_knowledge_extraction PUBLIC cxx_std_20)
 
-# build position independent code so that we can link this in the Python bindings (builds shared lib)
-set_property(TARGET cr_knowledge_extraction PROPERTY POSITION_INDEPENDENT_CODE ON)
-
-
 target_include_directories(cr_knowledge_extraction
         PUBLIC
         $<INSTALL_INTERFACE:include>
