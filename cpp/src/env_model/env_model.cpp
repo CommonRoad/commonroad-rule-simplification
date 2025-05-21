@@ -159,6 +159,7 @@ std::unordered_set<Direction> EnvironmentModel::get_turning_directions_impl(cons
             mode = 2;
             // Intentional fall-through to the next case
             // we have to check on what kind of direction lanelet the obstacle is at this step
+            [[fallthrough]];
         case 2:
             // In intersection
             if (not_on_intersection()) {
@@ -181,6 +182,8 @@ std::unordered_set<Direction> EnvironmentModel::get_turning_directions_impl(cons
                 }
             }
             break;
+        default:
+            throw std::logic_error("Invalid mode in get_turning_directions_impl");
         }
     }
 

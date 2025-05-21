@@ -1,7 +1,7 @@
 #include "cr_knowledge_extraction/kleene/intersection/on_incoming_left_of_extractor.hpp"
 
 #include <commonroad_cpp/obstacle/obstacle.h>
-#include <commonroad_cpp/roadNetwork/intersection/intersection.h>
+#include <commonroad_cpp/roadNetwork/intersection/incoming_group.h>
 #include <commonroad_cpp/roadNetwork/lanelet/lane.h>
 
 #include <ranges>
