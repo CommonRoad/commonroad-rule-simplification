@@ -27,11 +27,14 @@ variables:
 .python-version-unprotected-branches: &python-version-unprotected-branches "3.10"
 
 .python-versions: &python-versions
-  - *python-version-unprotected-branches
+  - "3.10"
+  - "3.11"
 
 pre_commit:
   stage: static-check
-  image: python:3.10-slim-bullseye
+  image: python:${PYTHON_VERSION}-slim-bullseye
+  variables:
+    PYTHON_VERSION: *python-version-unprotected-branches
   before_script:
     - apt-get update && apt-get install -y --no-install-recommends git
   script:
@@ -56,13 +59,34 @@ generate-cache:
     - cmake -G "Ninja Multi-Config" -S . -B build -DFETCHCONTENT_QUIET:BOOL=OFF
   needs: [ ]
 
+build-clang:
+  stage: compile
+  cache:
+    <<: *cache_dependency_archives
+  image: $CI_REGISTRY/tum-cps/commonroad-docker/ci-clang:2025.2
+  parallel:
+    matrix:
+      # We need libomp version matching the compiler, but Ubuntu only allows a single installed libomp
+      - CLANG_VERSION: [ 18 ]
+  variables:
+    CC: clang-$CLANG_VERSION
+    CXX: clang++-$CLANG_VERSION
+  script:
+    - cmake -G "Ninja Multi-Config" -S . -B build
+    - cmake --build build --config Release
+  needs: [ ]
+
 build-gcc:
   stage: compile
   cache:
     <<: *cache_dependency_archives
+  image: $CI_REGISTRY/tum-cps/commonroad-docker/ci-gcc:2025.2
+  parallel:
+    matrix:
+      - GCC_VERSION: [ 10, 11, 12, 13, 14 ]
   variables:
-    CC: gcc
-    CXX: g++
+    CC: x86_64-linux-gnu-gcc-$GCC_VERSION
+    CXX: x86_64-linux-gnu-g++-$GCC_VERSION
   script:
     - cmake -G "Ninja Multi-Config" -S . -B build
     - cmake --build build --config Release
@@ -189,7 +213,10 @@ run-gtest:
 
 run-examples:
   stage: test
-  image: python:3.10-slim-bullseye
+  image: python:${PYTHON_VERSION}-slim-bullseye
+  parallel:
+    matrix:
+      - PYTHON_VERSION: *python-versions
   before_script:
     # we need build-essential, since Polygon3 (dependency of the drivability checker) has to be compiled from source
     # libgl1 and libglib2.0-0 are required for the native cv2 package
@@ -204,9 +231,9 @@ run-examples:
 ### documentation ###
 build-docs:
   stage: docs
-  image: python:${JOB_PYTHON_VERSION}-slim-bullseye
+  image: python:${PYTHON_VERSION}-slim-bullseye
   variables:
-    JOB_PYTHON_VERSION: *python-version-unprotected-branches
+    PYTHON_VERSION: *python-version-unprotected-branches
   needs:
     - job: build-wheel
       artifacts: true
