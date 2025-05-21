@@ -16,7 +16,9 @@ if (SKBUILD)
 endif ()
 
 if (NOT SKBUILD)
+    # If we request Python bindings outside of SKBUILD, Python and nanobind better be installed
     find_package(Python 3.8 COMPONENTS Interpreter Development.Module REQUIRED)
+    find_package(nanobind CONFIG REQUIRED)
     message(STATUS "Adding Python interface for compilation only")
 endif ()
 

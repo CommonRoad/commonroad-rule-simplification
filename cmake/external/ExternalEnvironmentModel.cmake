@@ -1,12 +1,9 @@
 include(FetchContent)
 
-# Force the environment model to always use the external drivability checker
-set(EXTERNAL_CRDC_FORCE ON)
-
 FetchContent_Declare(
         EnvironmentModel
         GIT_REPOSITORY git@gitlab.lrz.de:cps/commonroad/environment-model.git
-        GIT_TAG 81a1da3442798b658c654c7e54dcbea21111aee2
+        GIT_TAG feature/replanning-new-clcs-common-cmake  # if you change the commit here also update the Python dependency
         #    URL /home/lercher/tum/commonroad/environment-model
 )
 

@@ -16,7 +16,7 @@ keywords = [
 ]
 dependencies = [
     "ltl_augmentation@git+ssh://git@gitlab.lrz.de/cps/ltl-augmentation.git#main",
-    "commonroad_cpp@git+ssh://git@gitlab.lrz.de/cps/commonroad/environment-model.git@81a1da3442798b658c654c7e54dcbea21111aee2", # if you change the commit here also update the cmake dependency
+    "commonroad_cpp@git+ssh://git@gitlab.lrz.de/cps/commonroad/environment-model.git@feature/replanning-new-clcs-common-cmake", # if you change the commit here also update the CMake dependency
     "commonroad-io~=2024.2",
     "commonroad-drivability-checker~=2024.1",
     "commonroad-route-planner~=2025.0.1",
@@ -71,6 +71,9 @@ build-dir = "build/{build_type}_{wheel_tag}"
 
 minimum-version = "build-system.requires"
 cmake.version = ">=3.24"
+
+[tool.scikit-build.cmake.define]
+CR_KNOWLEDGE_EXTRACTION_BUILD_PYTHON_BINDINGS = "ON"
 
 [tool.cibuildwheel]
 skip = ["pp*", "*-musllinux*"]

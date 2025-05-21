@@ -1,11 +1,3 @@
-# NOTE: The upper CMake version bound specified here does not prevent using newer
-# CMake versions - rather, it simply tells CMake that we are aware of versions
-# in this range, allowing CMake to adapt its behaviour accordingly.
-#
-# Citing the documentation:
-# The cmake_minimum_required(VERSION) command implicitly invokes the cmake_policy(VERSION)
-# command to specify that the current project code is written for the given range of CMake versions.
-# Source: https://cmake.org/cmake/help/v3.25/command/cmake_minimum_required.html
 cmake_minimum_required(VERSION 3.20..4.0)
 
 if (SKBUILD)
@@ -17,10 +9,9 @@ endif ()
 project(CommonRoadKnowledgeExtraction
         LANGUAGES CXX
         VERSION ${CR_KNOWLEDGE_EXTRACTION_VERSION}
-        DESCRIPTION "C++ extension for the commonroad-knowledge-extraction Python package")
+        DESCRIPTION "C++ extension for the commonroad-rule-simplification Python package")
 
-# Set the minimum CMake policy version to 3.5 - required for cmake >= 4.0
-set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
+set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
 
 # CMP0126 (3.21) - Removal of normal variables by set(CACHE)
 if (POLICY CMP0126)
@@ -31,6 +22,7 @@ endif ()
 if (POLICY CMP0135)
     cmake_policy(SET CMP0135 NEW)
 endif ()
+
 
 # Adapted from Eigen3 - snippet to get a value for PROJECT_IS_TOP_LEVEL
 # on CMake versions before v3.21.0
@@ -47,68 +39,55 @@ if (NOT SKBUILD)
     set(CMAKE_VERIFY_INTERFACE_HEADER_SETS ON)
 endif ()
 
-# Disable PCH on platforms other than Clang on Linux (spotty support)
-if (NOT LINUX OR NOT (CMAKE_CXX_COMPILER_ID STREQUAL "Clang") OR DEFINED ENV{CIBUILDWHEEL})
-    set(CMAKE_DISABLE_PRECOMPILE_HEADERS ON)
-endif ()
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 
-# This needs to be set here, as the environment model also writes it to the cache
-# Otherwise, we need to rebuild once, because then the value from the cache takes effect
-
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
-
-if (CMAKE_EXPORT_COMPILE_COMMANDS)
-    set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
-endif ()
-
-# IMPORTANT: DO NOT MOVE this section, in particular the calls to find_package(Python)
-# and find_package(pybind11), without careful consideration
-if (SKBUILD)
-    find_package(Python 3.8 COMPONENTS Interpreter Development.Module REQUIRED)
-
-    if (NOT NB_DIR)
-        execute_process(
-                COMMAND "${Python_EXECUTABLE}" -m nanobind --cmake_dir
-                OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE NB_DIR)
-    endif ()
-    list(APPEND CMAKE_PREFIX_PATH "${NB_DIR}")
-    find_package(nanobind CONFIG REQUIRED)
-
-    # SKBUILD_SELF_CONTAINED controls whether we try to build all dependencies
-    # ourselves. This is used in order to build cross-platform wheels
-    # using cibuildwheel.
-    # We don't enable this in normal Python builds since it will generally
-    # just slow down the build.
-    set(SKBUILD_SELF_CONTAINED OFF)
-
-    if (DEFINED ENV{CIBUILDWHEEL})
-        set(SKBUILD_SELF_CONTAINED ON)
-    endif ()
-
-    message(STATUS "PYTHON MODE - assuming we are invoked by pip/setup.py")
-    message(STATUS "PYTHON MODE - building static libraries")
-
-    set(FETCHCONTENT_QUIET ON)
-
-    # Globally build static libraries (affects all calls to add_library
-    # without an explicit library type)
-    set(BUILD_SHARED_LIBS OFF)
-    set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
-    # Globally set visibility preset
-    set(CMAKE_VISIBILITY_INLINES_HIDDEN ON)
-    set(CMAKE_CXX_VISIBILITY_PRESET default)
-endif ()
-
-set(CMAKE_CXX_EXTENSIONS OFF)
-
-# Some extra debugging for project developers - safe to disable, but read on why they might be useful:
-# Allow only targets in link_libraries
 set(CMAKE_LINK_LIBRARIES_ONLY_TARGETS ON)
 
 set(CMAKE_MESSAGE_CONTEXT_SHOW ON)
+
+option(CR_KNOWLEDGE_EXTRACTION_BUILD_PYTHON_BINDINGS
+        "Build Python bindings for CommonRoad Knowledge Extraction"
+        OFF)
+
+if (CR_KNOWLEDGE_EXTRACTION_BUILD_PYTHON_BINDINGS)
+    if (SKBUILD)
+        find_package(Python 3.8 COMPONENTS Interpreter Development.Module REQUIRED)
+
+        execute_process(
+                COMMAND "${PYTHON_EXECUTABLE}" -m nanobind --cmake_dir
+                OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE NB_DIR)
+        list(APPEND CMAKE_PREFIX_PATH "${NB_DIR}")
+        find_package(nanobind CONFIG REQUIRED)
+
+        # SKBUILD_SELF_CONTAINED controls whether we try to build all dependencies
+        # ourselves. This is used in order to build cross-platform wheels
+        # using cibuildwheel.
+        # We don't enable this in normal Python builds since it will generally
+        # just slow down the build.
+        set(SKBUILD_SELF_CONTAINED OFF)
+
+        message(STATUS "PYTHON MODE - assuming we are invoked by pip/setup.py")
+        message(STATUS "PYTHON MODE - building static libraries")
+
+        if (DEFINED ENV{CIBUILDWHEEL})
+            set(SKBUILD_SELF_CONTAINED ON)
+        endif ()
+
+        set(FETCHCONTENT_QUIET ON)
+
+        # Globally build static libraries (affects all calls to add_library
+        # without an explicit library type)
+        set(BUILD_SHARED_LIBS OFF)
+
+        set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+    endif (SKBUILD)
+endif (CR_KNOWLEDGE_EXTRACTION_BUILD_PYTHON_BINDINGS)
+
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON CACHE INTERNAL "")
 
 # Ensure executables are in the top level directory
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
@@ -120,25 +99,30 @@ if (NOT CommonRoadKnowledgeExtraction_IS_TOP_LEVEL)
     set(CR_KNOWLEDGE_EXTRACTION_BUILD_EXTRAS_DEFAULT OFF)
 endif ()
 
-cmake_dependent_option(CR_KNOWLEDGE_EXTRACTION_BUILD_DOXYGEN
-        "Build doxygen"
-        ${CR_KNOWLEDGE_EXTRACTION_BUILD_EXTRAS_DEFAULT}
-        "NOT SKBUILD"
-        OFF)
-
+# TODO Maybe involve BUILD_TESTING here?
 cmake_dependent_option(CR_KNOWLEDGE_EXTRACTION_BUILD_TESTS
         "Build tests"
         ${CR_KNOWLEDGE_EXTRACTION_BUILD_EXTRAS_DEFAULT}
         "NOT SKBUILD"
         OFF)
 
-option(CR_KNOWLEDGE_EXTRACTION_BUILD_PYTHON_BINDINGS
-        "Build Python bindings"
-        ${CR_KNOWLEDGE_EXTRACTION_BUILD_EXTRAS_DEFAULT})
+# add_library (without STATIC or SHARED) will respect BUILD_SHARED_LIBS when determining the library type
+# The following definitions allow setting BUILD_SHARED_LIBS globally or only for this project
+# (useful when including it into another project).
+#
+# If ${PROJECT_NAME}_BUILD_SHARED_LIBS is set to a specific value by another project or the user,
+# then we will use that value (by setting BUILD_SHARED_LIBS to the value of ${PROJECT_NAME}_BUILD_SHARED_LIBS).
+# Otherwise, the default for ${PROJECT_NAME}_BUILD_SHARED_LIBS is taken from BUILD_SHARED_LIBS if it exists.
 
-option(BUILD_SHARED_LIBS "Build reach as a shared library" ON)
+if (DEFINED BUILD_SHARED_LIBS)
+    set(_BUILD_SHARED_LIBS_DEFAULT ${BUILD_SHARED_LIBS})
+else ()
+    set(_BUILD_SHARED_LIBS_DEFAULT ON)
+endif ()
 
-option(CR_KNOWLEDGE_EXTRACTION_BUILD_SHARED_LIBS "Build using shared libraries" ${BUILD_SHARED_LIBS})
+option(${PROJECT_NAME}_BUILD_SHARED_LIBS "Build ${PROJECT_NAME} as a shared library" ${_BUILD_SHARED_LIBS_DEFAULT})
+
+set(BUILD_SHARED_LIBS ${${PROJECT_NAME}_BUILD_SHARED_LIBS})
 
 set(CMAKE_SUPPORTS_TRY_FIND_PACKAGE OFF)
 if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.24.0)
@@ -164,7 +148,6 @@ cmake_dependent_option(CR_KNOWLEDGE_EXTRACTION_SYSTEM_PACKAGES_FORCE
         OFF
 )
 
-# make FetchContent_Declare_Fallback available
 include(FetchContent)
 FetchContent_Declare(
         commonroad_cmake
@@ -195,12 +178,14 @@ set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 find_package(Threads REQUIRED)
 find_package(OpenMP)
 
-list(APPEND CMAKE_MODULE_PATH
-        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/external
-)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake/external)
 
-# We have custom logic to check for system Boost, therefore we include ExternalBoost unconditionally
-include(ExternalBoost)
+# We have custom logic to check for system Boost, therefore we include
+# ExternalBoost unconditionally
+include(external/ExternalBoost)
+
+include(ExternalCLCS)
+include(ExternalEnvironmentModel)
 
 if (CMAKE_SUPPORTS_TRY_FIND_PACKAGE)
     if (SKBUILD_SELF_CONTAINED)
@@ -237,18 +222,10 @@ else ()
     # Normal path: We try to use find_package via FetchContent, otherwise we fall
     # back to normal FetchContent
 
-    include(ExternalEigen)
-    include(ExternalSpdlog)
-    include(ExternalGoogleTest)
+    include(external/ExternalEigen)
+    include(external/ExternalSpdlog)
+    include(external/ExternalGoogleTest)
 endif ()
-
-# Include nanobind if we are not invoked by pip/setup.py
-if (NOT SKBUILD)
-    include(ExternalNanobind)
-endif ()
-
-include(ExternalDrivabilityChecker)
-include(ExternalEnvironmentModel)
 
 # Add subdirectory for the main library
 add_subdirectory(cpp)
@@ -264,7 +241,4 @@ if (CR_KNOWLEDGE_EXTRACTION_BUILD_TESTS)
     add_subdirectory(cpp/tests)
 endif ()
 
-# Add documentation
-#if (CR_KNOWLEDGE_EXTRACTION_BUILD_DOXYGEN)
-#    include(extras/Doxygen)
-#endif ()
+# include(cmake/install.cmake)

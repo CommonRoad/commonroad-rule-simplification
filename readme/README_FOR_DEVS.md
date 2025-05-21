@@ -100,3 +100,16 @@ With this, the breakpoints seem to work more reliably.
 To do so, edit your run configuration and remove "Build" from the "Before launch" section.
 
 If all else fails, uninstalling and reinstalling the package also seems to fix the breakpoint recognition.
+
+## Building Python Bindings Directly
+
+Building the Python bindings directly, i.e., without using scikit-build-core, can be helpful e.g. to set up your IDE.
+To do so, you need to add the following parameters to your CMake invocation.
+```
+-DCR_KNOWLEDGE_EXTRACTION_BUILD_PYTHON_BINDINGS=ON
+-DCMAKE_PREFIX_PATH=/path/to/site-packages
+```
+The first parameter enables the Python bindings.
+The second parameters adds the path to your Python installation's `site-packages` directory to the CMake search path like scikit-build-core does.
+If you are using an Anaconda/Miniconda environment, make sure to point this to the `site-packages` directory of the correct environment.
+Please make sure that `nanobind` with the version specified in the `build-system.requires` is installed in this environment.

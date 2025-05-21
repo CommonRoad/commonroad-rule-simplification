@@ -97,9 +97,9 @@ target_link_libraries(cr_knowledge_extraction
 
 target_link_libraries(cr_knowledge_extraction
         PUBLIC
-        crccosy
-        EnvironmentModel::env_model
         Eigen3::Eigen
+        CommonRoadCLCS::crccosy
+        EnvironmentModel::env_model
 )
 
 add_library(CommonRoadKnowledgeExtraction::cr_knowledge_extraction ALIAS cr_knowledge_extraction)
