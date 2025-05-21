@@ -1,27 +1,3 @@
-include(utils/EnsureStatic)
-
-# Sanity check: Ensure we are building all dependencies as static libraries
-if (SKBUILD)
-    if (SKBUILD_SELF_CONTAINED)
-        # If we are building all dependencies ourselves, then they should
-        # all be static.
-
-        ensure_all_static(cr_knowledge_extraction)
-    else ()
-        # If we are partially using system libraries, then only the cr_knowledge_extraction library
-        # itself has to be static.
-
-        ensure_static(cr_knowledge_extraction)
-    endif ()
-endif ()
-
-if (NOT SKBUILD)
-    # If we request Python bindings outside of SKBUILD, Python and nanobind better be installed
-    find_package(Python 3.8 COMPONENTS Interpreter Development.Module REQUIRED)
-    find_package(nanobind CONFIG REQUIRED)
-    message(STATUS "Adding Python interface for compilation only")
-endif ()
-
 set(python_module_name knowledge_extraction_core)
 nanobind_add_module(${python_module_name} MODULE
         pybind.hpp
@@ -68,3 +44,17 @@ add_custom_target(install-python-modules-${python_module_name}
         -P "${PROJECT_BINARY_DIR}/cmake_install.cmake"
         DEPENDS ${python_module_name}
 )
+
+# Sanity check: Ensure we are building all dependencies as static libraries
+include(utils/EnsureStatic)
+if (SKBUILD)
+    if (SKBUILD_SELF_CONTAINED)
+        # If we are building all dependencies ourselves, then they should
+        # all be static.
+        ensure_all_static(cr_knowledge_extraction)
+    else ()
+        # If we are partially using system libraries, then only the cr_knowledge_extraction library
+        # itself has to be static.
+        ensure_static(cr_knowledge_extraction)
+    endif ()
+endif ()

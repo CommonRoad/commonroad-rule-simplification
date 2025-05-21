@@ -54,15 +54,15 @@ option(CR_KNOWLEDGE_EXTRACTION_BUILD_PYTHON_BINDINGS
         OFF)
 
 if (CR_KNOWLEDGE_EXTRACTION_BUILD_PYTHON_BINDINGS)
+    find_package(Python 3.8 COMPONENTS Interpreter Development.Module REQUIRED)
+
+    execute_process(
+            COMMAND "${PYTHON_EXECUTABLE}" -m nanobind --cmake_dir
+            OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE NB_DIR)
+    list(APPEND CMAKE_PREFIX_PATH "${NB_DIR}")
+    find_package(nanobind CONFIG REQUIRED)
+
     if (SKBUILD)
-        find_package(Python 3.8 COMPONENTS Interpreter Development.Module REQUIRED)
-
-        execute_process(
-                COMMAND "${PYTHON_EXECUTABLE}" -m nanobind --cmake_dir
-                OUTPUT_STRIP_TRAILING_WHITESPACE OUTPUT_VARIABLE NB_DIR)
-        list(APPEND CMAKE_PREFIX_PATH "${NB_DIR}")
-        find_package(nanobind CONFIG REQUIRED)
-
         # SKBUILD_SELF_CONTAINED controls whether we try to build all dependencies
         # ourselves. This is used in order to build cross-platform wheels
         # using cibuildwheel.
@@ -84,6 +84,8 @@ if (CR_KNOWLEDGE_EXTRACTION_BUILD_PYTHON_BINDINGS)
         set(BUILD_SHARED_LIBS OFF)
 
         set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+    else ()
+        message(STATUS "PYTHON MODE - adding Python interface for compilation only")
     endif (SKBUILD)
 endif (CR_KNOWLEDGE_EXTRACTION_BUILD_PYTHON_BINDINGS)
 
