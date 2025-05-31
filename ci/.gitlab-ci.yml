@@ -66,12 +66,14 @@ build-clang:
   image: $CI_REGISTRY/tum-cps/commonroad-docker/ci-clang:2025.2
   parallel:
     matrix:
-      # We need libomp version matching the compiler, but Ubuntu only allows a single installed libomp
-      - CLANG_VERSION: [ 18 ]
+      - CLANG_VERSION: [ 15, 16, 17, 18, 19 ]
   variables:
     CC: clang-$CLANG_VERSION
     CXX: clang++-$CLANG_VERSION
   script:
+    - apt-get remove -y libomp-dev &&
+      apt-get update &&
+      apt-get install -y --no-install-recommends libomp-$CLANG_VERSION-dev
     - cmake -G "Ninja Multi-Config" -S . -B build
     - cmake --build build --config Release
   needs: [ ]
