@@ -1,19 +1,13 @@
 include(FetchContent)
-include(utils/FetchContentHelper)
 
-FetchContent_Declare_Fallback(
+FetchContent_Declare(
         CommonRoadCLCS
-
-        GIT_REPOSITORY git@gitlab.lrz.de:cps/commonroad/commonroad-clcs.git
-        #GIT_TAG f0905d3aeeb1d62584d67a73604601f5c948f3f2
-        GIT_TAG feature/common-cmake
-
         SYSTEM
+
+        GIT_REPOSITORY https://github.com/CommonRoad/commonroad-clcs.git
+        GIT_TAG 3bbfc0de99778b17e725ce2f259b989e751b937b
 )
 
 FetchContent_MakeAvailable(CommonRoadCLCS)
 
-mark_as_advanced(
-        ADD_MODULE_GEOMETRY
-        # BUILD_S11N
-)
+set_property(DIRECTORY ${CommonRoadCLCS_SOURCE_DIR} PROPERTY EXCLUDE_FROM_ALL ON)
