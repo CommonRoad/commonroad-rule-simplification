@@ -16,7 +16,7 @@ keywords = [
 ]
 dependencies = [
     "ltl_augmentation@git+ssh://git@gitlab.lrz.de/cps/ltl-augmentation.git#main",
-    "commonroad_cpp@git+ssh://git@gitlab.lrz.de/cps/commonroad/environment-model.git@feature/replanning-new-clcs-common-cmake", # if you change the commit here also update the CMake dependency
+    "commonroad_cpp@git+ssh://git@gitlab.lrz.de/cps/commonroad/environment-model.git@c7fcf8ad0855da4958df3045b3f59a6e482bab6e", # if you change the commit here also update the CMake dependency
     "commonroad-io~=2024.2",
     "commonroad-drivability-checker~=2024.1",
     "commonroad-route-planner~=2025.0.1",
