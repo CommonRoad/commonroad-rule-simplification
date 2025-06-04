@@ -2,7 +2,7 @@
 name = "cr_rule_simplification"
 version = "0.1.0"
 readme = { file = "README.md", content-type = "text/markdown" }
-requires-python = ">=3.10,<3.12"
+requires-python = ">=3.10,<3.14"
 #license = { file = "LICENSE.txt" }
 authors = [
     { name = "Cyber-Physical Systems Group - Technical University of Munich", email = "commonroad@lists.lrz.de" }

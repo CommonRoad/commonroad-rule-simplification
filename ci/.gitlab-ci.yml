@@ -24,17 +24,17 @@ default:
 variables:
   CXX_TEST_TARGET: "cr_knowledge_extraction_test"
 
-.python-version-unprotected-branches: &python-version-unprotected-branches "3.10"
-
 .python-versions: &python-versions
-  - "3.10"
+  - &default-python-version "3.10"
   - "3.11"
+#  - "3.12"
+#  - "3.13"
 
 pre_commit:
   stage: static-check
   image: python:${PYTHON_VERSION}-slim-bullseye
   variables:
-    PYTHON_VERSION: *python-version-unprotected-branches
+    PYTHON_VERSION: *default-python-version
   before_script:
     - apt-get update && apt-get install -y --no-install-recommends git
   script:
@@ -139,7 +139,9 @@ build-wheel:
   variables:
     # pretend to CMake that we are using cibuildwheel to build the wheel
     CIBUILDWHEEL: "1"
-    PYTHON_VERSION: *python-version-unprotected-branches
+  parallel:
+    matrix:
+      - PYTHON_VERSION: *python-versions
   script:
     - *install-rust
     - python$PYTHON_VERSION -m pip wheel -v -w built_wheel dist/*.tar.gz
@@ -235,7 +237,7 @@ build-docs:
   stage: docs
   image: python:${PYTHON_VERSION}-slim-bullseye
   variables:
-    PYTHON_VERSION: *python-version-unprotected-branches
+    PYTHON_VERSION: *default-python-version
   needs:
     - job: build-wheel
       artifacts: true
