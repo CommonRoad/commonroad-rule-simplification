@@ -100,14 +100,16 @@ target_link_libraries(cr_knowledge_extraction
 
 add_library(CommonRoadKnowledgeExtraction::cr_knowledge_extraction ALIAS cr_knowledge_extraction)
 
-foreach (target IN ITEMS cr_knowledge_extraction)
-    # this adds many warnings to the build. They usually help to find some bugs
-    # TODO: Check whether each warning flag is actually supported by the compiler before adding it
-    if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
-        target_compile_options(${target} PRIVATE -Wall -Wextra -Wconversion
-                -pedantic -Wfatal-errors -Wno-unused-parameter)
-    endif ()
-    if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
-        target_compile_options(${target} PRIVATE /W3)
-    endif ()
-endforeach ()
+if (${PROJECT_NAME}_IS_TOP_LEVEL)
+    foreach (target IN ITEMS cr_knowledge_extraction)
+        # this adds many warnings to the build. They usually help to find some bugs
+        # TODO: Check whether each warning flag is actually supported by the compiler before adding it
+        if (CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
+            target_compile_options(${target} PRIVATE -Wall -Wextra -Wconversion
+                    -pedantic -Wfatal-errors -Wno-unused-parameter)
+        endif ()
+        if (CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+            target_compile_options(${target} PRIVATE /W3)
+        endif ()
+    endforeach ()
+endif ()
