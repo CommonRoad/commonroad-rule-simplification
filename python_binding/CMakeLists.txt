@@ -1,7 +1,21 @@
 set(python_module_name knowledge_extraction_core)
+set(install_destination cr_rule_simplification/knowledge_extraction)
 nanobind_add_module(${python_module_name} MODULE
         pybind.hpp
         pybind.cpp
+)
+target_link_libraries(${python_module_name} PRIVATE cr_knowledge_extraction)
+
+install(TARGETS ${python_module_name}
+        LIBRARY DESTINATION ${install_destination}
+        COMPONENT ${python_module_name}
+)
+
+add_custom_target(install-python-modules-${python_module_name}
+        ${CMAKE_COMMAND}
+        -DCMAKE_INSTALL_COMPONENT=${python_module_name}
+        -P "${PROJECT_BINARY_DIR}/cmake_install.cmake"
+        DEPENDS ${python_module_name}
 )
 
 target_precompile_headers(nanobind-static
@@ -9,8 +23,7 @@ target_precompile_headers(nanobind-static
         <nanobind/nanobind.h>
 )
 
-set(install_destination cr_rule_simplification/knowledge_extraction)
-
+include(utils/EnsureStatic)
 if (SKBUILD)
     # only add Python typing stubs if we are building with scikit-build, otherwise, Python dependencies might be missing
     nanobind_add_stub(
@@ -27,27 +40,9 @@ if (SKBUILD)
             ${CMAKE_CURRENT_BINARY_DIR}/${python_module_name}.pyi
             ${CMAKE_CURRENT_BINARY_DIR}/py.typed
             DESTINATION ${install_destination}
-            COMPONENT PythonModules
+            COMPONENT ${python_module_name}
     )
-endif ()
-
-target_link_libraries(${python_module_name} PRIVATE cr_knowledge_extraction)
-
-install(TARGETS ${python_module_name}
-        LIBRARY DESTINATION ${install_destination}
-        COMPONENT ${python_module_name}
-)
-
-add_custom_target(install-python-modules-${python_module_name}
-        ${CMAKE_COMMAND}
-        -DCMAKE_INSTALL_COMPONENT=${python_module_name}
-        -P "${PROJECT_BINARY_DIR}/cmake_install.cmake"
-        DEPENDS ${python_module_name}
-)
-
-# Sanity check: Ensure we are building all dependencies as static libraries
-include(utils/EnsureStatic)
-if (SKBUILD)
+    # Sanity check: Ensure we are building all dependencies as static libraries
     if (SKBUILD_SELF_CONTAINED)
         # If we are building all dependencies ourselves, then they should
         # all be static.
