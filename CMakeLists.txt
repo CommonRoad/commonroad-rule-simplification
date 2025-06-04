@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.20..4.0)
+cmake_minimum_required(VERSION 3.20..3.31)
 
 if (SKBUILD)
     set(CR_KNOWLEDGE_EXTRACTION_VERSION ${SKBUILD_PROJECT_VERSION})
@@ -243,4 +243,4 @@ if (CR_KNOWLEDGE_EXTRACTION_BUILD_TESTS)
     add_subdirectory(cpp/tests)
 endif ()
 
-# include(cmake/install.cmake)
+include(cmake/install.cmake)

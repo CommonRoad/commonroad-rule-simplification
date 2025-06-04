@@ -94,6 +94,7 @@ target_link_libraries(cr_knowledge_extraction
 target_link_libraries(cr_knowledge_extraction
         PUBLIC
         Eigen3::Eigen
+        Boost::headers
         CommonRoadCLCS::crccosy
         EnvironmentModel::env_model
 )
