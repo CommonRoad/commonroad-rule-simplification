@@ -29,7 +29,6 @@ your package manager to speed up the build process.
 
 - [Eigen3](https://eigen.tuxfamily.org/)
 - [spdlog](https://github.com/gabime/spdlog)
-- [nanobind](https://github.com/wjakob/nanobind)
 
 **Optional dependencies:**
 
@@ -38,6 +37,14 @@ your package manager to speed up the build process.
 The additional Python dependencies are listed in `pyproject.toml`.
 
 #### Building the Code
+
+> **Note:** If you want to use this package with the PyPI versions of its dependencies, you need to compile it using GCC 10 (which is the compiler we use to create the PyPI wheels).
+> Otherwise, nanobind will not be able to detect the Python bindings of the dependencies correctly (see [here](https://nanobind.readthedocs.io/en/latest/faq.html#how-can-i-avoid-conflicts-with-other-projects-using-nanobind)).
+> To do so, indicate the path to GCC 10 in the `CXX` environment variable before building the code (e.g. `export CXX=/usr/bin/g++-10`).
+> Note that you need to start with a fresh build directory if you change the compiler, as CMake caches the compiler used for the build.
+> Alternatively, if you cannot use GCC 10 for some reason, you can install the following packages from source using the compiler of your choice:
+> [commonroad-clcs](https://github.com/CommonRoad/commonroad-clcs).
+> Make sure to use the correct versions of these packages as specified in the `pyproject.toml` file.
 
 1. Install C++ dependencies:
 

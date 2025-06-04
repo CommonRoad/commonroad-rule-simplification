@@ -13,15 +13,15 @@ class KnowledgeExtractor:
     _cpp_extractor: core.ExtractionInterface
 
     def __init__(
-        self, world: crcpp.World, ego_params: core.EgoParameters, ccs: pycrccosy.CurvilinearCoordinateSystem
+        self, world: crcpp.World, ccs: pycrccosy.CurvilinearCoordinateSystem, ego_params: core.EgoParameters
     ) -> None:
         """Create a new KnowledgeExtractor.
 
         :param world: The C++ world object corresponding to the CommonRoad scenario.
-        :param ego_params: The configuration parameters of the ego vehicle.
         :param ccs: The curvilinear coordinate system.
+        :param ego_params: The configuration parameters of the ego vehicle.
         """
-        self._cpp_extractor = core.ExtractionInterface(world, ego_params, ccs.reference_path_original())
+        self._cpp_extractor = core.ExtractionInterface(world, ccs, ego_params)
 
     def extract_kleene(self, formula: Formula, planning_horizon: int) -> KnowledgeSequence:
         """Extract Kleene knowledge from the scenario.

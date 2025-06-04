@@ -78,7 +78,7 @@ class TrafficRuleFacade:
             width=configuration.width,
             t_react=configuration.t_react,
         )
-        self._simplifier = TrafficRuleSimplifier(self.world, ego_params, self.ccs)
+        self._simplifier = TrafficRuleSimplifier(self.world, self.ccs, ego_params)
 
     def get_simplified_traffic_rules(
         self, rules: List[str], planning_horizon: int, consider_obstacle: Callable[[Obstacle], bool] = lambda obs: True

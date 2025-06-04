@@ -14,15 +14,15 @@ class TrafficRuleSimplifier:
     _knowledge_extractor: KnowledgeExtractor
 
     def __init__(
-        self, world: crcpp.World, ego_params: core.EgoParameters, ccs: pycrccosy.CurvilinearCoordinateSystem
+        self, world: crcpp.World, ccs: pycrccosy.CurvilinearCoordinateSystem, ego_params: core.EgoParameters
     ) -> None:
         """Create a new TrafficRuleSimplifier.
 
         :param world: The C++ world object corresponding to the CommonRoad scenario.
-        :param ego_params: The configuration parameters of the ego vehicle.
         :param ccs: The curvilinear coordinate system.
+        :param ego_params: The configuration parameters of the ego vehicle.
         """
-        self._knowledge_extractor = KnowledgeExtractor(world, ego_params, ccs)
+        self._knowledge_extractor = KnowledgeExtractor(world, ccs, ego_params)
 
     def simplify(self, rules: Iterable[Formula], planning_horizon: int) -> List[Formula]:
         """Simplify a set of traffic rules.

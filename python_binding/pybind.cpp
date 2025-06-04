@@ -17,8 +17,27 @@ using knowledge_extraction::ego_behavior::EgoParameters;
 namespace nb = nanobind;
 using namespace nb::literals;
 
+namespace {
+std::optional<nb::module_> try_import(const char *name) {
+    try {
+        return nb::module_::import_(name);
+    } catch (nb::python_error &e) {
+        if (e.matches(nb::builtins()["ModuleNotFoundError"])) {
+            const auto py_warn = nb::module_::import_("warnings");
+            py_warn.attr("warn")(
+                "The module '" + std::string(name) +
+                "' is not found. Some signatures might be incorrect and some features may not work as expected.");
+            return std::nullopt;
+        }
+        throw;
+    }
+}
+} // namespace
+
 NB_MODULE(knowledge_extraction_core, module) {
     module.doc() = "C++ extension for knowledge extraction from CommonRoad scenarios.";
+    // Import the Python bindings of the CLCS to ensure that the necessary types are bound
+    try_import("commonroad_clcs.pycrccosy");
 
     export_propositions(module);
     export_ego_parameters(module);
@@ -36,15 +55,8 @@ void export_extraction_result(const nb::module_ &module) {
 
 void export_extraction_interface(const nb::module_ &module) {
     nb::class_<knowledge_extraction::ExtractionInterface>(module, "ExtractionInterface")
-        .def(
-            "__init__",
-            [](knowledge_extraction::ExtractionInterface *self, World &world, const EgoParameters &ego_params,
-               const geometry::EigenPolyline &reference_path) {
-                auto ego_ccs = std::make_shared<geometry::CurvilinearCoordinateSystem>(reference_path);
-                new (self)
-                    knowledge_extraction::ExtractionInterface(std::make_shared<World>(world), ego_ccs, ego_params);
-            },
-            "world"_a, "ego_params"_a, "reference_path"_a)
+        .def(nb::init<std::shared_ptr<World>, std::shared_ptr<geometry::CurvilinearCoordinateSystem>, EgoParameters>(),
+             "world"_a, "ego_ccs"_a, "ego_params"_a)
         .def("extract_all", &knowledge_extraction::ExtractionInterface::extract_all)
         .def("extract_all_but_implications", &knowledge_extraction::ExtractionInterface::extract_all_but_implications)
         .def("extract_kleene", nb::overload_cast<const std::unordered_map<time_step_t, std::vector<std::string>> &>(
