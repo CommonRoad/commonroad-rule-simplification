@@ -1,7 +1,7 @@
 from typing import Iterable, List
 
 import crcpp
-from commonroad_dc import pycrccosy
+from commonroad_clcs import pycrccosy
 from ltl_augmentation import Augmenter, Formula, KnowledgeSequence
 
 import cr_rule_simplification.knowledge_extraction.knowledge_extraction_core as core

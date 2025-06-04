@@ -2,7 +2,7 @@ import time
 
 import commonroad_route_planner.fast_api.fast_api as route_planner
 from commonroad.common.file_reader import CommonRoadFileReader
-from commonroad_dc import pycrccosy
+from commonroad_clcs import pycrccosy
 from cr_rule_simplification import TrafficRuleFacade
 
 

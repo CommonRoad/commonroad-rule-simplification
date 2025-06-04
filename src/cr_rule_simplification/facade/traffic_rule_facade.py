@@ -5,7 +5,7 @@ import more_itertools
 from commonroad.planning.planning_problem import PlanningProblem
 from commonroad.scenario.obstacle import Obstacle
 from commonroad.scenario.scenario import Scenario
-from commonroad_dc import pycrccosy
+from commonroad_clcs import pycrccosy
 from ltl_augmentation import Formula
 
 from cr_rule_simplification.facade.configuration import Configuration
