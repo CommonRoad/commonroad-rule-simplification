@@ -36,8 +36,9 @@ std::optional<nb::module_> try_import(const char *name) {
 
 NB_MODULE(knowledge_extraction_core, module) {
     module.doc() = "C++ extension for knowledge extraction from CommonRoad scenarios.";
-    // Import the Python bindings of the CLCS to ensure that the necessary types are bound
+    // Import the Python bindings of the CLCS and environment model to ensure that the necessary types are bound
     try_import("commonroad_clcs.pycrccosy");
+    try_import("crcpp");
 
     export_propositions(module);
     export_ego_parameters(module);
