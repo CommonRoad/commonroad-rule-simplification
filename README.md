@@ -84,6 +84,13 @@ for further information on configuring CMake arguments via our build system (`sc
 
 Run the example script `main.py`.
 
+### Possible Installation Problems
+
+- Protobuf error like this `CHECK failed: GeneratedDatabase()->Add(encoded_file_descriptor, size)`:
+  this is caused by the `commonroad_cpp` Python package and the version of the environment model used by our C++ code
+  trying to register the same type with the same protobuf instance twice. To work around this issue, you can add the
+  `--config-settings=cmake.define.COMMONROAD_SYSTEM_PROTOBUF=OFF` option to the `pip install` command.
+
 ### Documentation
 
 To generate the documentation, first make sure that you have installed the documentation dependencies listed in `pyproject.toml`.
