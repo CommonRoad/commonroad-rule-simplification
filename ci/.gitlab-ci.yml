@@ -10,11 +10,6 @@ stages:
   - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.lrz.de/".insteadOf "git@gitlab.lrz.de:"
   - git config --global url."https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.lrz.de".insteadOf "ssh://git@gitlab.lrz.de"
 
-.install-rust: &install-rust
-  - apt-get update && apt-get install -y git curl build-essential
-  - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --default-toolchain=stable --profile=minimal -y
-  - source "$HOME/.cargo/env"
-
 default:
   image: $CI_REGISTRY/tum-cps/commonroad-docker/ci-base:2025.2
   before_script:
@@ -225,7 +220,6 @@ run-examples:
     # libgl1 and libglib2.0-0 are required for the native cv2 package
     - apt-get update && apt-get install -y --no-install-recommends git build-essential libgl1 libglib2.0-0 zlib1g zlib1g-dev
     - *update-git-config
-    - *install-rust
     - pip install -v .[test] # rebuild wheel from scratch to make sure that compiler versions match
   script:
     - python main.py
@@ -241,8 +235,7 @@ build-docs:
     - job: build-wheel
       artifacts: true
   before_script:
-    - apt-get update && apt-get install -y --no-install-recommends git doxygen zlib1g zlib1g-dev
-    - *install-rust
+    - apt-get update && apt-get install -y --no-install-recommends git build-essential doxygen zlib1g zlib1g-dev
     - *update-git-config
     - pip install pip-tools
     - pip-compile --extra=docs -o requirements_docs.txt pyproject.toml

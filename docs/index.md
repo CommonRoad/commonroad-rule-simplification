@@ -15,12 +15,6 @@ The software is written in Python 3.10 and C++-20, and was tested on Ubuntu 22.0
 > Thus, an SSH key in your LRZ GitLab account is required.
 > See [here](https://docs.gitlab.com/ee/ssh/) for instructions on how to add an SSH key.
 
-> **Note:** This project depends on the [`ltl_augmentation`](https://gitlab.lrz.de/cps/ltl-augmentation) Python package,
-> which uses a Rust extension module.
-> Currently, we do not provide a pre-built version of the `ltl_augmentation`, so you will need the Rust toolchain
-> installed on your system to build the package.
-> Please refer to the [Rust installation guide](https://www.rust-lang.org/tools/install) for further information.
-
 ### Third-Party Dependencies
 
 While most of these dependencies are added automatically during the build process, you can install them manually via

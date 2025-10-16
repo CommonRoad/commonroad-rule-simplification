@@ -15,11 +15,11 @@ keywords = [
     "temporal logic",
 ]
 dependencies = [
-    "ltl_augmentation@git+ssh://git@gitlab.lrz.de/cps/ltl-augmentation.git#main",
     "commonroad_cpp@git+ssh://git@gitlab.lrz.de/cps/commonroad/environment-model.git@c7fcf8ad0855da4958df3045b3f59a6e482bab6e", # if you change the commit here also update the CMake dependency
     "commonroad-io~=2024.2",
     "commonroad-clcs~=2025.2.0",
     "commonroad-route-planner~=2025.1.0",
+    "ltl-augmentation>=0.1.0",
     "numpy (>=1.22.0, <3.0)",
     "more-itertools~=10.5.0",
 ]
