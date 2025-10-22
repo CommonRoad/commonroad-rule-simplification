@@ -199,6 +199,24 @@ build-wheel-cibw:
       variables:
         CIBW_BUILD: "*-manylinux_x86_64"
 
+build-crcpp-wheel:
+  stage: build-wheels
+  image: quay.io/pypa/manylinux2014_x86_64:2025.01.05-1
+  variables:
+    # pretend to CMake that we are using cibuildwheel to build the wheel
+    CIBUILDWHEEL: "1"
+  parallel:
+    matrix:
+      - PYTHON_VERSION: *python-versions
+  script:
+    - python$PYTHON_VERSION -m pip wheel --no-deps -v -w built_wheel commonroad_cpp@git+https://github.com/CommonRoad/environment-model.git@develop
+    - auditwheel repair -w wheelhouse built_wheel/commonroad_cpp-*.whl
+  needs: [ ]
+  artifacts:
+    paths:
+      - wheelhouse/*.whl
+    expire_in: 30 minutes
+
 ### tests ###
 run-gtest:
   stage: test
@@ -209,21 +227,58 @@ run-gtest:
     - job: build-test
       artifacts: true
 
-run-examples:
+.test-setup:
+  &test-setup
   stage: test
   image: python:${PYTHON_VERSION}-slim-bullseye
-  parallel:
-    matrix:
-      - PYTHON_VERSION: *python-versions
   before_script:
     # we need build-essential, since Polygon3 (dependency of the drivability checker) has to be compiled from source
     # libgl1 and libglib2.0-0 are required for the native cv2 package
     - apt-get update && apt-get install -y --no-install-recommends git build-essential libgl1 libglib2.0-0 zlib1g zlib1g-dev
     - *update-git-config
-    - pip install -v .[test] # rebuild wheel from scratch to make sure that compiler versions match
+    # install requirements and package separately to make sure that the package is installed from the wheel and not from PyPI
+    - pip install uv
+    - uv sync --group test --no-default-groups --no-install-project --no-install-package commonroad_cpp
+    - uv pip install --no-index --no-deps --find-links=wheelhouse/ cr_rule_simplification commonroad_cpp
+
+.source-manual:
+  &source-manual
+  needs:
+    - job: build-wheel
+      artifacts: true
+    - job: build-crcpp-wheel
+      artifacts: true
+  rules:
+    - *skip_merge_request_pipeline
+    - if: $CI_COMMIT_REF_PROTECTED == "false"
+
+.source-cibw:
+  &source-cibw
+  needs:
+    - job: build-wheel-cibw
+      artifacts: true
+    - job: build-crcpp-wheel
+      artifacts: true
+  rules:
+    - *skip_merge_request_pipeline
+    - if: $CI_COMMIT_REF_PROTECTED == "true"
+
+.examples-setup:
+  &examples-setup
+  <<: *test-setup
   script:
-    - python main.py
-  needs: [ ]
+    - uv run --no-sync ${EXAMPLE}
+  parallel:
+    matrix:
+      - PYTHON_VERSION: *python-versions
+        EXAMPLE:
+          - main.py
+
+run-examples:
+  <<: [ *examples-setup, *source-manual ]
+
+run-examples-cibw:
+  <<: [ *examples-setup, *source-cibw ]
 
 ### documentation ###
 build-docs:
@@ -234,15 +289,16 @@ build-docs:
   needs:
     - job: build-wheel
       artifacts: true
+    - job: build-crcpp-wheel
+      artifacts: true
   before_script:
-    - apt-get update && apt-get install -y --no-install-recommends git build-essential doxygen zlib1g zlib1g-dev
+    - apt-get update && apt-get install -y --no-install-recommends build-essential git doxygen zlib1g zlib1g-dev
     - *update-git-config
-    - pip install pip-tools
-    - pip-compile --extra=docs -o requirements_docs.txt pyproject.toml
-    - pip install -r requirements_docs.txt
-    - pip install --no-index --find-links=wheelhouse/ --no-deps cr_rule_simplification[docs]
+    - pip install uv
+    - uv sync --group docs --no-default-groups --no-install-project --no-install-package commonroad_cpp
+    - uv pip install --no-index --find-links=wheelhouse/ --no-deps cr_rule_simplification commonroad_cpp
   script:
-    - mkdocs build
+    - uv run --no-sync mkdocs build
   artifacts:
     paths:
       - site
