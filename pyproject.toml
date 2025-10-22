@@ -2,7 +2,7 @@
 name = "cr_rule_simplification"
 version = "0.1.0"
 readme = { file = "README.md", content-type = "text/markdown" }
-requires-python = ">=3.10,<3.14"
+requires-python = ">=3.10"
 #license = { file = "LICENSE.txt" }
 authors = [
     { name = "Cyber-Physical Systems Group - Technical University of Munich", email = "commonroad@lists.lrz.de" }
@@ -15,13 +15,13 @@ keywords = [
     "temporal logic",
 ]
 dependencies = [
-    "commonroad_cpp@git+ssh://git@gitlab.lrz.de/cps/commonroad/environment-model.git@c7fcf8ad0855da4958df3045b3f59a6e482bab6e", # if you change the commit here also update the CMake dependency
-    "commonroad-io~=2024.2",
+    "commonroad-io @ git+https://github.com/commonroad/commonroad-io@feature/new-format",
+    "commonroad_cpp @ git+https://github.com/CommonRoad/environment-model.git@develop", # if you change the commit here also update the CMake dependency
     "commonroad-clcs~=2025.2.0",
-    "commonroad-route-planner~=2025.1.0",
+    "commonroad-route-planner(>=2025.1.0, <2026.0.0)",
     "ltl-augmentation>=0.1.0",
-    "numpy (>=1.22.0, <3.0)",
-    "more-itertools~=10.5.0",
+    "numpy>=1.22.0",
+    "more-itertools>=10.5",
 ]
 
 classifiers = [
@@ -39,7 +39,17 @@ classifiers = [
 #Forum = "https://commonroad.in.tum.de/forum/c/commonroad-reach/19"
 #Source = "https://gitlab.lrz.de/tum-cps/commonroad-reach"
 
-[project.optional-dependencies]
+[dependency-groups]
+dev = [
+    { include-group = "lint" },
+    { include-group = "test" },
+    { include-group = "docs" },
+    { include-group = "build" },
+]
+lint = [
+    "pre-commit>=3.7.0",
+    "ruff~=0.9",
+]
 test = [
     "pytest>=6.2.2",
 ]
@@ -50,29 +60,23 @@ docs = [
     "mkdocstrings-python~=1.8",
 ]
 build = [
-    "scikit-build-core~=0.11.0",
+    "scikit-build-core>=0.11.0",
     "nanobind~=2.2.0",
-    "pathspec>=0.12.1",
-    "pyproject-metadata>=0.7.1",
-    "typing_extensions~=4.12.2",
     "cmake (>=3.24, <4.0)",
-]
-dev = [
-    "pre-commit>=3.7.0",
-    "ruff~=0.9",
 ]
 
 [build-system]
 requires = [
-    "scikit-build-core~=0.11.0",
+    "scikit-build-core>=0.11.0",
     "nanobind~=2.2.0",
-    "typing_extensions~=4.12.2",
     "cmake (>=3.24, <4.0)",
 ]
 build-backend = "scikit_build_core.build"
 
 [tool.scikit-build]
 build-dir = "build/{build_type}_{wheel_tag}"
+
+editable.rebuild = true
 
 minimum-version = "build-system.requires"
 cmake.version = ">=3.24"
@@ -83,7 +87,7 @@ CR_KNOWLEDGE_EXTRACTION_BUILD_PYTHON_BINDINGS = "ON"
 [tool.cibuildwheel]
 skip = ["pp*", "*-musllinux*"]
 archs = ["x86_64"]
-environment = { PATH = "$HOME/.cargo/bin:$PATH", PIP_DISABLE_PIP_VERSION_CHECK = "1" }
+environment = { PIP_DISABLE_PIP_VERSION_CHECK = "1" }
 build-verbosity = 1
 test-extras = ["test"]
 

@@ -3,9 +3,8 @@ include(FetchContent)
 FetchContent_Declare(
         EnvironmentModel
         SYSTEM
-
-        GIT_REPOSITORY git@gitlab.lrz.de:cps/commonroad/environment-model.git
-        GIT_TAG c7fcf8ad0855da4958df3045b3f59a6e482bab6e  # if you change the commit here also update the Python dependency
+        GIT_REPOSITORY https://github.com/CommonRoad/environment-model.git
+        GIT_TAG develop  # if you change the commit here also update the Python dependency
 )
 
 FetchContent_MakeAvailable(EnvironmentModel)
