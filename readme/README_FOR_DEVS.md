@@ -1,6 +1,7 @@
 ## Using Pre-Commit Hooks
 
-This project uses [pre-commit](https://pre-commit.com/) to ensure that formatters and linters automatically run when committing files.
+This project uses [pre-commit](https://pre-commit.com/) to ensure that formatters and linters automatically run when
+committing files.
 To use pre-commit, install it via pip:
 
 ```bash
@@ -22,21 +23,45 @@ pre-commit run --all-files
 
 ## Editable Install (experimental)
 
-1. Install the C++ dependencies as described in the [README](../README.md).
+### With `uv`
+
+1. Install the C++ dependencies as described in the [README](../README.md#third-party-dependencies).
+
+2. Install the package without build isolation
+
+```bash
+uv sync -v --no-build-isolation-package cr_rule_simplification
+```
+
+Sometimes, it can be necessary to force a reinstallation of the package:
+
+```bash
+uv sync -v --no-build-isolation-package cr_rule_simplification --force-reinstall-package cr_rule_simplification
+```
+
+
+### Without `uv`
+
+1. Install the C++ dependencies as described in the [README](../README.md#third-party-dependencies).
 
 2. Install the Python build dependencies (required to make `--no-build-isolation` work in the next step):
 
 ```bash
-pip install "scikit-build-core~=0.10.7" "nanobind~=2.2.0" "pathspec>=0.12.1" "pyproject-metadata>=0.7.1" "typing_extensions~=4.12.2" "cmake (>=3.24, <4.0)"
+pip install --group build
 ```
+The `--group` option is only available with `pip>=25.1`.
+Otherwise, install the dependencies from the `build` group manually as listed in [`pyproject.toml`](../pyproject.toml).
 
-> **Note:** The versions of the dependencies might have changed from the time of writing this README. Please check the
-> optional build dependencies in the [`pyproject.toml`](../pyproject.toml) file for the latest versions.
+Also consider installing `ninja` to speed up the build process by parallelizing the compilation of C++ files:
+
+```bash
+pip install ninja
+```
 
 3. Build the package and install it in editable mode with automatic rebuilds.
 
 ```bash
-pip install -v --no-build-isolation --config-settings=editable.rebuild=true -e .
+pip install -v --no-build-isolation -e .
 ```
 
 Note that this is considered experimental by `scikit-build-core` and is subject to change.
@@ -47,13 +72,17 @@ Flags:
 
 - `-v` (verbose) prints information about the build progress
 - `--no-build-isolation` disables build isolation, which means the build runs in your local environment
-- `--config-settings=editable.rebuild=true` enables automatic rebuilds when the source code changes (see the caveats in
-  the documentation of `scikit-build-core`)
 - `-e` (editable) installs the package in editable mode
 
 ## Debugging the C++ Code
 
 1. Install the package in editable mode using a Debug build:
+
+```bash
+uv sync -v --no-build-isolation-package cr_rule_simplification --config-settings-package cr_rule_simplification:cmake.build-type="Debug"
+```
+
+Or, without `uv`:
 
 ```bash
 pip install -v --no-build-isolation --config-settings=editable.rebuild=true --config-settings=cmake.build-type="Debug" -e .
@@ -71,45 +100,24 @@ You can also use your favorite IDE to debug the C++ code.
 
 To set up a debugging configuration with CLion, follow the steps described
 under [option 2 here](https://www.jetbrains.com/help/clion/debugging-python-extensions.html#debug-custom-py).
-Make sure to use the Python and pip executables from your Anaconda environment.
+Make sure to use the Python executable from your Anaconda environment.
+You do not need to set up an external build tool in CLion, i.e., you can skip step 5.
+Moreover, remove "Build" from the "Before launch" section in the run configuration.
+CLion will now just use your manual debug installation with automatic rebuilds enabled from above.
 
-When setting up the external build tool in CLion, we recommend to choose a different build directory to avoid
-interference with your manual builds.
-You also have to make sure that CMake uses the correct compiler version (see the note at the top of
-the [README](../README.md)).
-Below, you find the pip arguments of an example configuration:
-
-```
-install
--v
---no-build-isolation
---config-settings=editable.rebuild=true
---config-settings=cmake.build-type="Debug"
---config-settings=build-dir=build/CLion
--e
-.
-```
-
-> **Note:** Do not disable the automatic rebuilds. Otherwise, CLion appears to not recognize the breakpoints you set.
+> **Note:** Do not disable the automatic rebuilds.
+> Otherwise, CLion appears to not recognize the breakpoints you set.
 > It also appears that breakpoints are not recognized if you start debugging immediately after changing the code.
 > In this case, restarting the debugging session should help.
+> If all else fails, uninstalling and reinstalling the package also seems to fix the breakpoint recognition.
 
-Alternatively, you can omit the build step in the CLion configuration and just rely on the automatic rebuilds of your
-manual debug installation.
-With this, the breakpoints seem to work more reliably.
-To do so, edit your run configuration and remove "Build" from the "Before launch" section.
+## Building the Python Bindings Manually
 
-If all else fails, uninstalling and reinstalling the package also seems to fix the breakpoint recognition.
-
-## Building Python Bindings Directly
-
-Building the Python bindings directly, i.e., without using scikit-build-core, can be helpful e.g. to set up your IDE.
-To do so, you need to add the following parameters to your CMake invocation.
-```
--DCR_KNOWLEDGE_EXTRACTION_BUILD_PYTHON_BINDINGS=ON
--DCMAKE_PREFIX_PATH=/path/to/site-packages
-```
-The first parameter enables the Python bindings.
-The second parameters adds the path to your Python installation's `site-packages` directory to the CMake search path like scikit-build-core does.
-If you are using an Anaconda/Miniconda environment, make sure to point this to the `site-packages` directory of the correct environment.
-Please make sure that `nanobind` with the version specified in the `build-system.requires` is installed in this environment.
+For development purposes it can be convenient to set up your IDE to build the Python bindings without invoking `pip`.
+To this end, you need to manually enable the Python bindings by passing `-DCR_REACH_FLOW_BUILD_PYTHON_BINDINGS=ON`
+when configuring the CMake project.
+If you do so, it is also necessary to install the Python build dependencies as described above.
+Finally, you need to point CMake to the correct Python `site-packages` directory by specifying
+`-DCMAKE_PREFIX_PATH=/path/to/site-packages` when configuring the CMake project.
+If you are using a Conda environment, this path is typically `${CONDA_PREFIX}/lib/python3.10/site-packages`.
+Note that the Python version may vary depending on your setup.

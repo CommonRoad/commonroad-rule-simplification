@@ -11,9 +11,13 @@ The software is written in Python 3.10 and C++-20, and was tested on Ubuntu 22.0
 
 ## Building from Source
 
-> **Note:** The build process automatically includes other internal repositories via Git.
-> Thus, an SSH key in your LRZ GitLab account is required.
-> See [here](https://docs.gitlab.com/ee/ssh/) for instructions on how to add an SSH key.
+> **Note:** If you want to use this package with the PyPI versions of its dependencies, you need to compile it using GCC 10 (which is the compiler we use to create the PyPI wheels).
+> Otherwise, nanobind will not be able to detect the Python bindings of the dependencies correctly (see [here](https://nanobind.readthedocs.io/en/latest/faq.html#how-can-i-avoid-conflicts-with-other-projects-using-nanobind)).
+> To do so, indicate the path to GCC 10 in the `CXX` environment variable before building the code (e.g. `export CXX=/usr/bin/g++-10`).
+> Note that you need to start with a fresh build directory if you change the compiler, as CMake caches the compiler used for the build.
+> Alternatively, if you cannot use GCC 10 for some reason, you can install the following packages from source using the compiler of your choice:
+> [commonroad-clcs](https://github.com/CommonRoad/commonroad-clcs).
+> Make sure to use the correct versions of these packages as specified in the `pyproject.toml` file.
 
 ### Third-Party Dependencies
 
@@ -28,7 +32,6 @@ your package manager to speed up the build process.
 
 - [Eigen3](https://eigen.tuxfamily.org/)
 - [spdlog](https://github.com/gabime/spdlog)
-- [nanobind](https://github.com/wjakob/nanobind)
 
 **Optional dependencies:**
 
@@ -38,26 +41,39 @@ The additional Python dependencies are listed in `pyproject.toml`.
 
 ### Building the Code
 
-1. Install C++ dependencies:
+1. We strongly recommend installing this package in a virtual Python environment using one of the following tools:
+- [uv](https://docs.astral.sh/uv/)
+- [Anaconda](https://www.anaconda.com/)
+- [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
+
+2. Install C++ dependencies:
 
 ```bash
 sudo apt-get update
-sudo apt-get install libboost-all-dev libeigen3-dev libyaml-cpp-dev libspdlog-dev libgtest-dev libgmock-dev
+sudo apt-get install libboost-all-dev libeigen3-dev libspdlog-dev libgtest-dev libgmock-dev
 ```
 
-2. Build the C++ extension and install the Python package:
+3. Build the C++ extension and install the Python package:
 
 ```bash
 pip install -v .
 ```
 
-This will build the Python bindings (cr_knowledge_extraction_core) required for C++-boosted computations.
+or, if you are using `uv`:
+
+```bash
+uv sync -v
+```
+
+This will build the Python bindings (knowledge_extraction_core) required for C++-boosted computations.
 
 > **Note**: The `-v` flag (verbose) prints information about the build progress
 
 **Optional:**
 
-- To build the code in Debug mode, add the flag `--config-settings=cmake.build-type="Debug"` to the `pip` command.
+- To build the code in Debug mode, add the flag
+  - `--config-settings=cmake.build-type="Debug"` if you are using `pip`
+  - `--config-settings-package cr_rule_simplification:cmake.build-type="Debug"` if you are using `uv`
 
 See [here](https://scikit-build-core.readthedocs.io/en/latest/configuration.html#configuring-cmake-arguments-and-defines)
 for further information on configuring CMake arguments via our build system (`scikit-build-core`).
@@ -67,14 +83,28 @@ for further information on configuring CMake arguments via our build system (`sc
 > If you want to explicitly configure the number of build jobs, you can do so by passing the
 > flag `--config-settings=cmake.define.CMAKE_BUILD_PARALLEL_LEVEL=$BUILD_JOBS` to the `pip` command, where `$BUILD_JOBS`
 > is the number of parallel jobs to use.
+> For `uv`, use `--config-settings-package cr_rule_simplification:cmake.define.CMAKE_BUILD_PARALLEL_LEVEL=$BUILD_JOBS`.
 > See [here](https://scikit-build-core.readthedocs.io/en/latest/faqs.html#multithreaded-builds) for further details.
 
 > **Note**: Building the package in Debug mode (see above) significantly increases the computation time of the C++
 > backend. Please make sure you are building in Release mode (default setting) if you require fast computations.
 
+You can also have a look at the [Dockerfile](./ci/docker/ci/Dockerfile) for the CI pipeline to see how to set up a
+consistent development environment on Debian/Ubuntu.
+
 ## Running the Code
 
-Run the example script `main.py`.
+Run the example script `main.py` to compute specification-compliant reachable sets:
+
+```bash
+python main.py
+```
+
+or, if you are using `uv`:
+
+```bash
+uv run main.py
+```
 
 ## Possible Installation Problems
 
