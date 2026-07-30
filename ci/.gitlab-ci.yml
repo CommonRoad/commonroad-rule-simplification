@@ -27,7 +27,7 @@ variables:
 
 pre_commit:
   stage: static-check
-  image: python:${PYTHON_VERSION}-slim-bullseye
+  image: python:${PYTHON_VERSION}-slim-trixie
   variables:
     PYTHON_VERSION: *default-python-version
   before_script:
