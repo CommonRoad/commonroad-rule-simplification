@@ -31,5 +31,8 @@ knowledge_extraction::road_network::CurvilinearRoadNetwork::get_overlapping_lane
     } catch (const geometry::CurvilinearProjectionDomainError &e) {
         // If we cannot convert from the CCS, be conservative and return all lanelets
         return road_network->getLaneletNetwork();
+    } catch (const geometry::CurvilinearProjectionDomainLongitudinalError &e) {
+        // If we cannot convert from the CCS, be conservative and return all lanelets
+        return road_network->getLaneletNetwork();
     }
 }
